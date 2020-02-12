@@ -10,6 +10,7 @@ and more.
 * Main References
 - [[https://redex.racket-lang.org/][PLT Redex and SEwPR]] website;
    + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
+   + [[https://homepages.inf.ed.ac.uk/gdp/publications/cbn_cbv_lambda.pdf][Call-by-Name, Call-by-Value and the Lambda-Calculus]] -- G. Plotkin, 1974 (important inspiration);
 - (book) Felleisen, Findler - /Semantics Engineering with PLT Redex/, MIT 2009;
 - [[https://docs.racket-lang.org/redex/index.html][Redex: Practical Semantics Engineering]] (manual section in the Racket documentation);
 - [[https://users.cs.northwestern.edu/~robby/lightweight-metatheory/][Run Your Research]] -- The 2012 POPL talk of Findler (including more resources);
@@ -19,6 +20,7 @@ and more.
 - [[https://en.wikipedia.org/wiki/Operational_semantics#Reduction_semantics][Reduction Semantics]] @ Wikipedia;
 - [[http://prl.ccs.neu.edu/blog/2017/09/25/plt-redex-faq/][PLT Redex FAQ]];
 - [[https://htdp.org/2003-09-26/][How to Design Programs]] (1st edition), MIT 2003 (also the 2nd edition);
+- [[https://github.com/ramalho/lc-with-redex][Lambda Calculus with Scheme and Redex]] (GitHub repo);
 
 * More References
 - [[https://docs.racket-lang.org/pollen/][Pollen]] documentation (TODO: Write the thesis in it?);
