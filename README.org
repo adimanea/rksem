@@ -9,10 +9,13 @@ and more.
 
 * Main References
 - [[https://redex.racket-lang.org/][PLT Redex and SEwPR]] website;
-   + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
-   + [[https://homepages.inf.ed.ac.uk/gdp/publications/cbn_cbv_lambda.pdf][Call-by-Name, Call-by-Value and the Lambda-Calculus]] -- G. Plotkin, 1974 (important inspiration);
+  + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
+  + [[https://homepages.inf.ed.ac.uk/gdp/publications/cbn_cbv_lambda.pdf][Call-by-Name, Call-by-Value and the Lambda-Calculus]] -- G. Plotkin, 1974 (important inspiration);
+  + [[https://www2.ccs.neu.edu/racket/pubs/tcs92-fh.pdf][Revised Report on the Syntactic Theories of Sequential Control and State]] -- Felleisen, Hieb, 1991
+(improves on Plotkin);
 - (book) Felleisen, Findler - /Semantics Engineering with PLT Redex/, MIT 2009;
 - [[https://docs.racket-lang.org/redex/index.html][Redex: Practical Semantics Engineering]] (manual section in the Racket documentation);
+  + [[https://plt.eecs.northwestern.edu/snapshots/current/pdf-doc/redex.pdf][PDF version]];
 - [[https://users.cs.northwestern.edu/~robby/lightweight-metatheory/][Run Your Research]] -- The 2012 POPL talk of Findler (including more resources);
 - (article) [[http://www-formal.stanford.edu/jmc/basis.html][A Basis for a Mathematical Theory of Computation]] -- J. McCarthy, 1961;
 - [[http://blog.ezyang.com/2014/01/ott-iff-plt-redex/][OTT <=> PLT Redex]], showing an alternative tool "for the working semanticist";
@@ -21,6 +24,8 @@ and more.
 - [[http://prl.ccs.neu.edu/blog/2017/09/25/plt-redex-faq/][PLT Redex FAQ]];
 - [[https://htdp.org/2003-09-26/][How to Design Programs]] (1st edition), MIT 2003 (also the 2nd edition);
 - [[https://github.com/ramalho/lc-with-redex][Lambda Calculus with Scheme and Redex]] (GitHub repo);
+- [[https://williamjbowman.com/doc/experimenting-with-redex/index.html][Experimenting with Languages in Redex]] -- examples on how to use Redex for toy languages
+(in Racket documentation);
 
 * More References
 - [[https://docs.racket-lang.org/pollen/][Pollen]] documentation (TODO: Write the thesis in it?);
