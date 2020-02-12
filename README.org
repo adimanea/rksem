@@ -7,17 +7,18 @@ with a strong theoretical motivation and interest. Along the way, I will
 calculus with types, semantics of (mostly) functional programming languages
 and more.
 
-*  Main References
+* Main References
 - [[https://redex.racket-lang.org/][PLT Redex and SEwPR]] website;
    + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
 - (book) Felleisen, Findler - /Semantics Engineering with PLT Redex/, MIT 2009;
 - [[https://docs.racket-lang.org/redex/index.html][Redex: Practical Semantics Engineering]] (manual section in the Racket documentation);
 - [[https://users.cs.northwestern.edu/~robby/lightweight-metatheory/][Run Your Research]] -- The 2012 POPL talk of Findler (including more resources);
 - (article) [[http://www-formal.stanford.edu/jmc/basis.html][A Basis for a Mathematical Theory of Computation]] -- J. McCarthy, 1961;
-- [[http://blog.ezyang.com/2014/01/ott-iff-plt-redex/][OTT <=> PLT Redex]], showing an alternative tool /"for the working semanticist"/;
+- [[http://blog.ezyang.com/2014/01/ott-iff-plt-redex/][OTT <=> PLT Redex]], showing an alternative tool "for the working semanticist";
   + [[https://www.cl.cam.ac.uk/~pes20/ott/][OTT website @ Cambridge]];
 - [[https://en.wikipedia.org/wiki/Operational_semantics#Reduction_semantics][Reduction Semantics]] @ Wikipedia;
 - [[http://prl.ccs.neu.edu/blog/2017/09/25/plt-redex-faq/][PLT Redex FAQ]];
+- [[https://htdp.org/2003-09-26/][How to Design Programs]] (1st edition), MIT 2003 (also the 2nd edition);
 
 * More References
 - [[https://docs.racket-lang.org/pollen/][Pollen]] documentation (TODO: Write the thesis in it?);
