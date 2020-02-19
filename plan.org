@@ -1,0 +1,41 @@
+#+TITLE: Dissertation Plan
+#+AUTHOR: Adrian Manea
+
+Here I will be outlining the TOC and the basic ideas that will become my
+dissertation.
+
+* Introduction and Motivation
+- Why I chose the theme;
+- What will the work include;
+- Current status of the field;
+- Future ideas.
+
+* Preliminaries
+** Historical aspects
+- McCarthy's Lisp mathematical specification and Landin's "mechanizing computation"
+as starting points;
+	+ Insist on lambda calculus not appropriate for recursive functions (McCarthy);
+	+ Ambiguous functions (essential, along with =call/cc=);
+- Jump to POPL 2012 and the problems outlined by Findler;
+
+** Scheme crash course
+- Basic ideas from SICP;
+- R5RS and other specifications;
+- =call/cc= discussed separately as a specific item for Scheme;
+
+** Racket
+- Basic ideas: What is it, what it offers, why they (PLT) chose it, why I chose it;
+- Basic examples and /various/ uses (games, toy languages [typed and untyped], literate
+programming [Pollen]);
+
+* PLT Redex
+- Brief overview of the literature and available tools (K, OTT);
+- What it tries to do (Findler 2012);
+- How it does it (describe its syntax and semantics);
+	+ Semantics through syntax (see PLT book);
+	+ Brief origins (ISWIM and Plotkin);
+
+* Examples
+- TBD.
+
+* Conclusions and further work
