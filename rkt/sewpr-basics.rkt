@@ -27,7 +27,7 @@
 (redex-match bool-any-lang
              B
              (term (lor false true)))
-;; --> (list (match (list (bind 'B '(lor false true)))))
+;; => (list (match (list (bind 'B '(lor false true)))))
 ;; The matching succeeds and this is an example that works:
 ;; B = (lor false true)
 
@@ -35,7 +35,7 @@
 (redex-match bool-any-lang
              (in-hole C (lor true B))
              (term (lor true (lor true false))))
-;; --> (list
+;; => (list
 ;;          (match (list (bind 'B 'false) (bind 'C '(lor true hole))))
 ;;          (match (list (bind 'B '(lor true false)) (bind 'C hole))))
 ;; Also works, with 2 examples:
@@ -51,11 +51,19 @@
         lor-true)                   ; name of the reduction
    (--> (in-hole C (lor false B))   ; In a context where we have lor between false and Bs,
         (in-hole C B)               ; it will return the Bs in that context
-        (lor-false))))              ; name of the reduction
+        lor-false)))              ; name of the reduction
 
 ;; Test
 (redex-match bool-any-lang
              (in-hole C (lor true B))
              (term (lor (lor true (lor false true)) false)))
 
-;; --> (list (match (list (bind 'B '(lor false true)) (bind 'C '(lor hole false)))))
+;; => (list (match (list (bind 'B '(lor false true)) (bind 'C '(lor hole false)))))
+
+(traces bool-any-red
+        (term (lor (lor true false)
+                   (lor true true))))
+;; we are asking to see how the expression
+;; (term (lor (lor true false) (lor true true)))
+;; reduces, using the bool-any-red reduction relation.
+;; See the produced PostScript.
