@@ -1,0 +1,53 @@
+\documentclass[12pt, a4paper]{report}
+
+\input{includes/packages}
+\input{includes/macros}
+\input{includes/thms}
+\input{includes/formatting}
+
+\begin{document}
+
+\thispagestyle{empty}
+\pagestyle{plain} % fix for page numbers
+
+\title{\huge\textbf{Semantics Engineering with \\ Redex in Racket}}
+\vspace{1cm}
+\author{\Large\textsc{Adrian Manea} \\ \large{Coordinator: Assoc.\ Prof.\ Traian \c{S}erb\u{a}nu\c{t}\u{a}}}
+
+\maketitle
+
+\pagenumbering{gobble}
+\tableofcontents
+
+\setcounter{page}{1} % page 1 after TOC
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN CONTENT
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\footnotesize{\color{gray}Redex in Racket}}
+\lhead{\footnotesize{\color{gray}Adrian Manea}}
+
+\pagestyle{plain} % restore page numbering
+
+% TODOs
+\addcontentsline{toc}{chapter}{\protect\numberline{}TO ADD/CLARIFY}
+\listoftodos[TO ADD/CLARIFY]
+
+\addcontentsline{toc}{chapter}{\protect\numberline{}Introduction and Motivation}
+\include{ch/intro}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INDEX
+\renewcommand{\indexname}{Index}
+\addcontentsline{toc}{chapter}{\protect\numberline{}Index}
+\printindex
+
+% BIBLIOGRAPHY
+\addcontentsline{toc}{chapter}{\protect\numberline{}References}
+\bibliography{redex.bib}
+\bibliographystyle{apalike}
+\nocite{*}
+
+\end{document}
