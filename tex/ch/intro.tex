@@ -1,6 +1,78 @@
 % ! TEX root = ../redex.tex
 \chapter*{Introduction and Motivation}
 
+The starting point for the present work was my motivation of learning
+the programming language Racket. Having a background in mathematics,
+the lambda calculus and the function programming languages appealed to
+me instantly and once I got acquainted with Emacs and the Lisps, my
+interest grew. Furthermore, the excellent theoretical foundations laid
+by J.\ McCarthy in \cite{mccarthy62} and \cite{mccarthy61}, described
+by some computer scientists as having introduced a paradigm shift in
+theoretical computer science that's comparable to the non-Euclidean
+geometry revolution proved to be an excellent introduction and motivation
+for wanting to learn more about the Lisp family of programming language.
+Before long, I discovered the influential \cite{sicp} and saw how an
+apparently simple programming language such as Scheme can reveal wonderful
+constructions of various degrees of abstraction.
+
+Doing some more reading in the world of Lisp dialects, I have discovered
+Racket, whose appeal was instantaneous to me, since it is so often described
+not as a general purpose programming language derived from Scheme, but rather
+as a toolbox for constructing languages to solve various problems. In fact,
+as I saw it, it offers the necessary items for one to properly understand,
+craft and teach languages that exhibit particular behaviour.
+
+This is precisely the aim of the current work. Given the inherent shortcomings
+of Scheme, assumed by its creators for the sake of simplicity and ease of
+use and extension, and not trying to delve into the whole \qq{zoo} of Lisp
+dialects, I found Racket to be the most appropriate object of study for my
+purposes. These are to study semantic aspects of (mostly) functional programming
+languages, as well as type theory and related formal methods, which Racket
+has the flexibility to allow, all while using a mild variation of the syntax
+that was established ever since McCarthy's (Common) Lisp.
+
+However, this work is not a Racket manual and given its sheer flexibility
+and array of features, it is beyond my scope to thoroughly explore this
+language-toolbox, at least not when confined within the scope of this
+dissertation. Therefore, the precise topic I chose to focus on this work is
+that of \textbf{PLT Redex} (henceforth called \textbf{Redex} in short, since
+PLT is the name of the research group that started it, continuing efforts from
+PLT Scheme, which was to become Racket).
+
+Inspired by the great article and presentation of B.\ Findler at POPL 2012
+(\cite{popl}), I will be presenting the main features of Redex (in Racket,
+as it is implemented), provide some examples and try to show how it can be
+used not only to create toy languages, but also some which come with included
+formal methods of checking correctness (a rather vague term which will be
+detailed in due time).
+
+\vspace{0.3cm}
+
+The plan of the work is as follows. A short historical presentation and
+preliminaries make up the first part of the dissertation. Then a Scheme
+and Racket \emph{crash course} will follow, focusing on specific aspects
+that will come in handy when discussing Redex, such as \texttt{call/cc} and
+\texttt{amb}. The main part of the work will then contain the actual
+presentation of Redex, along with some standard examples that the authors
+provided (\cite{amb,long,sewpr}). Finally, further examples are provided,
+which exhibit features of interest, related mostly to type theory.
+
+The work is in fact part of a more elaborate plan, which will be detailed
+in the final section of this dissertation.
+
+\vspace{0.3cm}
+
+It is also worth mentioning that the PLT group (\cite{pltgrp}) used Redex
+as a starting point for their work on a language-creating toolbox and
+their current focus is on Pyret, described as \emph{a programming language %
+  designed to serve as an outstanding choice for programming education while %
+  exploring the confluence of scripting and functional programming}
+(\cite{pyret}). However, since as we will detail, the wider focus is on
+Racket, we will not touch on this subject here.
+
+\todo[inline,noline,backgroundcolor=green!40]{change the bib style %
+(especially to go well with websites)}
+
 
 
 %%% Local Variables:
