@@ -2,6 +2,9 @@
 
 \chapter{History and Preliminaries}
 
+\todo[inline,noline,backgroundcolor=green!40]{index!}
+\todo[inline,noline,backgroundcolor=green!40]{\texttt{marginpar}s?}
+
 Ever since the introduction of the lambda calculus formalism for representing
 functions, by A.\ Church and others in the 1930s, various uses of it in the
 foundations of mathematics and in theoretical computer science arose. As it
@@ -177,20 +180,26 @@ after the current computation is performed. For example, in the computation
 \texttt{(+ (* 2 3) 5)}, the continuation of the multiplication is the addition
 of 5 to the result. As such, one can abstract the continuation from this example
 with a lambda expression:
+{\small
 \begin{verbatim}
 (define cont1
   (lambda (x) (+ x 5)))
 \end{verbatim}
+}
 Then, we get the same result as above by calling:
+{\small
 \begin{verbatim}
 (cont1 (* 2 3))     ; => 11
 \end{verbatim}
+}
 While this example may not seem like much, the basic idea that one can capture
 \qq{a part} of a computation and reuse it for some other purpose is important.
 
 This concept is captured in the standard \texttt{call/cc} function in Scheme
 (sometimes implemented as \texttt{call-with-current-continuation}). Some basic
 examples are the following:
+{
+  \small
 \begin{verbatim}
 ;; Nothing to capture
 (define id              ; the identity function
@@ -214,6 +223,9 @@ examples are the following:
 ;; Basically, the continuation only is (+ _ 3):
 (lambda (x) (+ x 3))
 \end{verbatim}
+}
+
+
 
 
 \vspace{0.3cm}
