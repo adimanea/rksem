@@ -7,6 +7,11 @@ with a strong theoretical motivation and interest. Along the way, I will
 calculus with types, semantics of (mostly) functional programming languages
 and more.
 
+*Update March 2020:* I've settled on PLT Redex as the main topic for
+the dissertation. More details on more general Racket will be added later.
+
+The PDF (WIP) of the dissertation can be accessed directly [[https://github.com/adimanea/rksem/blob/master/tex/redex.pdf][here]].
+
 * Main References
 - [[https://redex.racket-lang.org/][PLT Redex and SEwPR]] website;
   + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
