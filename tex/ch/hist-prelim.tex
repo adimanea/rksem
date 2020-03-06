@@ -225,19 +225,136 @@ examples are the following:
 \end{verbatim}
 }
 
-
-
+The \texttt{call/cc} function can be used for saving a certain point
+of a computation. For example, we can save a backup copy of a function
+than can be used later:
+{
+  \small
+\begin{verbatim}
+(define z #f)                   ; initialize z with false
+(+ (call/cc
+     (lambda (k)
+        (set! z k)              ; clear what's stored in z and put k
+        (* 1 2)))
+    3)                          ; => 5
+\end{verbatim}
+}
+In the example above, we have stored only the lambda-function in \texttt{z},
+so even if the whole computation returns \texttt{5}, we have like a
+\qq{bookmark} at the \texttt{lambda} definition which is stored in \texttt{z}.
+Henceforth, we can do:
+{
+  \small
+\begin{verbatim}
+(z 1)               ; => 4
+\end{verbatim}
+}
 
 \vspace{0.3cm}
 
-One last word regarding the source code and the entire contents of this
-dissertation. While Racket comes with an exceptionally powerful and user-friendly
-IDE called \texttt{DrRacket} which is automatically installed when installing
-the language and for which the book \cite{htdp} can be seen as an extensive
-user manual, we have chosen to write and test everything contained in this
-dissertation in GNU Emacs 26.3 running under Manjaro Linux. Scheme support is
-built in and for Racket, we used the full-featured REPL included in
-\href{https://www.racket-mode.com/}{racket-mode}.
+The \texttt{amb} operator is a bit more complicated and although it is
+implemented in the standard library in some Scheme distributions, we will
+define it manually. We will follow the presentation in \cite{nondet}. This
+will define \texttt{amb} as a macro, which ensures that the arguments are not
+evaluated and as we will see, it is implemented using \texttt{call/cc}.
+
+The basic idea, as outlined first in \cite{mccarthy61}, is that the \texttt{amb}
+operator works as an ambiguous evaluation, with a variable number of arguments,
+in the following sense:
+\begin{itemize}
+\item if none of its arguments can be computed or if no arguments are given,
+  it returns some kind of failure (we will use \texttt{\# f} for \texttt{false});
+\item if any (one or more) of its arguments can be computed, return all the
+  possible values.
+\end{itemize}
+
+For example, McCarthy defines in pseudocode:
+\[
+  \texttt{less(n) = amb(n-1, less(n-1))},
+\]
+which is a \qq{function} (quotes because it can return multiple values)
+that returns all the numbers that are less than the argument \texttt{n}. Thus,
+with \texttt{n} assumed to be a positive integer, \texttt{amb} tries to evaluate
+both \texttt{n-1} and recursively compute \texttt{less(n-1)}. If both can be computed,
+it returns both, which will happen until \texttt{n = 1}, when the final call will be
+\texttt{amb(0, less(0))}, that returns \texttt{0} and the computation stops, since
+none of the arguments won't work at the next iteration.
+
+Here's how \texttt{amb} can be implemented in Scheme, using \texttt{call/cc}:
+{
+  \small
+\begin{verbatim}
+(define f #f)                                       ; 1
+
+(define-syntax amb                                  ; 2
+  (syntax-rules ()                                  ; 3
+    ((_) (f))                                       ; 4
+    ((_ a) a)                                       ; 5
+    ((_ a b ...)                                    ; 6
+      (let ((s f))                                  ; 7
+        (call/cc                                    ; 8
+          (lambda (k)                               ; 9
+            (set! f (lambda ()                      ; 10
+                        (set! f s)                  ; 11
+                        (k (amb b ...))))           ; 12
+          (k a)))))))                               ; 13
+\end{verbatim}
+}
+
+The basic ideas are the following:
+\begin{itemize}
+\item In the \texttt{syntax-rules} declaration, the underscore denotes
+  the syntax (function) that is defined, \texttt{amb};
+\item The first case (line 4) is when \texttt{amb} is called with no arguments,
+  \texttt{(amb)}, case in which it returns \texttt{(f)}, which is \texttt{false};
+\item Then, in line 5, if it is called with some argument, it will return that;
+\item If it is called with more than one argument (the ellipse being special
+  syntax for zero or more arguments that could follow), then the actual work is done:
+  \begin{itemize}
+  \item first, we introduce a variable \texttt{s} and bind it to \texttt{f}, which is
+    \texttt{false};
+  \item then, \texttt{call/cc} is called to capture the current continuation in \texttt{k};
+  \item inside this \texttt{lambda}, \texttt{f} is reset and a recursive call is made,
+    invoking \texttt{k} (the previous computation) to \texttt{amb} called with the rest
+    of the arguments (starting with \texttt{b});
+  \item finally, in line 13, the captured outermost \texttt{lambda} is applied to \texttt{a},
+    which makes the innermost \texttt{lambda} be called only after this computation, so
+    first it tries to compute \texttt{(amb a)}
+  \end{itemize}
+\end{itemize}
+
+\begin{remark}\label{rk:first-res}
+  Note that by default, many Scheme and Racket implementations make \texttt{amb}
+  behave step by step. That is, when called with multiple arguments, of which more
+  than one can be computed, the first evaluation returns only the first computation.
+  Calling \texttt{amb} again returns the second possible computation etc.
+  Hence, for example, Racket 7.5 REPL, using the \texttt{\#lang scheme} pragma,
+  gives the following session, using the implementation above:
+  {
+    \small
+\begin{verbatim}
+REPL> (amb "dog" "cat")
+"dog"
+REPL> (amb)
+"cat"
+REPL> (amb)
+#f
+\end{verbatim}
+  }
+\end{remark}
+
+\vspace{0.3cm}
+
+\begin{remark}\label{rk:resources}
+  One last word regarding the source code and the entire contents of this
+  dissertation. While Racket comes with an exceptionally powerful and user-friendly
+  IDE called \texttt{DrRacket} which is automatically installed when installing
+  the language and for which the book \cite{htdp} can be seen as an extensive
+  user manual, we have chosen to write and test everything contained in this
+  dissertation in GNU Emacs 26.3 running under Manjaro Linux. Scheme support is
+  built in and for Racket, we used the full-featured REPL included in
+  \href{https://www.racket-mode.com/}{racket-mode}.
+\end{remark}
 
 %%% Local Variables:
 %%% mode: latex
