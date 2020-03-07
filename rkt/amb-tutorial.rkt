@@ -287,3 +287,7 @@
         (language->pict Ev)
         (reduction-relation->pict red))
        3/2)
+
+(traces red
+        (term ((+ (amb 1 2)
+                  (amb 10 20)))))
