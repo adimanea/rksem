@@ -404,8 +404,9 @@ language above:
 \end{verbatim}
 }
 Note the use of the unquoted expression, which forces the evaluation, making
-the definition be smiliar to a Haskell \texttt{fold}, sending the \texttt{+}
-inside the Redex \texttt{term}.
+the definition be smiliar to a Haskell \texttt{foldr}, sending the \texttt{+}
+inside the Redex \texttt{term} (in fact, the \texttt{foldr} function also
+exists in Racket and can be used alternatively in this case).
 
 Now we can define the reduction relations\footnotemark:
 
@@ -647,7 +648,180 @@ The tool also reports the various reduction paths displayed, in this case
 We now turn to the more \qq{serious} use of Redex, namely that presented at
 POPL 2012 and detailed in \cite{popl} and \cite{sewpr}.
 
+Having explained in detail the simple, but comprehensive example above,
+we now jump straight into the action. As such, we first define the simple
+language \texttt{Lambda-c}, encompassing basic (untyped) lambda calculus,
+plus \texttt{call/cc}, then extend it with evaluation contexts (and holes),
+plus the corresponding reduction relations.
 
+So basically, we start with the following simple BNF grammar:
+\begin{align*}
+  e ::&= (e \ e \ \dots) \\
+      &| \ x \\
+      &| \ (\lambda (x \dots). e) \\
+      &| \ \texttt{call/cc} \\
+      &| \ + \\
+      &| \ \texttt{number},
+\end{align*}
+which is readily written in Redex as:
+{
+  \small
+\begin{verbatim}
+#lang racket
+(require redex)
+
+(define-langauge Lambda-c
+  (e (e e ...)
+     x
+     (lambda (x ...) e)
+     call/cc
+     +
+     number)
+  (x variable-not-otherwise-mentioned))
+\end{verbatim}
+}
+
+Then we extend it with contexts, formally written in BNF as:
+\begin{align*}
+  e ::&= \dots | (A \ e) \\
+  v ::&= (\lambda (x \dots). e) \\
+      &| \ \texttt{call/cc} \\
+      &| \ + \\
+      &| \ \texttt{number} \\
+  E ::&= (v \dots E \ e \dots) \\
+      &| \ [ \ ]
+\end{align*}
+and then in Redex as:
+{
+  \small
+\begin{verbatim}
+(define-extended-language
+  Lambda-c/red Lambda-c
+    (e ... (A e))
+    (v (lambda (x ...) e)
+       call/cc
+       +
+       number)
+    (E (v ... E e ...)
+       hole))
+\end{verbatim}
+}
+Aside from the \emph{evaluation context} \texttt{E}, we have now introduced the
+\emph{abortion context} \texttt{A}, whose role can be seen in the reduction rules
+which follow below, first presented in a mathematical form, then in Redex:
+\begin{itemize}
+\item $ E[(A e)] \to e $ (\emph{abort});
+\item $ E[(\texttt{call/cc} v)] \to E[(v (\lambda x . (A E[x])))] $,
+  for $ x $ a \emph{fresh variable} (\emph{call/cc});
+\item $ E[((\lambda (x \dots_1).e)v \dots_1)] \to E[e \{ x := v, \dots \}] $
+  (\emph{$\beta$-reduction});
+\item $ E[(+ \texttt{number} \dots)] \to E[\Sigma (number \dots)] $ ($\Sigma$).
+\end{itemize}
+Note that the rule for $ \beta $-reduction used two kinds of ellipses, to show
+that after applying the rule, the rest of the computation could be different.
+Also, the \texttt{call/cc} reduction basically shows how the call with current
+continuation is equivalent to some lambda expression, in which the special context
+for {\color{red} \textbf{abortion}} was used.
+\todo[inline,noline,backgroundcolor=green!40]{abort (exit) or continue??}
+
+Now in Redex:
+{
+  \small
+\begin{verbatim}
+(define red
+  (reduction-relation
+   Lambda-c/red
+   #:domain e
+   (--> (in-hole E (A e))
+        e
+        "abort")
+   (--> (in-hole E (call/cc v))
+        (in-hole E (v (lambda (x) (A (in-hole E x)))))
+        (fresh x)
+        "call/cc")
+   (--> (in-hole E ((lambda (x ..._1) e) v ..._1))
+        (in-hole E (subst e (x v) ...))
+        "beta-reduction")
+   (--> (in-hole E (+ number ...))
+        (in-hole E (Sigma number ...))
+        "sum")))
+\end{verbatim}
+}
+
+We assume that the metafunctions \texttt{Sigma} and \texttt{subst} are already
+defined, as in the previous section.
+
+One more extension we can add is to allow the reductions to happen anywhere
+in redexes, since as defined in the extension \texttt{Lambda-c/red}, the first
+item of an expression in an \texttt{E}-context is a value \texttt{v}:
+{
+  \small
+\begin{verbatim}
+(define-extended-language
+  anywhere-Lambda-c Lambda-c/red
+  (E (e ... E e ...)
+     hole))
+
+;; extend the reductions by copying them
+(define anywhere-red
+  (extend-reduction-relation
+    red anywhere-Lambda-c))
+\end{verbatim}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extensive and Randomized Tests}
+
+Randomized testing in Redex is detailed in \cite{randomplt}. Also, as it is
+explained in \cite{popl}, Redex (and Racket) supports QuickCheck tests,
+in the style of the well-known combinator library initially developed
+in and for Haskell (\cite{quickcheck}).
+
+Before going into more details, we mention a simple test that can be run,
+using \texttt{redex-check}. The general syntax and more complex use is
+explained at \cite{redex-check}. We will first use the form:
+\[
+  \texttt{(redex-check G n e)},
+\]
+in which the boolean-valued expression \texttt{e} is seen as a predicate
+which is universally quantified over \texttt{n} and evaluates it for
+random terms that are generated from the non-terminal \texttt{n} belonging
+to the grammar \texttt{G}. Tweaks can be added, such as seeds for the
+random generation, trace printing, number of attempts, restrictions for the
+generated terms etc., but we will explore them later. First, a quick example:
+{
+  \small
+\begin{verbatim}
+(redex-check
+  Lambda-c/red e
+    (or (redex-match Lambda-c/red v (term e))   ; is it a term OR
+        (cons?                                  ; is it a list
+            (apply-reduction-relation red       ; after reducing ?
+                (term e)))))
+;; => counterexample found after 9 attempts: S
+\end{verbatim}
+}
+
+The example checks whether in the grammar \texttt{G} of the language
+\texttt{Lambda-c/red}, when quantifying over expressions \texttt{e},
+what follows can be an expression \texttt{e}. Then, the disjunction
+(which must be a boolean-valued function) checks whether either
+\texttt{term e} is a value \texttt{v} in the language or after
+reducing it using \texttt{red} it is still a list.
+
+The check reports that a free variable is a counterexample for the test,
+of course, since it's neither reducible, nor a value. This can be fixed
+by adding a special reduction relation to spot precisely free variables:
+{
+  \small
+\begin{verbatim}
+;; ... add to red ...
+(--> (in-hole E x)
+     error
+     "free variable")
+;; ...
+\end{verbatim}
+}
 
 
 %%% Local Variables:
