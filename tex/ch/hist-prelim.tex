@@ -309,7 +309,8 @@ The basic ideas are the following:
   \texttt{(amb)}, case in which it returns \texttt{(f)}, which is \texttt{false};
 \item Then, in line 5, if it is called with some argument, it will return that;
 \item If it is called with more than one argument (the ellipse being special
-  syntax for zero or more arguments that could follow), then the actual work is done:
+  syntax for zero or more arguments that could follow; in a more rigorous setting,
+  it is in fact a \emph{Kleene star}), then the actual work is done:
   \begin{itemize}
   \item first, we introduce a variable \texttt{s} and bind it to \texttt{f}, which is
     \texttt{false};
