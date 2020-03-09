@@ -823,6 +823,91 @@ by adding a special reduction relation to spot precisely free variables:
 \end{verbatim}
 }
 
+We also add that \cite{randomplt} contains numerous excellent examples of
+faulty specifications or ugly bugs in the case of a language that is very
+similar to what we have been using in this section. For example, the fact
+that we have lifted the usual \texttt{(+)} to the metafunction \texttt{Sigma}
+is more important than it seems. This is because we have thus avoided
+the bug of checking whether \texttt{(+)} itself is a term, which is in
+principle allowed by the extension \texttt{Lambda-c/red}.
+
+\vspace{0.3cm}
+
+Back to the main topic of the section, that of randomized tests. Although
+it appears simplistic, the general syntax and options of \texttt{redex-check}
+allows for an impressive amount of flexibility and it is the main tool
+responsible for randomized and extensive tests in Redex. In \cite{popl},
+the authors focused on claims that were central in some POPL papers, so
+they could run tests to check exactly those claims or theorems.
+{\color{red} We will try to do something similar in the next chapter,
+  where we construct our own language to showcase some relevant design
+  features,} but currently, we will just detail a bit more on the options
+allowed by \texttt{redex-check}.
+
+As detailed in \cite{redex-check}, the general syntax of this tool is the
+following:
+{
+  \small
+\begin{verbatim}
+  (redex-check template property-expr kw-arg ...)  
+   template     =     language pattern    
+         |     language pattern #:ad-hoc    
+         |     language pattern #:in-order    
+         |     language pattern #:uniform-at-random p-value    
+         |     language pattern #:enum bound    
+         |      language #:satisfying      
+            (judgment-form-id pattern ...)      
+         |      language #:satisfying      
+            (metafunction-id pattern ...) = pattern      
+   kw-arg     =     #:attempts attempts-expr    
+         |     #:source metafunction    
+         |     #:source relation-expr    
+         |     #:retries retries-expr    
+         |     #:print? print?-expr    
+         |     #:attempt-size attempt-size-expr    
+         |     #:prepare prepare-expr    
+         |     #:keep-going? keep-going?-expr    
+\end{verbatim}
+}
+
+The general use is to search for counterexamples to
+\texttt{property-expr}, which is seen as a predicate that is universally
+quantified over the pattern variables that are found in \texttt{template}.
+How this works is that \texttt{redex-check} constructs and tests a
+candidate counterexample by choosing a random term \texttt{t} based on
+\texttt{template} and then evaluates \texttt{property-expr} using the
+match-bindings that are produced when matching \texttt{t} against
+\texttt{pattern}.
+
+Most of the options are available for controlling how \texttt{t} is generated:
+\begin{itemize}
+\item \texttt{language pattern}: Redex uses an ad-hoc strategy for generating
+  patterns that are used for tests. For the first 10 seconds, it will use in-order
+  enumeration to pick terms, then it alternates between in-order enumeration and
+  an ad-hoc random generator and after 10 minutes, it uses only the ad-hoc generator.
+  The options \texttt{\#:ad-hoc} and \texttt{\#:in-order} forces it to use only
+  the respective methods;
+\item the \texttt{\#:uniform-at-random p-value} either selects a natural number
+  at random, if the enumeration of the patterns is finite or it selects from
+  a geometric distribution with probability specified by \texttt{p-value}. The
+  range of this selection can be set with the \texttt{\:enum bound} option, which
+  makes it check numbers only up to \texttt{bound};
+\item the \texttt{\#:satisfying} option filters test cases that only satisfy
+  a particular judgment that is then specified and a similar filter can be used
+  for metafunctions;
+\item \texttt{attempts-expr} controls how many random terms are generated
+  and the size and complexity of the terms tends to increase after each
+  failed attempt;
+\item the \texttt{\#:prepare} keyword provides an optional function that can
+  be used to modify the test cases, e.g.\ to apply a specific reduction relation
+  to all of them or any other transformation via a \texttt{lambda} expression;
+\item the \texttt{\:source} keyword is followed by a metafunction or reduction
+  relation which makes the test distribute evenly only with respect to that
+  metafunction or reduction relation, i.e.\ it will generate only patterns that
+  are similar to those found in the respective metafunction or relation.
+\end{itemize}
+
+
 
 %%% Local Variables:
 %%% mode: latex
