@@ -7,12 +7,25 @@ with a strong theoretical motivation and interest. Along the way, I will
 calculus with types, semantics of (mostly) functional programming languages
 and more.
 
-*Update March 2020:* I've settled on PLT Redex as the main topic for
-the dissertation. More details on more general Racket will be added later.
+*Update March 2020:* I've decided to focus the dissertation on Racket.
+The applications I will be considering are crafting (elements of) proof
+assistants to showcase (elements of) intuitionistic logic.
 
-The PDF (WIP) of the dissertation can be accessed directly [[https://github.com/adimanea/rksem/blob/master/tex/redex.pdf][here]].
+The [OLD] part was focusing on PLT Redex, which I've decided to skip.
 
 * Main References
+- [[https://docs.racket-lang.org/][Racket documentation]];
+- [[https://htdp.org/][How to Design Programs]];
+- [[https://www.youtube.com/watch?v=jimmGDcTx4Y][P. Ragde's Proust]] (video talk @ 7th Racket Con 2017);
+  + [[https://arxiv.org/abs/1611.09473][arXiv article]]
+
+* More References
+- [[https://docs.racket-lang.org/pollen/][Pollen]] documentation (TODO: Write the thesis in it?);
+- [[https://www.leafac.com/playing-the-game-with-plt-redex/#abstract][Peg Solitaire with PLT Redex]];
+- [[https://web.mit.edu/alexmv/6.037/sicp.pdf][SICP]], 2nd Edition, MIT 1996;
+
+
+* [OLD] References
 - [[https://redex.racket-lang.org/][PLT Redex and SEwPR]] website;
   + [[https://redex.racket-lang.org/why-redex.html][Why PLT Redex]] (good overview);
   + [[https://homepages.inf.ed.ac.uk/gdp/publications/cbn_cbv_lambda.pdf][Call-by-Name, Call-by-Value and the Lambda-Calculus]] -- G. Plotkin, 1974 (important inspiration);
@@ -32,7 +45,3 @@ The PDF (WIP) of the dissertation can be accessed directly [[https://github.com/
 - [[https://williamjbowman.com/doc/experimenting-with-redex/index.html][Experimenting with Languages in Redex]] -- examples on how to use Redex for toy languages
 (in Racket documentation);
 
-* More References
-- [[https://docs.racket-lang.org/pollen/][Pollen]] documentation (TODO: Write the thesis in it?);
-- [[https://www.leafac.com/playing-the-game-with-plt-redex/#abstract][Peg Solitaire with PLT Redex]];
-- [[https://web.mit.edu/alexmv/6.037/sicp.pdf][SICP]], 2nd Edition, MIT 1996;
