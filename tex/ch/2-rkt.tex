@@ -1,0 +1,90 @@
+% ! TEX root = ../racket.tex
+\chapter{Racket Crash Course}
+
+Historically speaking, Racket is based on Scheme, being formerly called
+PLT Scheme. As such, it expands on the standards R5RS (1998) and R6RS (2009)
+of Scheme and diverge more significantly from R7RS (2013). However, we will
+not be concerned about the differences between the languages and we will
+assume that all Racket syntax that we introduce is valid Scheme syntax and
+vice versa, unless explicitly mentioned otherwise.
+
+Both languages emerged from a common ancestor, Lisp and as such, they
+use a \emph{list syntax}. Furthermore, they use a prefix notation
+for the functions, predicates and mathematical operations, the so-called
+Polish ({\L}ukasiewicz) notation.
+
+The only delimiters Scheme uses are parentheses (and double quotations
+for strings) whereas Racket strongly suggests the use of square brackets
+inside parentheses for delimiting more important statements\footnote{Some %
+  Scheme implementations allow the use of square brackets as well, but
+  do not enforce it and furthermore, there are interpreters that reject
+  this syntax.}
+
+Loosely speaking, both Scheme and Racket are untyped, but they do recognize
+three basic types: \emph{lists, functions} and \emph{symbols}, the
+latter encompassing variables and \qq{everything else}.
+
+A specific feature is the so-called \emph{quoting mechanism}, denoted
+by a single quote (\texttt{'}) or a backtick (\texttt{`}) which
+turns anything into a symbol and the reverse, the \emph{unquoting mechanism},
+denoted by a comma (\texttt{,}) which enforces evaluation, as in the
+case of a call by name versus call by value approach. For example,
+\texttt{'(+ 1 2)} is interpreted as the symbol (string) \texttt{(+ 1 2)},
+whereas \texttt{,(+ 1 2)} means \texttt{3}.
+
+Another aspect of syntax is that a semicolon is used for comments and
+the convention is to use a single semicolon for an inline comment
+and two or more semicolons for comments spanning multiple lines.
+The output of a program is commonly written as \texttt{;; => output}
+inside the source code or documentation.
+
+\begin{remark}\label{rk:implementation}
+  A short word on implementation: all the examples that we will be
+  showcasing, as well as the included source code is tested on a
+  Manjaro Linux operating system using the Emacs 26 editor, the
+  included Scheme mode and the third party
+  \href{https://www.racket-mode.com/}{Racket mode}.
+
+  After writing the source code, \texttt{C-c} loads the file into
+  the respective REPL.
+\end{remark}
+
+Some simple examples follow.
+{
+  \small
+\begin{verbatim}
+(+ (* 5 3) 1)       ;; => 16
+
+(define (mod2 x)
+  (lambda (x) (rem x 2)))
+(mod2 5)            ;; => 1
+
+(define (mod3 x)
+  "Write the remainder of x when divided by 3"
+  (cond                                         ; multiple branching
+     ((equal (rem x 3) 1) write "it's 1")       ; if (x % 3 == 1)
+     ((equal (rem x 3) 2) write "it's 2")       ; if (x % 3 == 2)
+     (#t write "it's 0")))                      ; default (true) case
+
+(define (add-or-quote x)
+  "Add 3 if x is even or write 'hello' else"
+  (cond
+    ((equal (mod2 x) 0) (lambda (x) ,(+ 1 2)))
+    (#t (lambda (x) 'hello))))
+
+(set sum '(+ 1 2 3))        ; defines the variable "sum"
+(set x (* ,sum 2))          ; defines x to be 12
+\end{verbatim}
+}
+
+\vspace{0.3cm}
+
+Hopefully, the rest of the syntax can be understood directly from
+the examples that will follow. For further investigation, we recommend
+the official Racket documentation \cite{racket} and the book
+\cite{htdp}. As the need requires, we will also further explain the syntax.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
