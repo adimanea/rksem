@@ -1,0 +1,91 @@
+% ! TEX root = ../racket.tex
+
+\chapter*{Introduction and Motivation}
+
+The main motivation for starting the work on this project is my interest
+in the programming language Racket. This grew from me getting acquainted
+with Emacs and Lisps, from a user standpoint at first, but then my interest
+grew and I started reading more about lambda calculus and various other
+related subjects. Before long, I discovered John McCarthy's pioneering
+work in trying to make lambda calculus suitable for programming languages,
+but what really captured my interest were the theoretical foundations that
+McCarthy's articles \cite{mccarthy60, mccarthy61, mccarthy62} set for this
+task, in a time when programming was either electrical engineering or
+pure mathematics. His work was said to have introduced a paradigm shift
+in computer science that is comparable to the non-Euclidean geometry
+revolution. The next step was discovering \cite{sicp}, which showed me how
+an apparently simple programming language such as Scheme can be used
+for wonderful constructions and various degrees of abstraction. This is
+further supported by the thorough specification and revisions that were
+published by the Scheme Community, the latest being \cite{r7rs}.
+
+Further reading in the world of Lisp dialects, I have discovered Racket,
+whose appeal was instantaneous to me, since it is so often described not
+as a general purpose programming language derived from Scheme,\footnotemark
+but rather as a toolbox for constructing languages to solve various
+problems. In fact, as I see it, it offers the necessary items for one to
+properly understand, craft and teach languages that exhibit particular
+behaviour.
+
+\footnotetext{Racket used to be called PLT Scheme, where PLT is the name
+  of the research group that has been working on this project since
+  the very beginning, scattered throughout the world, as showcased
+  at \cite{pltgrp}.}
+
+This is precisely the aim of the current work. Having a background in
+mathematics, I quickly became interested on the one hand in proof assistants
+(or so-called \qq{theorem provers}) and type theory, on the other.
+The appeal of category theory mixed with (or, by some sources, morphed into)
+topos theory, type theory and the background of intuitionistic logic is
+very strong for me and I have been trying to approach the subject from
+many of its sides. Of equal interest for me is the teaching aspect.
+I believe in strong foundations, a thorough understanding of fundamentals
+before getting into more complex structures and I so often search for
+methods, tools and examples that I can use to showcase particular aspects
+of the subject I'm learning or teaching. Racket, for me, provides the perfect
+environment to fulfil most of such intentions. On the one hand, the language
+is big and flexible enough to be expressive for concepts of type theory,
+logic and proofs and on the other, it can be used in a piecemeal setup
+to serve as a great teaching toolbox for my purposes.
+
+\vspace{0.3cm}
+
+The plan of the work is as follows. We will start with some basic elements
+of type theory and intuitionistic logic. While the subject is hugely developed
+and used in many parts of (theoretical) computer science, we will try to make
+the work as self-contained as possible and as such, include in the preliminaries
+strictly the topics that will be developed further. For simplicity, but also
+for historical reasons, we will be focusing on the main work by one of
+the creators of the field, at least in terms of making its presentation
+appropriate for computer science applications, Per Martin-L\"{o}f, \cite{mltt}.
+While Martin-L\"{o}f's lectures focus more on the theoretical side of things,
+the excellent \cite{pmltt} provides enough details to see how the concepts
+can be used in actual programming.
+
+The second preliminary part of the dissertation will focus on Racket itself.
+We will try to provide a so-called \qq{crash-course} to introduce some
+elements of syntax. Again, we will be focusing on items that will be used
+throughout the dissertation.
+
+A first, excellent example will follow, along the lines of P.\ Ragde's
+article, \cite{proust}. There, the author showcases a toy proof assistant,
+called \emph{Proust}, that they have written in Racket, the purpose being
+twofold. On the one hand, it shows the power that the language has for
+such tasks and on the other, as the author mentions, it helps them and
+their students to understand at least a part of the inner workings of
+well established proof assistants, such as Coq and Agda. That is, they
+will be implementing a small portion of the tools that are available in
+Coq and Agda in an intentionally verbose style so that their functions are
+transparent.
+
+Finally, further examples are provided, which will exhibit features of
+interest from type theory and intuitionistic logic.
+
+\todo[inline,noline,backgroundcolor=green!40]{change bib style to go well %
+  with websites}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
