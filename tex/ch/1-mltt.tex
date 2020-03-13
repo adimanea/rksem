@@ -1,0 +1,217 @@
+% ! TEX root = ../racket.tex
+
+\chapter{Martin-L\"of Type Theory}
+
+
+We start the theoretical part of this work focusing on Martin-L\"of's take
+on intuitionistic logic and type theory. Before we do that, however, a quick
+note on the historical evolution of the subject. For brevity, we will
+use the abbreviation MLTT for Martin-L\"of's Type Theory.
+
+\section{Brief Historical Overview}
+
+Type theory was first developed by Bertrand Russell and some of his
+collaborators and then expanded by Frank Ramsey and others. It was used
+first to introduce a kind of hierarchy of (mathematical) concepts
+that would \qq{solve} Russell's paradox. At the same time, in the first
+part of the twentieth century, the Dutch mathematician L.\ E.\ J.\ Brouwer,
+then continuing with the American mathematician E.\ Bishop sowed the seeds
+of \emph{constructive mathematics}. They put the emphasis on proofs that
+actually produce examples of the concepts existential quantifiers speak of.
+Thus, for example, any proof of a proposition of the form $ \exists x $ such
+that $ P $ must contain a method of actually instantiating that $ x $.
+This approach contrasted with the formalism developed by leading mathematicians
+such as D.\ Hilbert who proposed that mathematics should be performed
+simply following abstract rules and that showing a method to obtain an $ x $
+in the previous example does not necessarily mean that that $ x $ should be
+obtained \qq{practically}, but only \emph{in principle}.
+
+At the same time, philosopher and logician A.\ Heyting summarized in his
+monograph \cite{heyting} the approach that became known as
+\emph{intuitionistic logic}. This emphasized constructive proofs as well
+and was used by Brouwer as a formal basis for his mathematical program.
+
+In the second half of the twentieth century, the Swedish mathematician and philosopher
+Per Martin-L\"of exposed his take on intuitionistic logic and type theory
+into what became known as \emph{Martin-L\"of type theory}. This approach
+draws influences from the philosophical work of F.\ Brentano, G.\ Frege and
+E.\ Husserl, but also uses the \emph{Curry-Howard correspondence} between
+propositions and programs, terms and proofs (excellently detailed in \cite{ch}).
+
+Martin-L\"of's approach became extremely influential and with the help of
+works such as \cite{pmltt}, it was quickly implemented as a foundation for
+extremely powerful proof assistants such as NuPRL, Coq, Agda, Idris and others.
+
+It is also worth mentioning that type theory and intuitionistic logic have
+continued to develop independently from applications in computer science.
+As such, types and toposes are seen as good candidates to provide
+\qq{proper} foundations of mathematics instead of sets. Some very important
+contributions have come from the HoTT group (\cite{hott}).
+
+We will not go into more historical or philosophical details of this subject
+and instead further focus on the mathematical aspects that were then
+implemented in proof assistants.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Fundamentals of MLTT}
+
+MLTT draws inspiration from Gentzen natural deduction system from the 1930s,
+explained in more modern terms in \cite{girard}. As such, judgments will be
+written in the so-called \emph{proof tree form}, such as:
+\[
+  \begin{prooftree}
+    \hypo{A}
+    \infer1{A \lor B}
+  \end{prooftree}
+\]
+where above the line we have the hypotheses and below the inferences.
+In particular, the above rule takes for granted that we have some formulas
+$ A $ and $ B $ and it infers that $ A \lor B $ is true given the hypothesis
+that $ A $ is true.
+
+Given some $ A $, which can be a set or a proposition, we write $ a \in A $
+to mean, using the Curry-Howard correspondence, that either:
+\begin{itemize}
+\item $ a $ is an element of the set $ A $;
+\item $ a $ is a proof of the proposition $ A $.
+\end{itemize}
+
+Also, the judgment $ a = b \in A $ means more than meets the eye:
+\begin{itemize}
+\item $ A $ is a proposition or a set;
+\item $ a $ and $ b $ are proofs or elements respectively;
+\item $ a $ and $ b $ are identical elements of the set $ A $ or
+  represent identical proofs of the proposition $ A $.
+\end{itemize}
+
+In fact, more than these readings can be given for the simple judgment
+$ a \in A $, as shown in the table of figure \ref{fig:judge}.
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tabular}{l | l | l}
+    A set & $ a \in A $ & implies \\
+    \hline
+    $ A $ is a set & $ a $ is an element of the set $ A $ & $ A $ is nonempty \\
+    $ A $ is a proposition & $ a $ is a (constructive) proof of  $ A $ & $ A $ is true \\
+    $ A $ is an intention (expectation) & $ a $ is a method of fulfilling $ A $ & $ A $ is fulfillable (realizable) \\
+    $ A $ is a problem (task) & $ a $ is a method of solving $ A $ & $ A $ is solvable
+  \end{tabular}
+  \caption{Readings of the judgment $ a \in A $, cf.\ \cite[p.\ 4]{mltt}}
+  \label{fig:judge}
+\end{figure}
+
+In particular, the reading which refers to problem-solving is commonly attributed to
+A.\ Kolmogorov (\cite{kolm}) and called the \emph{Brouwer-Heyting-Kolmogorov interpretation}.
+
+What is characteristic of MLTT is that in order to ascertain that we have a set
+(proposition), we must prescribe an \emph{introduction} rule, by means of showing
+how a \emph{canonical} element of the set (proof of the proposition, respectively)
+is constructed an \emph{equality} rule which shows how we know that two canonical
+elements are equal.
+
+For example, for the set of positive integers (using the Peano approach and denoting
+by $ a' $ the successor of the element $ a $), we can give the rules:
+\begin{itemize}
+\item for the canonical elements: $ 0 \in \NN $ and %
+  $ \begin{prooftree} \hypo{a \in \NN} \infer1{a' \in \NN} \end{prooftree} $;
+\item equality of canonical elements: $ 0 = 0 \in \NN $ and
+  $ \begin{prooftree} \hypo{a = b \in \NN} \infer1{a' = b' \in \NN} \end{prooftree} $.
+\end{itemize}
+
+Another example, for the product of two sets (propositions) $ A \times B $, we have:
+\begin{itemize}
+\item canonical elements:
+  \[
+    \begin{prooftree}
+    \hypo{a \in A} \hypo{b \in B} \infer2{(a, b) \in A \times B}
+  \end{prooftree};
+  \]
+\item equality of canonical elements:
+  \[
+    \begin{prooftree}
+      \hypo{a = c \in A} \hypo{b = d \in B}
+      \infer2{(a, b) = (c, d) \in A \times B}
+    \end{prooftree}
+  \]
+\end{itemize}
+
+Now, equality of the sets (propositions) as a whole is prescribed by showing
+how equal and canonical elements are formed for the sets (propositions).
+For example, for sets (propositions), the equality is simply:
+\[
+  \begin{prooftree}
+    \hypo{a = b \in A}
+    \infer1{}
+    \infer1{a = b \in B}
+  \end{prooftree}.
+\]
+
+For non-canonical elements, to explain what it means for them to be elements
+of a set (proposition) $ A $, we must specify a method (proof, program) which,
+when executed (performed), it yields a \emph{canonical} element of the set as a
+result.
+
+Then, finally, two arbitrary (not necessarily canonical) elements of
+a set $ A $ are equal if, when executed as above, yield equal
+\emph{canonical} elements of the set.
+
+\vspace{0.3cm}
+
+It is now worth focusing our attention on the particular cases of propositions.
+Given the setup above, we can write the table in figure \ref{fig:proofs}.
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tabular}{l|l}
+    a proof of & consists of \\
+    \hline
+    $ \perp $ & --- \\
+    $ A \land B $ & a proof of $ A $ and a proof of $ B$ \\
+    $ A \lor B $ & a proof of $ A $ or a proof of $ B $ \\
+    $ A \supset B $ & a method taking any proof of $ A $ into a proof of $ B $ \\
+    $ (\forall x) B(x) $ & a method taking any individual $ a $ into a proof of $ B(a) $ \\
+    $ (\exists x)B(x) $ & an individual $ a $ and a proof of $ B(a) $
+  \end{tabular}
+  \caption{Proofs of propositions, cf.\ \cite[p.\ 7]{mltt}}
+  \label{fig:proofs}
+\end{figure}
+
+We can be more precise than that, noting further:
+\begin{itemize}
+\item the proposition $ \perp $ has no possible proof;
+\item $ (a, b) $ is a proof of $ A \land B $, provided that $ a $ is a proof
+  of $ A $ and $ b $ is a proof of $ B $;
+\item $ i(a) $ or $ j(b) $ are proofs of $ A \lor B $, provided that $ a $
+  is a proof of $ A $ and $ b $ is a proof of $ B $, where $ i $ and $ j $
+  are the canonical inclusions (which we detail later);
+\item $ \lambda x . b(x) $ is a proof of $ A \supset B $, provided that
+  $ b(a) $ is a proof of $ B $ under the hypothesis that $ a $ is a proof of $ A $;
+\item $ \lambda x . b(x) $ is a proof of $ (\forall x)B(x) $, provided that
+  $ b(a) $ is a proof of $ B(a) $, where $ a $ is some individual;
+\item $ (a, b) $ is a proof of $ (\exists x)B(x) $, given that $ a $ is an
+  individual and $ b $ is a proof of $ B(a) $.
+\end{itemize}
+
+Also, the presentation can be extended further to \emph{types}. From a historical,
+philosophical and mathematical point of view, types themselves are taken as
+primary notions, hence not properly defined. Intuitively though, one can
+think of types as \qq{hierarchies}, \qq{levels} of certain kinds of elements
+or rather use the computer science intuition of \emph{data types}.
+
+For this case, the judgment \qq{$ a $ is an element of type $ A $} is commonly
+denoted by $ a : A $ and if this is the case, we say that the type $ A $ is
+\emph{inhabited}.
+
+It can be formally shown that the type-theoretical approach is isomorphic
+to the propositional approach and the set-theoretical approach, making what
+is commonly known as the \emph{formulas-as-types} or \emph{propositions-as-sets}
+interpretations (for intuitionistic logic).
+
+\todo[inline,noline,backgroundcolor=green!40]{more on types? we'll see}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
