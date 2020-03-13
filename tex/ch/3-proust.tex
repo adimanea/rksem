@@ -1,0 +1,109 @@
+% ! TEX root = ../racket.tex
+\chapter{Proust}
+
+This chapter will provide an example of a great use of Racket to craft
+a \qq{nano proof assistant}, called Proust. The presentation closely
+follows \cite{proust} and it will contain further clarifications as
+needed.
+
+As the author mentions, the article is intended as a DIY approach
+for a simple proof assistant (in fact, the name derives from a weird
+contraction of the expression \qq{proof assistant}). In fact, the goal
+is much more interesting than that, in that it will also delve into the
+inner works of the underlying mechanisms of proof asistants, for the
+purpose of implementing them in a simpler manner.
+
+Note that since Racket is rather a toolbox for crafting one's own toy
+languages, any source code must start with a \texttt{\# lang} pragma,
+which mentions what part of Racket one wants to use. Common pragmas
+(formally, \emph{modules}) include:
+\begin{itemize}
+\item \texttt{htdp} -- the special module with syntax used in the
+  \cite{htdp} book;
+\item \texttt{racket} -- the full-fledged module with all syntax;
+\item \texttt{racket/base} -- the simplest submodule of \texttt{racket};
+\item \texttt{racket/typed} -- the module of Racket with strong typing;
+\item \texttt{scheme} -- the backwards compatible module allowing one
+  to use Scheme syntax.
+\end{itemize}
+
+To not overcomplicate the example and to skip any decision process,
+we will just use \texttt{\#lang racket}.
+
+First, we specify the language that we will use to make proof terms,
+which will be a mix of untyped lambda calculus and simple and function
+types. As such, the BNF grammar of the language is as follows:
+\begin{align*}
+  \texttt{expr} ::&= (\lambda x \Rightarrow \texttt{expr}) \\
+                  &| \ (\texttt{expr} \ \texttt{expr}) \\
+                  &| \ (\texttt{expr} : \texttt{type}) \\
+                  &| \ x \\
+  \texttt{type} ::&= (\texttt{type} \to \texttt{type}) \\
+                  &| \ X.
+\end{align*}
+
+The reader will recognize, respectively: lambda abstraction, application,
+type inhabitance and free variables. These are the legal expressions
+and the types are either simple or functional.
+
+To recognize the structures that appear, we will use the standard
+Racket structures (records), which will also allow pattern-matching to
+extract the parts that are needed:
+{
+  \small
+\begin{verbatim}
+(struct Lam (var body))         ; lambda abstractions
+(struct App (func arg))         ; application
+(struct Arrow (domain range))   ; functionals
+\end{verbatim}
+}
+
+The first goal of the simple proof assistant will be to parse expressions,
+in order to understand them appropriately and extract the needed parts.
+For this, we define a function \texttt{parse-expr}, which takes a so-called
+S-expression (standard Racket/Lisp expression) and produces an element
+that is a legal \texttt{expr}.
+{
+  \small
+\begin{verbatim}
+(define (parse-expr s)
+  (match s                              ; pattern-match s
+    [`(lambda ,(? symbol? x) => ,e)     ; is it a lambda expression?
+        (Lam x (parse-expr e))]         ; make it a Lam
+    [`(,e0 ,e1)                         ; is it an application?
+        (App (parse-expr e0)            ; make it an App
+             (parse-expr e1))]
+    [(? symbol? x) x]))                 ; else, it's a symbol, return it
+\end{verbatim}
+}
+
+Notice the very clever use of the quoting and unquoting mechanism in the
+definition of \texttt{parse-expr}, as well as the square bracket delimitation
+of the matching cases. The quote for the patterns ensures that we are searching
+for expressions that are either (literally) \texttt{(lambda ...)} or \texttt{(... ...)},
+but inside the quoting we actually want to see what's there, so we
+evaluate the components using the unquote. The special predicate
+\texttt{(? symbol? x)} is used only in pattern matching, where the first
+question mark matches anything (similar to \texttt{*} in regular expressions).
+Also note that there is a convention in Lisps to name predicates (i.e.\ functions
+that return true or false) ending with a question mark.
+
+Similarly, we parse type expressions:
+{
+  \small
+\begin{verbatim}
+(define (parse-type t)
+  (match t
+    [`(,t1 -> ,t2)                              ; is it a functional type?
+        (Arrow (parse-type t1)                  ; make it an Arrow
+                (parse-type t2))]
+    [(? symbol? X) X]                           ; is it a simple type? return it
+    [else (error "can't parse this type")]))
+\end{verbatim}
+}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
