@@ -11,6 +11,8 @@ and more.
 The applications I will be considering are crafting (elements of) proof
 assistants to showcase (elements of) intuitionistic logic.
 
+The PDF (wip) can be directly accessed [[https://github.com/adimanea/rksem/blob/master/tex/racket.pdf][here]].
+
 The [OLD] part was focusing on PLT Redex, which I've decided to skip.
 
 * Main References
