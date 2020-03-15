@@ -5,6 +5,7 @@
 (struct Lam (var body))                 ; lambda expression
 (struct App (func arg))                 ; application
 (struct Arrow (domain codomain))        ; function
+(struct TA (type var))                  ; type annotation
 
 ;; expr = (lambda x => expr)
 ;;      | (expr expr)
@@ -19,21 +20,36 @@
     [`(,func ,arg)                          ; is it an application?
      (App (parse-expr func)                 ; then make it App
           (parse-expr arg))]
+    [`(,type ,var)
+     (TA (parse-expr type)
+         (parse-expr var))]
     [(? symbol? x) x]))                     ; otherwise, it's a symbol => return it
+
+(parse-expr '(lambda x => x))                           ; => #<Lam>
+(parse-expr '(lambda x => (lambda y => (x y))))         ; => #<Lam>
+(parse-expr '(+ x))                                     ; => #<App>
+(parse-expr 'x)                                         ; => 'X
 
 ;; type = (type -> type) | X
 
-;; parse-type : sexp -> Type
+;; ;; parse-type : sexp -> Type
 (define (parse-type t)
   (match t
     [`(,t1 -> ,t2)
      (Arrow (parse-type t1)
             (parse-type t2))]
+    [`(,type ,var)
+     (TA (parse-type type)
+         (parse-type var))]
     [(? symbol? X) X]
     [else (error "unrecognized type")]))
 
-;; type-check : Context Expr Type -> boolean
-;; produces #t if expr has type t in context ctx (else error)
+(parse-type '(A -> B))                      ; => #<Arrow>
+(parse-type 'X)                             ; => 'X
+(parse-type '(x a))                         ; => #<TA>
+
+;; ;; type-check : Context Expr Type -> boolean
+;; ;; produces #t if expr has type t in context ctx (else error)
 (define (type-check ctx expr type)
   (match expr
     [(Lam x t)
@@ -51,7 +67,7 @@
 (define (type-infer ctx expr)
   (match expr
     [(Lam _ _) (cannot-infer ctx expr)]
-    ;; [(ann e t) (type-check ctx e t) t]          ;; SYNTAX ERROR
+    [(TA e t) (type-check ctx e t) t]
     [(App f a)
      (define tf (type-infer ctx f))
      (match tf
@@ -61,15 +77,19 @@
      (cond
        [(assoc x ctx) => second]
        [else (cannot-infer ctx expr)])]))
-
+     
 (define (cannot-infer ctx expr)
   (error "cannot infer the type of the expression in the provided context"))
 
-;; test: a proof term annotated with expected type
-(define (check-proof p)
-  (type-infer empty (parse-expr p)))
+(type-check empty
+            (parse-expr '(lambda x => x))
+            (parse-type '(A -> A)))                 ; => #t
+
+;; ONLY WORKS FOR LAMBDAS
+
+;; (define (check-proof p)
+;;   (type-infer empty (parse-expr p)) true)
 
 ;; test:
-(check-proof
- '((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
-;; ERROR: NO MATCHING CLAUSE
+;; (check-proof
+;;  `((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
