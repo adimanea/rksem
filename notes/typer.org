@@ -1,0 +1,23 @@
+#+TITLE: The Little Typer
+#+AUTHOR: Adrian
+#+STARTUP: overview
+
+* References
+- Friedman, Christiansen -- /The Little Typer/, 2018
+
+* Meta
+You can export code blocks as in the example below by pressing
+~C-c C-v t~ to export (tangle) *all* code blocks in current buffer.
+To tangle only the block under cursor, press ~C-u C-c C-v t~ or use
+a numeric prefix to affect only that number of blocks.
+
+#+BEGIN_SRC racket :tangle ../rkt/swap.rkt :exports code
+  (define swap
+	(lambda (p)
+	  (elim-Pair
+	   Nat Atom
+	   (Pair Atom Nat)
+	   p
+	   (lambda (a d)
+		 (cons d a)))))
+#+END_SRC
