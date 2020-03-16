@@ -20,9 +20,9 @@
     [`(,func ,arg)                          ; is it an application?
      (App (parse-expr func)                 ; then make it App
           (parse-expr arg))]
-    [`(,type ,var)
-     (TA (parse-expr type)
-         (parse-expr var))]
+    [`(,e : ,t)                             ; is it a type annotation?
+     (TA (parse-expr e)                     ; make it a TA
+         (parse-type t))]
     [(? symbol? x) x]))                     ; otherwise, it's a symbol => return it
 
 (parse-expr '(lambda x => x))                           ; => #<Lam>
@@ -38,15 +38,11 @@
     [`(,t1 -> ,t2)
      (Arrow (parse-type t1)
             (parse-type t2))]
-    [`(,type ,var)
-     (TA (parse-type type)
-         (parse-type var))]
     [(? symbol? X) X]
     [else (error "unrecognized type")]))
 
 (parse-type '(A -> B))                      ; => #<Arrow>
 (parse-type 'X)                             ; => 'X
-(parse-type '(x a))                         ; => #<TA>
 
 ;; ;; type-check : Context Expr Type -> boolean
 ;; ;; produces #t if expr has type t in context ctx (else error)
@@ -85,11 +81,14 @@
             (parse-expr '(lambda x => x))
             (parse-type '(A -> A)))                 ; => #t
 
-;; ONLY WORKS FOR LAMBDAS
-
-;; (define (check-proof p)
-;;   (type-infer empty (parse-expr p)) true)
+(define (check-proof p)
+  (type-infer empty (parse-expr p)) true)
 
 ;; test:
-;; (check-proof
-;;  `((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
+(check-proof
+ '((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
+
+
+(type-check empty
+            (parse-expr '(+ x))
+            (parse-type 'X))
