@@ -45,10 +45,11 @@ _______________ is a type.                     <--- judgment
 ______ and _______ are the same type.		   <--- judgment
 #+END_EXAMPLE
 
-** COMMENT Claims before Definitions
+** Claims before Definitions
 Using ~define~ to associate a name with an expression requires
 that the expression's type has previously been associated with
 the name using ~claim~.
+
 #+BEGIN_SRC racket :tangle ../rkt/claim-define.rkt :exports code
   #lang pie
 
@@ -77,6 +78,7 @@ Note that not every value is in normal form. This is because the
 arguments to a constructor need not be normal. Each expression has only
 one normal form, but it is sometimes possible to write it as a value in
 more than one way.
+
 #+BEGIN_SRC racket :tangle ../rkt/values-normal.rkt :exports code
   #lang pie
 
