@@ -98,6 +98,291 @@ more than one way.
 #+END_SRC
 
 *Keywords:* atom, type, type constructor
-*Examples (respectively):* ~'dog, Nat, Pair~.
+*Examples (respectively):* ='dog, Nat, Pair=.
 
 * 2: Doin' What Comes Naturally
+*Constructors* build values and *eliminators* take apart values
+built by constructors. In the context of what we've met so far,
+=Pair= is a constructor and =car= and =cdr= are eliminators.
+
+Also, =lambda= is a /constructor/, which constructs functions.
+Its corresponding /eliminator/ is the function application.
+The /type constructor/ for =lambdas= is =->=, so for example,
+=(-> Atom (Pair Atom Atom))= is the type of a lambda that takes
+an atom and produces a pair of two atoms, such as:
+#+BEGIN_SRC racket
+  (lambda 'dog
+	(cons 'dog 'cat))
+#+END_SRC
+
+*Initial Law of Application*:
+#+BEGIN_QUOTE
+If f is an (-> Y X) and arg is an Y, then (f arg) is an X.
+#+END_QUOTE
+
+*Initial First Commandment of Lambda*:
+#+BEGIN_QUOTE
+Two lambda-expressions that expect the same number of arguments
+are the same if their bodies are the same after consistently renaming
+their variables (alpha-conversion).
+#+END_QUOTE
+
+*Initial Second Commandment of Lambda*:
+#+BEGIN_QUOTE
+If f is an (-> Y X), then f is the same as (lambda (y) (f y)),
+as long as y does not occur in f.
+#+END_QUOTE
+
+*Neutral expressions* are not values and cannot yet be evaluated
+due to a variable. For example:
+#+BEGIN_QUOTE
+If x is a (Pair Nat Atom), then (cdr x) is a neutral value.
+Without knowing the value of x, there is no way to find the
+value of (cdr x).
+#+END_QUOTE
+
+** =which-Nat=
+A =which-Nat= expression has 3 arguments: =target=, =base= and =step=:
+#+BEGIN_SRC racket
+  #lang pie
+
+  (which-Nat target
+			 base
+			 step)
+#+END_SRC
+- It checks whether =target= is zero:
+  + If so, the value returned is the value of =base=;
+  + Otherwise, if =target= is some =(add1 n)=, then the value
+	of the expression is the value of =(step n)=.
+Examples:
+#+BEGIN_SRC racket :tangle ../rkt/which-nat.rkt :export code
+  #lang pie
+
+  (which-Nat zero
+			 'naught
+			 (lambda (n)
+			   'more))            ;; => 'naught
+  (which-Nat 4
+			 'naught
+			 (lambda (n)
+			   'more))            ;; => 4
+  ;; 4 is another way of writing (add1 3)
+  ;; so it returns ((lambda (n) 'more) 3),
+  ;; which is 'more.
+
+  (which-Nat 5
+			 0
+			 (lambda (n)
+			   (+ 6 n)))          ;; => 10
+  ;; 5 is (add1 4), so it returns
+  ;; ((lambda (n) (+ 6 n)) 4) = 10.
+#+END_SRC
+
+** Example: Custom Type with Constructor and Eliminator
+#+BEGIN_SRC racket :tangle ../rkt/pear-type.rkt :export code
+  #lang pie
+
+  (claim Pear-maker U)            ;; universe
+  (define Pear-maker              ;; two Nats make a Pear
+	(-> Nat Nat Pear))
+
+  (claim elim-Pear
+		 (-> Pear Pear-maker Pear))
+  (define elim-Pear               ;; eliminator consumes the maker
+	(lambda (pear maker)
+	  (maker (car pear) (cdr pear))))
+
+  (claim pearwise+                ;; Addition for Pear types
+		 (-> Pear Pear Pear))
+  (define pearwise+
+	(lambda (x y)
+	  (elim-Pear x                ;; split the two parts into
+				 (lambda (a1 d1)  ;; their parts (remember, Pair = (Nat, Nat))
+				   (elim-Pear y
+							  (lambda (a2 d2)
+								(cons
+								 (+ a1 a2)        ;; then add the parts
+								 (+ d1 d2))))))))
+#+END_SRC
+
+* 3: A Forkful of Pie
+A =the=-expression associates an expression with its type:
+#+BEGIN_SRC racket
+  #lang pie
+  (the (Pair Atom Atom)                   ; what follows has this type
+	   (cons 'spinach 'cauliflower))
+
+  (the (Pair Atom                     
+			 (Pair Atom Atom))            ; what follows has this type
+	   (cons 'spinach
+			 (cons 'kale 'cauliflower)))
+#+END_SRC
+
+*Remark:* The value of =(the X e)= is =e=, with type =X=.
+In the case of the universe =U=, it is basically =(the U U)=.
+
+* 3: Eliminate All Natural Numbers
+*In Pie, all functions are total.*
+
+** =iter-Nat=
+An =iter-Nat= expression looks like this:
+#+BEGIN_SRC racket
+  (iter-Nat target
+			base
+			step)
+#+END_SRC
+When =target= is zero, the value of the expression is
+the value of =base=. However, when =target= is =(add1 n)=,
+the value of the expression is the value of:
+#+BEGIN_SRC racket
+  (step
+   (iter-Nat n
+			 base
+			 step))
+#+END_SRC
+So each =add1= in the value of =target= is replaced by a =step=
+and the zero is replaced by =base=.
+Example:
+#+BEGIN_SRC racket :tangle ../rkt/iter-Nat.rkt :exports code
+  #lang pie
+
+  (iter-Nat 5
+			3
+			(lambda (k)
+			  (add1 k)))          ;; => 8
+  ;; target = 5
+  ;; base = 3
+  ;; step = (lambda (k) (add1 k))
+  ;; so basically applies add1 5 times to 3
+#+END_SRC
+
+Using =iter-Nat=, we can define addition for natural numbers:
+#+BEGIN_SRC racket :tangle ../rkt/plus-iter.rkt :exports code
+  #lang pie
+
+  (claim +                    ; addition of naturals
+		 (-> Nat Nat
+			 Nat))
+  (claim step+                ; inductive step for definition
+		 (-> Nat Nat))
+  (define step+               ; inductive step addition (n-1) -> n
+	(lambda (+n-1)
+	  (add1 +n-1)))
+  (define +
+	(lambda (n j)             ; sum of n and j
+	  (iter-Nat n             ; target
+				j             ; base
+				step+)))      ; step
+#+END_SRC
+
+** =rec-Nat=
+The general syntax of =rec-Nat= is similar to that for =iter-Nat= and
+=which-Nat=, in that it uses a =target=, a =base= and a =step=.
+But it works this way:
+- if the =target= is zero, the value of the expression is the =base=;
+- if the =target= is not zero, the =target= shrinks by removing an
+  =add1= each time. The =base= and =step= do not change.
+
+Example:
+#+BEGIN_SRC racket :tangle ../rkt/rec-Nat.rkt :exports code
+  #lang pie
+
+  (rec-Nat (add1 zero)
+		   0
+		   (lambda (n-1 almost)
+			 (add1
+			  (add1 almost))))
+  ;; is the same as
+  ((lambda (n-1 almost)
+	 (add1
+	  (add1 almost)))
+   zero
+   (rec-Nat zero
+			0
+			(lambda (n-1 almost)
+			  (add1
+			   (add1 almost)))))
+  ;; which is further
+  (add1
+   (add1
+	(rec-Nat zero
+			 0
+			 (lambda (n-1 almost)
+			   (add1
+				(add1 almost))))))
+  ;; then further
+  (add1
+   (add1 0))      ;; => 2
+#+END_SRC
+
+A further example is to use =rec-Nat= to check whether a =Nat=
+is zero:
+#+BEGIN_SRC racket :tangle ../rkt/zerop-rec.rkt :exports code
+  #lang pie
+
+  (claim step-zerop           ; the inductive step for
+		 (-> Nat Atom         ; checking nullity
+			 Atom))
+  (define step-zerop
+	(lambda (n-1 zerop-n-1)
+	  'nil))                  ; nothing
+
+  (claim zerop                ; the actual check
+		 (-> Nat
+			 Atom))
+  (define zerop
+	(lambda (n)
+	  (rec-Nat n
+			   't             ; true
+			   step-zerop)))
+
+  ;; REMARK: `zerop' is actually `zero?' in Scheme.
+#+END_SRC
+
+Next, the Gauss sum.
+#+BEGIN_SRC racket :tangle ../rkt/gauss-sum.rkt :exports code
+  #lang pie
+
+  (require plus-iter)             ; uses the definition of plus
+
+  (claim step-gauss               ; inductive step
+		 (-> Nat Nat
+			 Nat))
+  (define step-gauss
+	(lambda (n-1 gauss-n-1)
+	  (+ (add1 (n-1) gauss-n-1))))
+
+  (claim gauss                    ; Gauss formula for sum of n integers
+		 (-> Nat Nat))
+  (define gauss
+	(lambda (n)
+	  (rec-Nat n
+			   0
+			   step-gauss)))
+#+END_SRC
+
+Lastly, multiplication:
+#+BEGIN_SRC racket :tangle ../rkt/mult.rkt :exports code
+  #lang pie
+
+  (require plus-iter)         ; we need the definition of +
+
+  (claim mult                    ; multiplication of naturals
+		 (-> Nat Nat
+			 Nat))
+  (claim step-mult               ; inductive step
+		 (-> Nat Nat Nat
+			 Nat))
+
+  (define step-mult
+	(lambda (j n-1 mult-n-1)
+	  (+ j mult-n-1)))
+
+  (define mult
+	(lambda (n j)
+	  (rec-Nat n
+			   0
+			   (step-mult j))))
+#+END_SRC
+
+* 4: Easy as Pie
