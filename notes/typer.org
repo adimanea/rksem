@@ -2,6 +2,11 @@
 #+AUTHOR: Adrian
 #+STARTUP: overview
 
+I'm starting to learn Racket for formal reasoning and for this purpose,
+I will be studying /The Little Typer/ book, which describes the language
+[[https://github.com/the-little-typer/pie][Pie]]. As such, I will be adding here some theoretical notes which I will
+expand in my dissertation and also some source code blocks.
+
 * References
 - Friedman, Christiansen -- /The Little Typer/, 2018
 
@@ -12,6 +17,11 @@ To tangle only the block under cursor, press ~C-u C-c C-v t~ or use
 a numeric prefix to affect only that number of blocks.
 
 #+BEGIN_SRC racket :tangle ../rkt/swap.rkt :exports code
+  ;; Use the Pie module
+  ;; (after installing with `raco pkg install pie'
+  #lang pie
+
+  ;; a simple example, the swap function
   (define swap
 	(lambda (p)
 	  (elim-Pair
@@ -21,3 +31,71 @@ a numeric prefix to affect only that number of blocks.
 	   (lambda (a d)
 		 (cons d a)))))
 #+END_SRC
+
+* 1: The More Things Change, the More They Stay the Same
+By Martin-Lof, /a judgment is an attitude that a person takes/
+/towards expressions. When we come to know something, we are/
+/making a judgment/. A _form of judgment_ is an observation
+with blank spaces in it, such as:
+
+#+BEGIN_EXAMPLE
+_________________ is a ___________________.    <--- judgment
+________ is the same _______ as __________.    <--- judgment
+_______________ is a type.                     <--- judgment
+______ and _______ are the same type.		   <--- judgment
+#+END_EXAMPLE
+
+** COMMENT Claims before Definitions
+Using ~define~ to associate a name with an expression requires
+that the expression's type has previously been associated with
+the name using ~claim~.
+#+BEGIN_SRC racket :tangle ../rkt/claim-define.rkt :exports code
+  #lang pie
+
+  ;; doesn't work in Pie
+  (define one
+	(add1 zero))
+
+  ;; this works
+  (claim one Nat)         ; declare the type first
+  (define one
+	(add1 zero))
+
+  (claim four Nat)
+  (define four
+	(add1
+	 (add1
+	  (add1
+	   (add1 zero)))))
+#+END_SRC
+
+An expression with a constructor at the top is called a *value*.
+For example, the constructors of ~Nat~ are ~zero~ and ~add1~, while
+the constructor of ~Pair~ is ~cons~.
+
+Note that not every value is in normal form. This is because the
+arguments to a constructor need not be normal. Each expression has only
+one normal form, but it is sometimes possible to write it as a value in
+more than one way.
+#+BEGIN_SRC racket :tangle ../rkt/values-normal.rkt :exports code
+  #lang pie
+
+  (add1
+   (+ (add1 zero)
+	  (add1
+	   (add1 zero))))
+  ;; is a value, but it is NOT normal
+  ;; because the arguments are not in normal form
+
+  ;; To make it normal, we only have to use normalized expressions.
+  (claim one Nat)
+  (claim two Nat)
+  (define one (add1 zero))
+  (define two (add1 (add1 zero)))
+  (+ one two)             ; normal value
+#+END_SRC
+
+*Keywords:* atom, type, type constructor
+*Examples (respectively):* ~'dog, Nat, Pair~.
+
+* 2: Doin' What Comes Naturally
