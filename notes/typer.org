@@ -386,3 +386,145 @@ Lastly, multiplication:
 #+END_SRC
 
 * 4: Easy as Pie
+** =Pair= eliminators
+We can define an eliminator for =Pair=, regardless of
+the types in =Pair=. That is, we will define an eliminator that
+will expose any of =A= or =D= in =(Pair A D)=, regardless of
+the types that =A= or =D= represent.
+
+#+BEGIN_SRC racket :tangle ../rkt/elim-Pair.rkt :exports code
+  #lang pie
+
+  ;; elim-Pair will operate on PRODUCT TYPES (see theory in the notes)
+  (claim elim-Pair
+		 (Pi ((A U)
+			  (D U)
+			  (X U))
+			 (-> (Pair A D)
+				 (-> A D
+					 X)
+				 X)))
+  (define elim-Pair
+	(lambda (A D X)
+	  (lambda (p f)
+		(f (car p) (cdr p)))))
+
+  (claim kar                  ; first eliminator for (Pair Nat Nat)
+		 (-> (Pair Nat Nat)   ; (it will resemble car)
+			 Nat))
+  (define kar
+	(lambda (p)
+	  (elim-Pair
+	   Nat Nat                ; the types of car and cdr which we will elim
+	   Nat                    ; the output of the lambda below
+	   p                      ; the actual argument
+	   (lambda (a d)          ; will be used like this
+		 a))))
+
+  (claim kdr                  ; second eliminator for (Pair Nat Nat)
+		 (-> (Pair Nat Nat    ; (it will resemble cdr)
+				   Nat)))
+  (define kdr
+	(lambda (p)
+	  (elim-Pair
+	   Nat Nat
+	   Nat
+	   p
+	   (lambda (a d)
+		 d))))
+
+  ;; swapping elements in a (Pair Nat Atom)
+  (claim swap
+		 (-> (Pair Nat Atom)
+			 (Pair Atom Nat)))
+  (define swap
+	(lambda (p)
+	  (elim-Pair
+	   Nat Atom
+	   (Pair Atom Nat)
+	   p
+	   (lambda (a d)
+		 (cons d a)))))
+#+END_SRC
+
+** Product Types
+In principle, the type for =elim-Pair= could be:
+#+BEGIN_SRC racket
+  ;; the general use of elim-Pair is
+  (elim-Pair
+   A D
+   X
+   p
+   f)
+
+  ;; so it's type could be something like
+  (claim elim-Pair
+		 (-> A D
+			 X
+			 (Pair A D)
+			 (-> A D
+				 X)
+			 X)
+#+END_SRC
+
+The idea is that in the =claim= for =elim-Pair=, =A=, =D= and =X= must be
+able to refer to whatever the arguments are. But at the same time, when we
+=claim= an expression with type =(-> Y X)=, it is a /lambda-expression/,
+which, given an =Y=, results in a =X=, where =X= and =Y= are types.
+But also, =A, D, X= are neither type constructors, so it means that
+the definition using functional types cannot work.
+
+Hence, we need another type, which is the *product type*.
+
+Here is a motivating example:
+#+BEGIN_SRC racket :tangle ../rkt/product-flip.rkt :exports code
+  ;; the following is a motivating example for the
+  ;; use of product types, before introducing them formally.
+  ;; see the notes for details
+
+  #lang pie
+  (claim flip
+		 (Pi ((A U)
+			  (D U))
+			 (-> (Pair A D)
+				 (Pair D A))))
+  (define flip
+	(lambda (A D)
+	  (lambda (p)
+		(cons (cdr p) (car p)))))
+#+END_SRC
+
+Basically, what we are getting using product types are functions that work
+for arguments having any type, since the product type is /parametrized/
+by the types.
+
+Similarly, another example is to define a /diagonal/ function, i.e.
+one which makes a pair with the same element. But it is now defined
+using product types, hence it will work for arguments of any type.
+#+BEGIN_SRC racket :tangle ../rkt/diagonal.rkt :exports code
+  ;; we define a general purpose diagonal function,
+  ;; i.e. one which makes a pair of the same argument.
+  ;; it will be defined using product types, hence
+  ;; it will work for arguments of any type.
+
+  #lang pie
+
+  (claim twin                     ; twin is
+		 (Pi ((Y U))              ; parametrized by any type Y : U
+			 (-> Y                ; and produces Y -> (Pair Y Y)
+				 (Pair Y Y))))
+  (define twin
+	(lambda (Y)                   ; abstract the type
+	  (lambda (x)                 ; abstract the argument
+		(cons x x))))             ; use the Pair type constructor (`cons')
+
+  ;; it can now be used in particular examples,
+  ;; namely for particular types:
+  (claim twin-Atom
+		 (-> Atom
+			 (Pair Atom Atom)))
+  (define twin-Atom
+	(twin Atom))
+#+END_SRC
+
+* 5: Lists, Lists, and More Lists
