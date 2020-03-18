@@ -2,10 +2,10 @@
 
 #lang racket
 
-(struct Lam (var body))                 ; lambda expression
-(struct App (func arg))                 ; application
-(struct Arrow (domain codomain))        ; function
-(struct TA (type var))                  ; type annotation
+(struct Lam (var body) #:transparent)                 ; lambda expression
+(struct App (func arg) #:transparent)                 ; application
+(struct Arrow (domain codomain) #:transparent)        ; function
+(struct TA (type var) #:transparent)                  ; type annotation
 
 ;; expr = (lambda x => expr)
 ;;      | (expr expr)
