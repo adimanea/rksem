@@ -32,6 +32,38 @@ case of a call by name versus call by value approach. For example,
 \texttt{'(+ 1 2)} is interpreted as the symbol (string) \texttt{(+ 1 2)},
 whereas \texttt{,(+ 1 2)} means \texttt{3}.
 
+For simple expressions, quoting can be done either with a single
+quote or with a backtick. However, in more complex expressions,
+a difference appears. The backtick is actually called
+\emph{quasiquote} and it can be used in expressions containing
+unquote. So basically we have:
+{
+  \small
+\begin{verbatim}
+'(+ 1 2)                ;; => (+ 1 2)
+
+(define x 3)
+`(+ 2 ,x)               ;; => 5     (used quasiquote)
+'(+ 2 ,x)               ;; error    (used quote)
+\end{verbatim}
+}
+
+Moreover, there is also the \emph{splice unquote} syntax, which
+is used to unquote lists. Instead of returning the whole list,
+as a regular unquote would do, splice unquote, denoted by
+\texttt{,{@}}, actually inserts the elements of the list:
+{
+  \small
+\begin{verbatim}
+(define x '(1 2 3))
+`(+ 4 ,@x)              ;; => 10
+\end{verbatim}
+}
+Notice also the use of the quote in the first line, because we
+are just defining a (literal) list to store in \texttt{x}, whereas
+in the second line, we used the quasiquote, since the expression
+contains an unquote (the spliced one).
+
 Another aspect of syntax is that a semicolon is used for comments and
 the convention is to use a single semicolon for an inline comment
 and two or more semicolons for comments spanning multiple lines.
