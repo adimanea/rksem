@@ -30,6 +30,9 @@ which mentions what part of Racket one wants to use. Common pragmas
 To not overcomplicate the example and to skip any decision process,
 we will just use \texttt{\#lang racket}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Grammar and Basic Parsing}
+
 First, we specify the language that we will use to make proof terms,
 which will be a mix of untyped lambda calculus and simple and function
 types. As such, the BNF grammar of the language is as follows:
@@ -52,11 +55,24 @@ extract the parts that are needed:
 {
   \small
 \begin{verbatim}
-(struct Lam (var body))         ; lambda abstractions
-(struct App (func arg))         ; application
-(struct Arrow (domain range))   ; functionals
+(struct Lam (var body) #:transparent)         ; lambda abstractions
+(struct App (func arg) #:transparent)         ; application
+(struct Ann (expr type) #:transparent)        ; explicit type annotations
+(struct Arrow (domain range) #:transparent)   ; functional types
 \end{verbatim}
 }
+
+A little remark about \emph{transparent} vs.\ \emph{opaque} structures.
+By default, all structures defined in Racket are opaque. What this means
+for our purposes is that if you print such a structure, it doesn't
+show anything about its internal contents. For example, printing
+a \texttt{Lam} will output \texttt{\#<Lam>} (see the code examples
+that follow below). On the other hand, a transparent structure shows
+its internals when printed, i.e.\ it will print something like
+\texttt{(Lam 'x 'y)}.
+
+By default, all Racket structures are opaque, so transparency must
+be enabled explicitly.
 
 The first goal of the simple proof assistant will be to parse expressions,
 in order to understand them appropriately and extract the needed parts.
@@ -73,20 +89,33 @@ that is a legal \texttt{expr}.
     [`(,e0 ,e1)                         ; is it an application?
         (App (parse-expr e0)            ; make it an App
              (parse-expr e1))]
-    [(? symbol? x) x]))                 ; else, it's a symbol, return it
+    [`(,e : ,t)                         ; is it a type annotation (e : t)?
+        (Ann (parse-expr e)             ; make it an Ann
+             (parse-expr t))]
+    [`(,e1 ,e2 ,e3 ,r ...)              ; is it a general list?
+        (parse-expr 
+            `((,e1 ,e2) ,e3 ,@r))]      ; parse it by parts
+    [(? symbol? x) x]                   ; else, it's a symbol, return it
+    [else (error 'parse "bad syntax: ~a" s)]))
 \end{verbatim}
 }
 
-Notice the very clever use of the quoting and unquoting mechanism in the
-definition of \texttt{parse-expr}, as well as the square bracket delimitation
-of the matching cases. The quote for the patterns ensures that we are searching
-for expressions that are either (literally) \texttt{(lambda ...)} or \texttt{(... ...)},
-but inside the quoting we actually want to see what's there, so we
-evaluate the components using the unquote. The special predicate
-\texttt{(? symbol? x)} is used only in pattern matching, where the first
-question mark matches anything (similar to \texttt{*} in regular expressions).
-Also note that there is a convention in Lisps to name predicates (i.e.\ functions
-that return true or false) ending with a question mark.
+Notice the very clever use of the quoting and unquoting (including splice)
+mechanism in the definition of \texttt{parse-expr}, as well as the square bracket
+delimitation of the matching cases. The quote for the patterns ensures that
+we are searching for expressions that are either (literally) \texttt{(lambda ...)}
+or \texttt{(... ...)}, but inside the quoting we actually want to see
+what's there, so we evaluate the components using the unquote.
+The special predicate \texttt{(? symbol? x)} is used only in pattern
+matching, where the first question mark matches anything (similar to
+\texttt{*} in regular expressions). Also note that there is a convention
+in Lisps to name predicates (i.e.\ functions that return true or false)
+ending with a question mark.
+
+Most of the syntax should be clear and it is also accompanied by
+comments which should ease understanding. The only new piece of syntax
+which we comment on is the \emph{ellipse} (\texttt{...}), which is used
+to match anything that follows (\qq{the rest}).
 
 Similarly, we parse type expressions:
 {
@@ -97,10 +126,177 @@ Similarly, we parse type expressions:
     [`(,t1 -> ,t2)                              ; is it a functional type?
         (Arrow (parse-type t1)                  ; make it an Arrow
                 (parse-type t2))]
+    [`(,t1 -> ,t2 -> ,r ...)                    ; maybe it's a multi-arg function
+        (Arrow (parse-type t1)
+               (parse-type `(,t1 -> ,@r)))]
     [(? symbol? X) X]                           ; is it a simple type? return it
     [else (error "can't parse this type")]))
 \end{verbatim}
 }
+
+To make printing clear enough, we define helper functions that do
+\qq{unparsing}, both for expressions and for types:
+{
+  \small
+\begin{verbatim}
+;; pretty-print-expr : expr -> String
+(define (pretty-print-expr e)
+  (match e
+    [(Lam x b) (format "(lambda ~a => ~a)" x (pretty-print-expr b))]
+    [(App e1 e2) (format "(~a ~a)"
+                          (pretty-print-expr e1)
+                          (pretty-print-expr e2))]
+    [(? symbol? x) (format "~a" x)]
+    [(Ann e t) (format "(~a : ~a)"
+                        (pretty-print-expr e)
+                        (pretty-print-expr t))]))
+
+;; pretty-print-type : Type -> String
+(define (pretty-print-type t)
+  (match t
+    [(Arrow t1 t2) (format "(~a -> ~a)"
+                            (pretty-print-type t1)
+                            (pretty-print-type t2))]
+    [else t]))
+\end{verbatim}
+}
+
+When evaluating and checking proofs, we will need a \emph{context},
+which is defined as a \texttt{(listof (List Symbol Type))}. The
+\texttt{listof} keyword is called a \emph{contract} in this case and
+in short, it \emph{asserts} that what it expects is a list with a
+symbol and a type. If the context does not respect the contract,
+we get a specific error. Racket provides extensive support for software
+contracts, for various items such as structures, functions, variables,
+but we do not actually need any such complexity here, so we will
+only indicate \cite{contract} for further information.
+
+\todo[inline,noline,backgroundcolor=green!40]{evaluation context theory!}
+
+Now, given the fact that a context is a list of a symbol and a type,
+we can \texttt{pretty-print} it as well using the function:
+{
+  \small
+\begin{verbatim}
+(define (pretty-print-context ctx)
+  (cond
+    [(empty? ctx) ""]
+    [else (string-append (format "\n~a : a"
+                                 (first (first ctx))
+                                 (pretty-print-type (second (first ctx))))
+          (pretty-print-context (rest ctx)))]))
+\end{verbatim}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Checking Lambdas}
+
+Now, given this setup, we can actually start writing the functions
+for the proofs. \textbf{We remark explicitly that for the purposes %
+  of this chapter, we will only present the part that uses lambda terms
+  for proofs.}
+
+First, type-checking, which checks whether an
+expression has a certain type in a given context.
+{
+  \small
+\begin{verbatim}
+;; type-check : Context Expr Type -> Boolean
+;; produces true if expr has type t in context ctx
+;; (else, error)
+(define (type-check ctx expr type)
+  (match expr
+    [(Lam x t)              ; is expr a lambda expression?
+      (match type           ; then the type must be an arrow
+        [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
+        [else (cannot-check ctx expr type)])]
+  [else (if (equal? (type-infer ctx expr) type) true    ; fail for other types
+            (cannot-check ctx expr type))]))
+
+;; the error function
+(define (cannot-check ctx expr type)
+  (error 'type-check "cannot typecheck ~a as ~a in context:\n~a"
+    (pretty-print-expr expr)
+    (pretty-print-type type)
+    (pretty-print-context ctx)))
+\end{verbatim}
+}
+
+Then the function that tries to make a type inference.
+{
+  \small
+\begin{verbatim}
+;; type-infer : Context Expr -> Type
+;; tries to produce type of expr in context ctx
+;; (else, error)
+(define (type-infer ctx expr)
+  (match expr
+    [(Lam _ _) (cannot-infer ctx expr)]     ; lambdas are handled in type-check
+    [(Ann e t) (type-check ctx e t) t]      ; check type annotations
+    [(App f a)                              ; function application
+        (define tf (type-infer ctx f))
+          (match tf                         ; must be arrow type
+            [(Arrow tt tw) #:when (type-check ctx a tt) tw] ; when the rest typechecks
+            [else (cannot-infer ctx expr)])]
+    [(? symbol? x)                          ; for symbols
+       (cond
+         [(assoc x ctx) => second]          ; if it's a list, the second is the type
+         [else (cannot-infer ctx expr)])])) ; else, not okay
+
+;; the error function
+(define (cannot-infer ctx expr)
+  (error 'type-infer "cannot infer type of ~a in context:\n~a"
+    (pretty-print-expr expr)
+    (pretty-print-context ctx)))
+\end{verbatim}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic Testing}
+
+Now we can define a function that checks some basic proofs like so:
+{
+  \small
+\begin{verbatim}
+(define (check-proof p)
+    (type-infer empty (parse-expr p)) true)
+\end{verbatim}
+}
+
+This way, if errors do not appear, the function will successfully apply
+the \texttt{type-infer} procedure and return \texttt{true}, which can be
+seen as a \qq{successful exit code}.
+
+Using this, we can use the Racket testing module to check some basic
+proofs, such as:
+{
+  \small
+\begin{verbatim}
+(require test-engine/racket-tests)              ; import the test module
+
+;; check whether check-proof returns true => good proof
+;; lambda xy.x : A -> (B -> A)
+(check-expect
+  (check-proof '((lambda x => (lambda y => x)) : (A -> (B -> A))))
+    true)
+
+;; lambda xy.yx : (A -> ((A -> B) -> B))
+(check-expect
+  (check-proof '((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
+    true)
+
+;; lambda fgx.f(gx) : ((B -> C) -> ((A -> B) -> (A -> C)))
+(check-expect
+  (check-proof '((lambda f => (lambda g => (lambda x => f (g x)))) :
+                    ((B -> C -> ((A -> B) -> (A -> C))))))
+    true)
+
+(test)          ;; => All 3 tests passed.
+\end{verbatim}
+}
+
+\todo[inline,noline,backgroundcolor=green!40]{comment on what the proofs mean}
+\todo[inline,noline,backgroundcolor=green!40]{add some more, e.g. ifs, booleans, Church nums}
 
 
 %%% Local Variables:
