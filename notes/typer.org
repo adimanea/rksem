@@ -528,3 +528,171 @@ using product types, hence it will work for arguments of any type.
 #+END_SRC
 
 * 5: Lists, Lists, and More Lists
+The constructors for lists are:
+- =nil=, which makes an empty list;
+- =::=, which is the equivalent of =cons= for pairs.
+Also, the type constructor is =List=, so =(List E)= is a type.
+
+As in the case of integers, the eliminator for lists is =rec-List=, as 
+described below:
+#+BEGIN_SRC racket
+  (rec-List target
+			base
+			step)
+  ;; in this case, rec-List is an X when:
+  ;;      - target is a (List E)
+  ;;      - base is an X
+  ;;      - step is an (-> E (List E) X X)
+#+END_SRC
+
+** Example: Manipulating List Length
+The following example defines functions to be used to increase
+or decrease the length of a list.
+#+BEGIN_SRC racket :tangle ../rkt/list-length.rkt :exports code
+  ;; Defininig the length of a list,
+  ;; using rec-List and dependent types.
+
+  #lang pie
+
+  ;; the length of a list
+  (claim length
+		 (Pi ((E U))
+			 (-> (List E)
+				 Nat)))
+  (define length
+	(lambda (E)
+	  (lambda (es)
+		(rec-List es
+				  0
+				  step-length E))))   ; we need the inductive step
+
+  ;; inductive step for increasing length
+  (claim step-length
+		 (Pi ((E U))
+			 (-> E (List E) Nat
+				 Nat)))
+  (define step-length
+	(lambda (E)
+	  (lambda (e es length-es)
+		(add1 length-es))))
+
+  ;; special version for Atoms
+  (claim length-Atom
+		 (-> (List Atom)
+			 Nat))
+  (define length-Atom
+	(length Atom))
+#+END_SRC
+
+*Remark:* All the entries in a list must have the same type!
+
+** Example: Appending to a List
+
+#+BEGIN_SRC racket :tangle ../rkt/list-append.rkt :exports code
+  ;; Definining the functions to append to a list,
+  ;; using steps and induction, as well as dependent types.
+  #lang pie
+
+  (claim append
+		 (Pi ((E U))
+			 (-> (List E) (List E)
+				 (List E))))
+  (define append
+	(lambda (E)
+	  (lambda (start end)
+		(rec-List start
+				  end
+				  (step-append E))))) ; we need the inductive step
+
+  ;; the inductive step for appending to a list
+  (claim step-append
+		 (Pi ((E U))
+			 (-> E (List E) (List E)
+				 (List E))))
+  (define step-append
+	(lambda (E)
+	  (lambda (e es append-es)
+		(:: e append-es))))
+#+END_SRC
+
+** Example: Concatenating Two Lists
+
+#+BEGIN_SRC racket :tangle ../rkt/list-concat.rkt :exports code
+  ;; we define the concatenation of two lists
+  ;; using induction and dependent types.
+  #lang pie
+
+  ;; we need the append defined previously
+  (require list-append)
+
+  ;; helper: a special cons,
+  ;; that appends at the end of a list: snoc
+  (claim snoc
+		 (Pi ((E U))
+			 (-> (List E) E
+				 (List E))))
+  (define snoc
+	(lambda (E)
+	  (lambda (start e)
+		(rec-List start
+				  (:: e nil)
+				  (step-append E)))))
+
+  ;; the inductive step
+  (claim step-concat
+		 (Pi ((E U))
+			 (-> E (List E) (List E)
+				 (List e))))
+  (define step-concat
+	(lambda (E)
+	  (lambda (e es concat-es)
+		(snoc E concat-es e))))
+
+  ;; actual concatenation
+  (claim concat
+		 (Pi ((E U))
+			 (-> (List E) (List E)
+				 (List E))))
+  (define concat
+	(lambda (E)
+	  (lambda (start end)
+		(rec-List end
+				  start
+				  step-concat E))))
+#+END_SRC
+
+** Example: Reversing a List
+#+BEGIN_SRC racket :tangle ../rkt/list-reverse.rkt :exports code
+  ;; we define reversing a list using induction
+  ;; and dependent types.
+  #lang pie
+
+  ;; we need snoc
+  (require list-append)
+
+  ;; reversing a list
+  (claim reverse
+		 (Pi ((E U))
+			 (-> (List E)
+				 (List E))))
+
+  ;; the inductive step
+  (claim step-reverse
+		 (Pi ((E U))
+			 (-> E (List E) (List E)
+				 (List E))))
+
+  (define step-reverse
+	(lambda (E)
+	  (lambda (e es reverse-es)
+		(snoc E reverse-es e))))
+
+  (define reverse
+	(lambda (E)
+	  (lambda (es)
+		(rec-List es
+				  (the (List E) nil)      ; nil
+				  (step-Reverse E)))))
+#+END_SRC
+
+* 6: Precisely How Many?
