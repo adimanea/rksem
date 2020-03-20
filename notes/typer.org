@@ -696,3 +696,99 @@ or decrease the length of a list.
 #+END_SRC
 
 * 6: Precisely How Many?
+We are building lists of specific length with the syntax
+=(Vec E k)=. This builds a list of elements of type =E= of length =k=.
+In general, =vec::= is the constructor for such lists and for the
+particular case of =(Vec E zero)=, the constructor is =vecnil=.
+That is, if =e= is an =E= and =es= is a =(Vec E k)=, then
+=(vec:: e es)= is a =(Vec E (add1 k))=.
+
+For such items, we can define functions that take the =head=,
+=tail= or specific elements.
+
+** Example: First of One
+#+BEGIN_SRC racket :tangle ../rkt/first-of-one.rkt :exports code
+  ;; this snippet takes the first element
+  ;; from a list which contains only one (i.e. of type (Vec E 1))
+  ;; then only two
+  #lang pie
+
+  ;; claim the type
+  (claim first-of-one
+		 (Pi ((E U))
+			 (-> (Vec E 1)
+				 E)))
+  ;; define the function
+  (define first-of-one
+	(lambda (E)
+	  (lambda (es)
+		(head es))))          ; head is built in
+
+  ;; test
+  (first-of-one Atom
+				(vec:: 'shiitake vecnil))     ; => 'shiitake
+
+  ;; for lists of 2 elements
+  ;; claim the type
+  (claim first-of-two
+		 (Pi ((E U))
+			 (-> (Vec E 2)
+				 E)))
+  ;; define the function
+  (define first-of-two
+	(lambda (E)
+	  (lambda (es)
+		(head es))))
+
+  ;; test
+  (first-of-two Atom
+				(vec:: 'matsutake
+					   (vec:: 'morel
+							  (vec:: 'truffle vecnil)))) ; => error
+  (first-of-two Atom
+				(vec:: 'hribi
+					   (vec:: 'bureti vecnil)))          ; => 'hribi
+#+END_SRC
+
+** Example: Custom =first= and =rest=
+#+BEGIN_SRC racket :tangle ../rkt/first-of-list.rkt :exports code
+  ;; define a custom version of `first' and `rest' for a list
+
+  #lang pie
+
+  ;; claim the type of first
+  (claim first
+		 (Pi ((E U)
+			  (l Nat))
+			 (-> (Vec E (add1 l))
+				 E)))
+  ;; define it
+  (define first
+	(lambda (E l)
+	  (lambda (es)
+		(head es))))
+
+  ;; test
+  (first (vec:: 'one
+				(vec:: 'two
+					   (vec:: 'three vecnil))))       ; => one
+
+  ;; claim the type of rest
+  (claim rest
+		 (Pi ((E U)
+			  (l Nat))
+			 (-> (Vec E (add1 l))
+				 (Vec E l))))
+  ;; define it
+  (define rest
+	(lambda (E l)
+	  (lambda (es)
+		(tail es))))
+
+  ;; test
+  (rest (vec:: 'one
+			   (vec:: 'two
+					  (vec:: 'three vecnil))))        ; => '(two three vecnil)
+#+END_SRC
+
+* 7: It All Depends on the Motive
