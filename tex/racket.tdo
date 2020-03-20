@@ -1,6 +1,7 @@
 \contentsline {todo}{change bib style to go well with websites}{4}{section*.1}% 
-\contentsline {todo}{more on types? we'll see}{8}{section*.4}% 
-\contentsline {todo}{\emph {Programming} in MLTT!}{8}{section*.5}% 
-\contentsline {todo}{evaluation context theory!}{15}{section*.6}% 
-\contentsline {todo}{comment on what the proofs mean}{17}{section*.7}% 
-\contentsline {todo}{add some more, e.g. ifs, booleans, Church nums}{17}{section*.8}% 
+\contentsline {todo}{\emph {Programming} in MLTT!}{8}{section*.4}% 
+\contentsline {todo}{dependent types}{8}{section*.5}% 
+\contentsline {todo}{skip it and explain directly on code?}{10}{section*.6}% 
+\contentsline {todo}{evaluation context theory!}{16}{section*.7}% 
+\contentsline {todo}{comment on what the proofs mean}{18}{section*.8}% 
+\contentsline {todo}{add some more, e.g. ifs, booleans, Church nums}{18}{section*.9}% 
