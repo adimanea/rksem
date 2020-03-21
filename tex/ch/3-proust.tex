@@ -1,5 +1,6 @@
 % ! TEX root = ../racket.tex
 \chapter{Proust}
+\label{ch:proust}
 
 This chapter will provide an example of a great use of Racket to craft
 a \qq{nano proof assistant}, called Proust. The presentation closely
@@ -8,19 +9,19 @@ needed.
 
 As the author mentions, the article is intended as a DIY approach
 for a simple proof assistant (in fact, the name derives from a weird
-contraction of the expression \qq{proof assistant}). In fact, the goal
+contraction of the expression \qq{proof assistant}). The general goal
 is much more interesting than that, in that it will also delve into the
 inner works of the underlying mechanisms of proof asistants, for the
 purpose of implementing them in a simpler manner.
 
 Note that since Racket is rather a toolbox for crafting one's own toy
-languages, any source code must start with a \texttt{\# lang} pragma,
+languages, any source code must start with a \texttt{\#\!\!\! lang} pragma,
 which mentions what part of Racket one wants to use. Common pragmas
 (formally, \emph{modules}) include:
 \begin{itemize}
 \item \texttt{htdp} -- the special module with syntax used in the
   \cite{htdp} book;
-\item \texttt{racket} -- the full-fledged module with all syntax;
+\item \texttt{racket} -- the full-fledged module with all syntax and features;
 \item \texttt{racket/base} -- the simplest submodule of \texttt{racket};
 \item \texttt{racket/typed} -- the module of Racket with strong typing;
 \item \texttt{scheme} -- the backwards compatible module allowing one
@@ -28,7 +29,9 @@ which mentions what part of Racket one wants to use. Common pragmas
 \end{itemize}
 
 To not overcomplicate the example and to skip any decision process,
-we will just use \texttt{\#lang racket}.
+we will just use \texttt{\#lang racket}. This will also mean that
+we will be working in an \emph{untyped} environment, although we will
+define custom syntax for explicit type annotations and functional types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Grammar and Basic Parsing}
@@ -46,12 +49,15 @@ types. As such, the BNF grammar of the language is as follows:
 \end{align*}
 
 The reader will recognize, respectively: lambda abstraction, application,
-type inhabitance and free variables. These are the legal expressions
-and the types are either simple or functional.
+type inhabitance (also known as typed variable declaration) and
+free variables. These are the legal expressions and the types are
+either simple or functional.
 
 To recognize the structures that appear, we will use the standard
 Racket structures (records), which will also allow pattern-matching to
-extract the parts that are needed:
+extract the parts that are needed. This works more or less as a DIY
+approach to typing, where we make things as verbose as possible, allowing
+for easy recognition and pattern matching for such types:
 {
   \small
 \begin{verbatim}
@@ -64,14 +70,14 @@ extract the parts that are needed:
 
 A little remark about \emph{transparent} vs.\ \emph{opaque} structures.
 By default, all structures defined in Racket are opaque. What this means
-for our purposes is that if you print such a structure, it doesn't
+for our purposes is that if one prints such a structure, it doesn't
 show anything about its internal contents. For example, printing
 a \texttt{Lam} will output \texttt{\#<Lam>} (see the code examples
 that follow below). On the other hand, a transparent structure shows
 its internals when printed, i.e.\ it will print something like
 \texttt{(Lam 'x 'y)}.
 
-By default, all Racket structures are opaque, so transparency must
+Since by default, all Racket structures are opaque, transparency must
 be enabled explicitly.
 
 The first goal of the simple proof assistant will be to parse expressions,
@@ -106,11 +112,12 @@ delimitation of the matching cases. The quote for the patterns ensures that
 we are searching for expressions that are either (literally) \texttt{(lambda ...)}
 or \texttt{(... ...)}, but inside the quoting we actually want to see
 what's there, so we evaluate the components using the unquote.
-The special predicate \texttt{(? symbol? x)} is used only in pattern
+The special predicate \texttt{(?\!\! symbol?\!\! x)} is used only in pattern
 matching, where the first question mark matches anything (similar to
 \texttt{*} in regular expressions). Also note that there is a convention
 in Lisps to name predicates (i.e.\ functions that return true or false)
-ending with a question mark.
+ending with a question mark. So basically the last successful case
+of pattern matching is used for symbols (literals).
 
 Most of the syntax should be clear and it is also accompanied by
 comments which should ease understanding. The only new piece of syntax
@@ -161,6 +168,12 @@ To make printing clear enough, we define helper functions that do
 \end{verbatim}
 }
 
+Notice another piece of new syntax in formatted printing,
+where the \texttt{~a} placeholder is used, i.e.\ it will be
+replaced by the arguments that follow. For example, the syntax
+\texttt{(format "\~\!a" 'x)} will put the symbol \texttt{x}
+in place of \texttt{"\~\!a"} when printing.
+
 When evaluating and checking proofs, we will need a \emph{context},
 which is defined as a \texttt{(listof (List Symbol Type))}. The
 \texttt{listof} keyword is called a \emph{contract} in this case and
@@ -169,9 +182,10 @@ symbol and a type. If the context does not respect the contract,
 we get a specific error. Racket provides extensive support for software
 contracts, for various items such as structures, functions, variables,
 but we do not actually need any such complexity here, so we will
-only indicate \cite{contract} for further information.
-
-\todo[inline,noline,backgroundcolor=green!40]{evaluation context theory!}
+only indicate \cite{contract} for further information. Also, for
+(judgments in) contexts, we refer the reader to our \S\ref{sec:depty},
+where we see that a context $ \Gamma $ is basically made of lists of
+typed variable declarations of the form $ x : A $.
 
 Now, given the fact that a context is a list of a symbol and a type,
 we can \texttt{pretty-print} it as well using the function:
@@ -295,8 +309,33 @@ proofs, such as:
 \end{verbatim}
 }
 
-\todo[inline,noline,backgroundcolor=green!40]{comment on what the proofs mean}
-\todo[inline,noline,backgroundcolor=green!40]{add some more, e.g. ifs, booleans, Church nums}
+\vspace{0.3cm}
+
+Formally, what \texttt{check-proof} does is to verify well-formedness of
+typing judgments for lambda expressions (see our \S\ref{ch:mltt}). As such,
+for example, the first proof checks the typing for the Church Boolean
+\texttt{true} in our \S\ref{sec:unty-lambda}.
+
+The other two proofs are just simple exercises. We can also write, for example,
+the typing for the Church numeral $ c_1 $ (again, see \S\ref{sec:unty-lambda}).
+Given that:
+\[
+  c_1 = \lambda s . \lambda z . sz = \lambda sz.sz,
+\]
+we have:
+{
+  \small
+\begin{verbatim}
+;; c1 = lambda sz . sz : ((A -> B) -> (A -> B))
+(check-expect
+  (check-proof '((lambda s => (lambda z => (s z))) : ((A -> B) -> (A -> B))))
+    true)
+(test)                  ;; => All 1 test passed.
+\end{verbatim}
+}
+
+\todo[inline,noline,backgroundcolor=green!40]{is it OK?}
+
 
 
 %%% Local Variables:
