@@ -1,6 +1,7 @@
 % ! TEX root = ../racket.tex
 
 \chapter{Martin-L\"of Type Theory}
+\label{ch:mltt}
 
 
 We start the theoretical part of this work focusing on Martin-L\"of's take
@@ -52,7 +53,13 @@ We will not go into more historical or philosophical details of this subject
 and instead further focus on the mathematical aspects that were then
 implemented in proof assistants.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+It is worth mentioning, however, that type theory (along with topos theory)
+has evolved into a domain which claims to serve as a better foundation for
+mathematics than set theory. As such, there are significant differences
+between sets and types, which are excellently summarized at
+\cite[\S1.1]{hott}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 \section{Fundamentals of MLTT}
 
@@ -125,8 +132,8 @@ Another example, for the product of two sets (propositions) $ A \times B $, we h
 \item canonical elements:
   \[
     \begin{prooftree}
-    \hypo{a \in A} \hypo{b \in B} \infer2{(a, b) \in A \times B}
-  \end{prooftree};
+      \hypo{a \in A} \hypo{b \in B} \infer2{(a, b) \in A \times B}
+    \end{prooftree};
   \]
 \item equality of canonical elements:
   \[
@@ -209,34 +216,777 @@ to the propositional approach and the set-theoretical approach, making what
 is commonly known as the \emph{formulas-as-types} or \emph{propositions-as-sets}
 interpretations (for intuitionistic logic).
 
-\todo[inline,noline,backgroundcolor=green!40]{\emph{Programming} in MLTT!}
-\todo[inline,noline,backgroundcolor=green!40]{dependent types}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Untyped Lambda Calculus}
+\label{sec:unty-lambda}
 
-\textbf{Dependent types references}
+Since in the Proust application that we present in \S\ref{ch:proust}
+we will build a small proof assistant to verify proofs based on
+untyped lambda calculus, we will spend some space here to rigorously
+introduce some basic notions of this formalism. The simply typed version
+is not much more complicated and we will try to cover it briefly in
+the next section, in the context of dependent types.
+
+This short presentation follows \cite[\S5]{tapl}. Much details, along
+with its connection to propositional logic, can be found in
+\cite{ch}.
+
+Therefore, the grammar of the untyped lambda calculus can be described
+in BNF as below:
+\[
+  t ::= x \mid \lambda x . t \mid t t,
+\]
+meaning, respectively, variables, lambda abstractions and applications.
+
+Two keywords are essential at this point:
 \begin{itemize}
-\item Rijke, Introduction to HoTT:
-  \begin{itemize}
-  \item L1: Dependent Type Theory;
-  \item L2: Dependent Function Types and $ \NN $;
-  \item L3: Inductive Types and the Universe;
-  \item L4: Identity Types (just to make the connection with homotopy);
-  \end{itemize}
-\item The HoTT Book:
-  \begin{itemize}
-  \item 1.1: Type Theory vs.\ Set Theory;
-  \item 1.2: Function Types;
-  \item 1.3: Universes and Families;
-  \item 1.4: Dependent Function Types ($ \Pi $)
-  \end{itemize}
-\item McBride --- The View from Left: \S 2: Dependent type theory for
-  functional programming;
-\item PMLTT:
-  \begin{itemize}
-  \item III.19: Types;
-  \item III.20: Defining sets in terms of types;
-  \item IV.21: Some small examples;
-  \end{itemize}
+\item \emph{metavariables} are the variables that are abstracted.
+  So for example, in the expression $ \lambda x . x^2 $, $ x $ is
+  a metavariable, since it can be renamed (consistently) without
+  losing any meaning of the term. That is, $ \lambda x . x^2 $ is
+  the same term as $ \lambda y . y^2 $, for example;
+\item the \emph{scope} of variables is the region of the expression
+  where it is \emph{bound}. In the lambda term above, the variable
+  $ x $ is bound in the whole body of the expression, $ \lambda x $
+  being the actual binder. But in the term
+  $ \lambda x . \lambda y . x \cdot y $, $ x $ is bound
+  in both the interior and the exterior lambda, while $ y $ is bound
+  only in the interior expression. Finally, in the term
+  $ \lambda x . xy $, $ y $ is free.
+
+  A term that has no free variables is called a \emph{combinator}.
+  The simplest example is the \emph{identity function},
+  $ \lambda x . x $.
 \end{itemize}
+
+We should also note that lambda application \emph{associates to the left}.
+Hence, for example, in the expression:
+\[
+  (\lambda x . \lambda y . xy)ab,
+\]
+we first bind $ x $ to $ a $.
+
+Although seemingly simple, untyped lambda calculus can be used
+to express some essential programming features, such as Booleans,
+numerals and branching expressions. They are usually called with
+A.\ Church's name as a prefix, i.e. \emph{Church Booleans, Church %
+  numerals} and (less common) \emph{Church branching}.
+
+For this purpose, we introduce:
+\begin{align*}
+  \texttt{true} &= \lambda t . \lambda f . t \\
+  \texttt{false} &= \lambda t . \lambda f . f.
+\end{align*}
+
+To test this, we introduce a combinator \texttt{test}, which
+is basically a branching expression. That is, let:
+\[
+  \texttt{test} = \lambda l . \lambda m . \lambda n . lmn.
+\]
+We will see how this expression reduces to $ m $ if $ l $ is
+\texttt{true} and it reduces to $ n $ if $ l $ is \texttt{false}.
+That is, we can understand the expression as:
+\[
+  \texttt{test} = \texttt{if l then m else n}.
+\]
+Here is an example computation:
+\begin{align*}
+  \texttt{test true v w} &= (\lambda l . \lambda m . \lambda n . lmn) \texttt{true} v w \\
+                         &\to (\lambda m . \lambda n . \texttt{true} m n) v w \\
+                         &\to (\lambda n . \texttt{true} v n) w \\
+                         &\to \texttt{true} v w \\
+                         &= (\lambda t . \lambda f . t) vw \\
+                         &\to (\lambda f . v) w \\
+                         &= v.
+\end{align*}
+
+More expressions can be defined, such as:
+\begin{align*}
+  \texttt{and} &= \lambda b . \lambda c . bc \texttt{false} \\
+  \texttt{pair} &= \lambda f . \lambda s . \lambda b . bfs \\
+  \texttt{first} &= \lambda p . p \texttt{true} \\
+  \texttt{second} &= \lambda p . p \texttt{false}.
+\end{align*}
+
+They are detailed at \cite[pp. 59-60]{tapl}.
+
+Finally, we reach \emph{Church numerals}. They are lambda expressions
+which \qq{act like numbers}. That is, when the numeral $ c_n $ is fed
+as an argument to a function, it makes the function apply $ n $ times.
+Here are the definitions of the first few:
+\begin{align*}
+  c_0 &= \lambda s . \lambda z . z \\
+  c_1 &= \lambda s . \lambda z . s z \\
+  c_2 &= \lambda s . \lambda z . s (s z) \\
+  c_3 &= \lambda s . \lambda z . s (s (s z))
+\end{align*}
+
+Notice the suggestive naming of variables, $ z $ reminding of zero
+and $ s $ reminding of the successor function. Another remark is that
+$ c_0 $ is actually \texttt{false}, with its variables renamed.
+
+But we can define the successor function for Church numerals as well:
+\[
+  \texttt{succ} = \lambda n . \lambda s . \lambda z . s (n s z).
+\]
+When applied to a Church numeral $ c_p $, it will produce the expression
+of the succeeding Church numeral $ c_{p + 1} $.
+
+We won't get into any more details here, for multiple reasons. On the
+one hand, the theory is reach enough to be hard to cover it extensively
+in this dissertation, therefore pointers to literature suffice for our
+purposes. On the other hand, we will not be concerned with more technical
+results or complications in what follows, so what we presented so far
+should serve as a reasonable prerequisite. We are also convinced that
+should novelties appear, they will be easy to grasp on the go.
+As we mentioned, we will be focusing on untyped lambda calculus only in
+presenting the Proust \qq{nano prover} in \S\ref{ch:proust}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Dependent Types --- Judgments and Inference Rules}
+\label{sec:depty}
+
+In many cases, it is very useful to have \emph{dependent types}, namely
+types which, in a way, are \emph{parametrized} by other types. A particular
+illustrating example is when we want to define, say, a function that selects
+the first element of a list, but we don't want to define it separately
+for lists of integers, then for lists of strings, then for lists of floats
+etc. We just want one function that does the job regardless of the types
+of the arguments.
+
+A similar situation may be familiar from elementary mathematics. For example,
+if we have a \emph{sequence of functions}, such as:
+\[
+  f_n : \RR \to \RR, n \in \NN
+\]
+and each of the terms of the sequence is a different function, e.g.:
+\[
+  f_1(x) = \cos x, \quad f_2(x) = x^2, \quad f_3(x) = \exp(x) \dots,
+\]
+we can say that we have \emph{parametrized} the function $ f $ by
+the positive integers $ n $ which serve as the indices of the sequence.
+
+Now imagine that the indices can be of different types, e.g.\ we can
+have $ f_{a[]} $ and $ f_5 $ and $ f_{'a'} $ in the same sequence and depending
+on the case, we know how to define the function. For example:
+\begin{itemize}
+\item for any $ a \in \ZZ $, define $ f_a = a^2 - 3a + 1 $;
+\item for any vector \texttt{a[]}, define $ f_{\texttt{a[]}} $ to be the sum
+  of the elements of \texttt{a[]};
+\item for any character \texttt{c}, define $ f_{\texttt{c}} $ to be the ASCII code
+  of \texttt{c}.
+\end{itemize}
+
+What we have \qq{defined} in the toy example above is actually a
+\emph{dependent function} which has one extra argument that is not obvious.
+So to be precise, we are definining something like $ f(x, T) $
+(also written as $ f(T)(x) $ or $ f_T(x) $), where $ T $ is the type of $ x $
+and depending on this $ T $ we actually know how to compute the value
+of the function in $ x $ accordingly. Once we have a fixed type $ T $,
+the function is computed with a uniform formula for all arguments.
+So in the example above, the three rules that separate the cases for the
+types of the argument are each uniform: for \emph{any integer} we compute
+that polynomial expression, for \emph{any vector} we take the sum of
+its elements and for \emph{any character}, we take its ASCII code.
+
+While this may seem complicated and the example above may not be the most
+illuminating, we emphasize once again that dependent types are extremely
+useful for the case when we want to define functions that work in a similar
+way for various types. For example, we can modify the definitions above
+so that they do similar things regardless of the type of the argument:
+\begin{itemize}
+\item for any integer $ a \in \ZZ $, define $ f_a = a^2 - 3a + 1 $;
+\item for any vector \texttt{a[]}, define $ f_{\texttt{a[]}} $ to first compute
+  the sum of the elements in \texttt{a[]}, store it in \texttt{s}
+  and then compute $ s^2 - 3s + 1 $;
+\item for any character \texttt{c}, define $ f_{\texttt{c}} $ to first take the
+  ASCII code of \texttt{c}, store it in $ c $, then compute
+  $ c^2 - 3c + 1 $.
+\end{itemize}
+
+In such a situation, the function acts \emph{as if} it is the polynomial
+$ X^2 - 3X + 1 $, computed \emph{regardless} of the types of its arguments
+(integers, vectors, characters). That is, we have implemented a sort of
+\qq{general polynomial} whose definition is \emph{dependent} on the type
+of the argument, but the overall look is \qq{the same}.
+
+\vspace{0.3cm}
+
+These are the basic ideas which can also serve as motivations for what
+follows. We now go into a more rigorous presentation, following
+\cite{rijke}.
+
+As it was seen in the theory developed by Martin-L\"{o}f, it is fundamental
+to specify what kinds of types, terms and judgments are primitive to
+one theory. In the case of the dependent type theory, we start with
+four primitive judgments:
+\begin{enumerate}[(1)]
+\item $ A $ is a well formed \emph{type} in a context $ \Gamma $,
+  written as:
+  \[
+    \Gamma \vdash A \text{ type};
+  \]
+\item $ A $ and $ B $ are \emph{judgmentally equal types} in
+  a context $ \Gamma $, written as:
+  \[
+    \Gamma \vdash A \equiv B \text{ type};
+  \]
+\item $ a $ is a well-formed \emph{term} of type $ A $ in a context $ \Gamma $,
+  in symbols:
+  \[
+    \Gamma \vdash a : A;
+  \]
+\item $ a $ and $ b $ are \emph{judgmentally equal terms} of type $ A $
+  in a context $ \Gamma $, in symbols:
+  \[
+    \Gamma a \equiv b : A.
+  \]
+\end{enumerate}
+
+In all the above, a \emph{context} is just an expression which puts together
+all we assume to know so far. In symbols, it can be written as:
+\[
+  \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, x_n : A_n(x_1, \dots, x_{n-1}),
+\]
+and interpreted as being made of the statement $ x_1 : A_1 $ (where $ x_1 $
+is a well-formed term and $ A_1 $ is a well-formed type), then
+$ x_2 : A_2 $, \emph{but} knowing already information about $ x_1 $
+and so forth, until the last statement, which presupposes the previous
+$ n - 1 $ statements.
+
+Most of the times, we will be omitting the presuppositions, in the
+sense that we will just write $ x_1 : A_1, \dots, x_n : A_n $.
+However, the presuppositions are essential, since they actually mean,
+for any $ 1 \leq k \leq n $ that:
+\[
+  x_1 : A_1, x_2 : A_2, \dots, x_{k-1} \vdash A_k \text{ type},
+\]
+namely that they all make up the necessary hypothesis which allows
+us to conclude that the next item is a well-formed type (under
+this hypothesis).
+
+Another item of terminology is that we say that the context $ \Gamma $
+above \emph{declares the variables} $ x_1, \dots, x_n $. An \emph{empty
+  context} declares no variable and a type that is well-formed in an
+empty context will be called a \emph{closed type}, as well as a well-formed
+of such a type will be called a \emph{closed term}.
+
+Getting towards dependent types, we may enrich a context with one more
+declaration then obtain a judgment there, such as:
+\begin{equation}
+  \label{eq:one-dep-type}
+  \Gamma, x : A \vdash B \text{ type}.
+\end{equation}
+This means that if we enlarge the context $ \Gamma $ with the declaration
+$ x : A $ we can then judge that $ B $ is a well-formed type, which will
+be called a \emph{type dependent on $ A $}. An alternate name for $ B $
+is actually a \emph{family of types} over $ A $ (in context $ \Gamma $),
+since by changing $ x $, we can change $ A $, which in turn could change $ B $,
+but such that the judgment in~\eqref{eq:one-dep-type} remains valid.
+
+We should also point out that we have been emphasizing \emph{judgments}
+and \emph{judgmental} equalities. They contrast \emph{definitions}
+and \emph{definitional} equalities respectively in the sense that
+judgments are \emph{derived}, whereas definitions are postulated.
+
+Hence, in order to derive judgments, we need \emph{inference rules}.
+They actually say that  \emph{judgmental equality is %
+  an equivalence relation} between judgments:
+\begin{itemize}
+\item reflexivity for types:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash A \text{ type}}
+    \infer1{\Gamma \vdash A \equiv A \text{ type}}
+  \end{prooftree}
+  $;
+\item reflexivity for terms:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash a : A}
+    \infer1{\Gamma a \equiv a : A}
+  \end{prooftree}
+  $;
+\item symmetry for types:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash A \equiv A' \text{ type}}
+    \infer1{\Gamma \vdash A' \equiv A \text{ type}}
+  \end{prooftree}
+  $;
+\item symmetry for terms:
+  $ \begin{prooftree}
+    \hypo{\Gamma a \equiv a' : A}
+    \infer1{\Gamma \vdash a' \equiv a : A}
+  \end{prooftree}
+  $;
+\item transitivity for types:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash A \equiv A' \text{ type}}
+    \hypo{\Gamma \vdash A' \equiv A^{''} \text{ type}}
+    \infer2{\Gamma \vdash A \equiv A^{''} \text{ type}}
+  \end{prooftree}
+  $;
+\item transitivity for terms:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash a \equiv a' : A}
+    \hypo{\Gamma \vdash a' \equiv a^{''} : A}
+    \infer2{\Gamma \vdash a \equiv a^{''} : A}
+  \end{prooftree}
+  $.
+\end{itemize}
+
+Aside from these basic rules, we also have \emph{structural rules}, which
+can be used in more complex derivations. They specify how \emph{weakening},
+\emph{substitutions} and \emph{use of variables} are performed.
+
+\begin{enumerate}[(1)]
+\item \emph{Weakening a context:} As in the case of any deductive thinking,
+  to weaken a hypothesis means to add more information to it (as opposed
+  to strengthening it by removing information). Hence, the rule for
+  weakening a context (denoted by $ W_A $) is the following:
+  \[
+    \begin{prooftree}
+      \hypo{\Gamma \vdash A \text{ type}}
+      \hypo{\Gamma, \Delta \vdash J}
+      \infer2{\Gamma, x : A, \Delta \vdash J}
+    \end{prooftree} W_A.
+  \]
+  the explanation of the rule is as follows. We start with a context
+  $ \Gamma $ where we make a typing judgment about $ A $. Then we also
+  assume we have a larger context, comprised of $ \Gamma $ and $ \Delta $
+  in which we have a judgment $ J $ (which can be any of the four kinds
+  introduced earlier). We conclude that in a weakened context where we
+  include both $ \Gamma $ and $ \Delta $, as well as a typing judgment
+  which makes use of $ A $, namely the declaration of the \emph{fresh variable}
+  $ x : A $, we can still judge $ J $.
+\item \emph{Variable rule:} This rule basically introduces an identity
+  function for any type $ A $, denoted by $ \delta_A $:
+  \begin{equation}
+    \label{eq:variable-rule}
+    \begin{prooftree}
+      \hypo{\Gamma \vdash A \text{ type}}
+      \infer1{\Gamma, x : A \vdash x : A}
+    \end{prooftree} \delta_A.
+  \end{equation}
+  What we're seeing is that starting from a well-formed type, the judgment
+  of a well-formed term of that type is automatic if we enlarge the
+  context to contain that term as well. The identity function basically
+  maps identically the $ x : A $ from the hypothesis (context) to the conclusion
+  (judgment).
+\item \emph{Substitution rule:} We know already that we can rename variables
+  consistently without changing anything in the judgments. This rule shows
+  that we can perform substitutions consistently and this well preserve
+  well-formedness of types, terms and judgmental equality (for types and terms):
+  \[
+    \begin{prooftree}
+      \hypo{\Gamma \vdash a : A}
+      \hypo{\Gamma, x : A, \Delta \vdash J}
+      \infer2{\Gamma, \Delta[a/x] \vdash J[a/x]}
+    \end{prooftree} S_a.
+  \]
+  This rule of substituting $ a $ for $ x $ basically says that we can safely
+  substitute $ x $ with $ a $ consistently in a context and what will happen
+  is that the substitution will propagate to the initial judgment.
+
+  The variations of this rule are for terms and types, which we write below
+  and assume they are self-explanatory, following the explanations above:
+  \[
+    \begin{prooftree}
+      \hypo{\Gamma \vdash a \equiv a' : A}
+      \hypo{\Gamma, x : A, \Delta \vdash B \text{ type}}
+      \infer2{\Gamma, \Delta[a/x] \vdash B[a/x] \equiv B[a'/x] \text{ type}}
+    \end{prooftree};
+  \]
+  \[
+    \begin{prooftree}
+      \hypo{\Gamma \vdash a \equiv a' : A}
+      \hypo{\Gamma, x : A, \Delta \vdash b : B}
+      \infer2{\Gamma, \Delta[a/x] \vdash b[a/x] \equiv b[a'/x] : B[a/x]}
+    \end{prooftree}.
+  \]
+\end{enumerate}
+
+Taking from geometry, when $ B $ is a family of types over $ A $ and we
+have some $ a : A $, we call $ B[a/x] $ \emph{the fiber} of $ B $ at
+$ a $ and sometimes denote it shorter with $ B(a) $.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dependent $ \Pi $ Types}
+
+How do we actually \qq{parametrize} a type in general by another type?
+And assume we did that. What are the well-formed terms that inhabit
+such types? We are about to find the answers to these questions:
+the types are called \emph{(dependent) function types} or
+$ \Pi $-types and their terms will be lambda abstractions.
+
+Again taking from Martin-L\"{o}f, in order to specify a type, it
+is enough to give its \emph{formation rule} (called \emph{introduction}
+by Martin-L\"{o}f) and a rule which shows how to identify identical
+types of this sort. They are, respectively, the $ \Pi $-formation
+rule and the $ \Pi $-equality rule, presented below:
+\begin{itemize}
+\item $ \Pi $ formation:
+  $ \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash B(x) \text{ type}}
+    \infer1{\Gamma \vdash \Pi_{(x : A)} B(x) \text{ type}}
+  \end{prooftree} \Pi-\text{intro}
+  $;
+\item $ \Pi $-equality:
+  $ \begin{prooftree}
+    \hypo{\Gamma : A \equiv A' \text{ type}}
+    \hypo{\Gamma, x : A \vdash B(x) \equiv B'(x) \text{ type}}
+    \infer2{\Gamma \vdash \Pi_{(x : A)} B(x) \equiv %
+      \Gamma_{(x : A')} B'(x) \text{ type}}
+  \end{prooftree} \Pi-\text{eq}
+  $.
+\end{itemize}
+
+In words, if we start with a context $ \Gamma $ and weaken it with
+a declaration of a fresh variable $ x : A $ (assumed arbitrary)
+and if in this (weakened) context we have a well-formed type
+which is denoted by $ B(x) $ precisely to emphasize that it holds for
+any $ x $, the conclusion is that we can form a type which engulfs
+this arbitrary $ x $ and the respective family $ B(x) $. This is the
+so-called \emph{product type} or $ \Pi $-type and is denoted by
+$ \Pi_{(x : A)} B(x) $. Again, we emphasize the fact that this holds
+for all $ x $ which is fixed for a particular type, but can be varied
+freely and the judgment still holds.
+
+The situation is not dissimilar to the one we explained intuitively at
+the beginning of the previous section: we have some judgment (in this case,
+the well-formedness of the type $ B(x) $) which is parametrized by
+some $ x $ in the sense that it can be different when changing $ x $,
+but what's not different is that the judgment of well-formedness
+still holds true. So basically we have a sort of a \emph{family of %
+  judgments}, that are accounted by the possible change of $ x $.
+
+This still holds true if we uniformly rename the parameter $ x $.
+That is, assuming that $ x' : A $ is a fresh variable that does not
+occur in the hypothesis $ \Gamma, x : A $ (i.e.\ $ x \notin \Gamma $
+and $ x' \neq x $), we have the $ \Pi $-renaming rule:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash B(x) \text{ type}}
+    \infer1{\Gamma \vdash \Pi_{(x : A)} B(x) \equiv %
+      \Pi_{(x' : A)} B(x') \text{ type}}
+  \end{prooftree} \Pi-x'/x.
+\]
+
+The well-formed terms that inhabit such $ \Pi $-types are special cases
+of $ \lambda $-abstractions. Their special quality consists in that they
+can produce outputs of different types, \emph{depending} (pun intended!)
+on the type of the input, but they do this in a uniform way, in the sense
+that it can be captured in an inference rule:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash b(x) : B(x)}
+    \infer1{\Gamma \vdash \lambda x.b(x) : \Pi_{(x : A)} B(x)}
+  \end{prooftree} \lambda_A.
+\]
+
+Notice how we specified everywhere that both the terms $ b $ and the
+types $ B $ \emph{depend} on the choice of $ x : A $.
+
+The term $ \lambda x . b(x) $ outputs a well-formed term of the
+product type. Intuitively, it is a general rule that can be applied
+\qq{in the same way} regardless of the types of its input and which
+can produce different types of output.
+
+For example, we are taught in elementary geometry that two plane vectors,
+understood as drawn arrows, are perpendicular if we superimpose a geometric
+tool for measuring angles and we see the indication of $ 90^\circ $.
+But then in high school, we learn that vectors are also pairs of reals
+and perpendicularity can be translated in terms of the dot product
+being null. Then in college, abstraction increases and we see that the
+same dot product can be adapted (almost identically) to functions, matrices,
+polynomials and other algebraic structures in the context of Euclidean
+vector spaces. Now we realize we know a \emph{dependent function:} the
+dot product. It is computed \qq{essentially the same} regardless of the
+type of its inputs: pairs or triples of reals, matrices, continuous
+functions, polynomials etc. The output is still a real number, so the
+output type does not change once the input type changes, but this is
+irrelevant. The basic idea is to have a uniform (rule-like) method of
+associating something functionally to an input, regardless of its type.
+
+What follows now is to give a rule which enables us to infer that two
+lambda abstractions are identical:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash b(x) \equiv b'(x) : B(x)}
+    \infer1{\Gamma \vdash \lambda x . b(x) \equiv %
+      \lambda x . b'(x) : \Pi_{(x : A)} B(x)}
+  \end{prooftree}\lambda_A-\text{eq}
+\]
+What this rule says is that if we start with identical terms (more
+precisely, \emph{pairs} of identical terms, one pair for each
+parameter $ x $), then the lambda abstractions that associates to
+the parameter $ x $ any of these terms are themselves identical.
+
+\begin{remark}\label{rk:int-ext}
+  A technical word of caution is appropriate here. Both in mathematics
+  and in philosophy, we have the complementary terms of \emph{intensional}
+  and \emph{extensional} equality or definitions. Their distinction is
+  relevant here.
+
+  We call the \emph{extension} of a concept the collection of examples
+  or items that are characterized by that concept. For example, if the
+  concept is \qq{cuteness}, all the cute objects belong to the extension
+  of that concept. Mathematically, the extension of a functional concept
+  (i.e.\ of a function) $ f : A \to B $ is the image of the function,
+  namely $ f(A) $.
+
+  The \emph{intension} of a concept is the actual definition of the concept,
+  seen in the most abstract way possible. Mathematically, the intension of a
+  functional concept (a function) $ f : A \to B $ is the actual definition
+  that makes up the function. So, say, if $ f(x) = x^2 $, the intension of
+  $ f $ is \qq{squaring the argument}.
+
+  Now, for functions, which are one of the core concepts of this work,
+  we have two kinds of equality:
+  \begin{itemize}
+  \item \emph{extensional equality}, which says that two functions
+    $ f, g : A \to B $ are equal iff $ f(x) = g(x), \forall x \in A $,
+    namely if $ f(A) = g(A) $, i.e.\ their extensions coincide (as sets).
+    This is usually called in mathematics \emph{pointwise equality}.
+  \item \emph{intensional equality}, which makes two functions as above
+    equal iff their actual definitions coincide (perhaps after algebraic
+    manipulation). In mathematics, this is usually called \emph{identity},
+    a very strong and rare relation between nontrivial objects.
+    So for example, the functions $ x \mapsto x^2 $ and
+    $ y \mapsto (y + 1 - 1)^2 $ are intensionally equal (they are also
+    extensionally equal).
+  \end{itemize}
+  In general, the two notions are not the same, although it is not easy to
+  provide counterexamples.
+
+  The point of this remark is that the rule $ \lambda_A-\text{eq} $ is an
+  item of \emph{intensional equality}, since we're assuming that the output
+  expression of the two lambda terms are the same (as it was the case of
+  $ x^2 $ and $ (y + 1 - 1)^2 $ in our example).
+
+  This distinction used to be central in the early days of type theory,
+  especially when it was infused with philosophy (more precisely, logicism).
+  But in (theoretical computer science) practice, intensional concepts are
+  usually preferred, as they provide a \qq{tighter} form of identification.
+\end{remark}
+
+Back to the $ \lambda_A-\text{eq} $ rule, we also have the variation
+which uses fresh variables. Hence, if $ x' : A $ is fresh, i.e.\
+$ x' \neq x $ and $ x' \notin \Gamma $, then we have:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash b(x) : B(x)}
+    \infer1{\Gamma \vdash \lambda x . b(x) \equiv \lambda x' b(x') : %
+      \Pi_{(x : A)} B(x)}
+  \end{prooftree}\lambda_A-x'/x.
+\]
+
+Whenever it is possible, we will still use the more common notation
+for functions, hence a \emph{dependent function}, which is a well-formed
+term of a $ \Pi $-type will be denoted either explicitly by the
+lambda notation, such as $ \lambda x . b(x) : \Pi_{(x : A)} B(x) $,
+or implicitly, by $ f : \Pi_{(x : A)} B(x) $, being understood that
+the argument of $ f $ is $ x $.
+
+The actual use of functions is contained in the \emph{evaluation rule}:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma \vdash f : \Pi_{(x : A)} B(x)}
+    \infer1{\Gamma, x : A \vdash f(x) : B(x)}
+  \end{prooftree}\dr{ev}_A.
+\]
+
+Moreover, basic conversions can be performed inside functional terms,
+both of implying that evaluation and lambda abstraction are mutually
+inverse operations:
+\begin{itemize}
+\item $ \beta $-reduction:
+  $ \begin{prooftree}
+    \hypo{\Gamma, x : A \vdash b(x) : B(x)}
+    \infer1{\Gamma, x : A \vdash (\lambda y . b(y))(x) \equiv b(x) : B(x)}
+  \end{prooftree}\beta
+  $. This shows how $ \lambda $ expressions work, in general,
+  so nothing special here.
+\item $ \eta $-conversion:
+  $ \begin{prooftree}
+    \hypo{\Gamma \vdash f : \Pi_{(x : A)} B(x)}
+    \infer1{\Gamma \vdash \lambda x . f(x) \equiv f : \Pi_{(x:A)} B(x)}
+  \end{prooftree}\eta
+  $, which says nothing else that another name for a lambda abstraction
+  of the form $ \lambda x . f(x) $ is $ f $.
+\end{itemize}
+
+Note that as in the case of regular (untyped) lambda calculus, functions of
+multiple arguments can be written as iterating lambda abstraction
+(which in turn produces terms of iterated $ \Pi $-types). As such,
+a function of two arguments $ (x, y) \in A \times B $ can be written as
+$ \lambda x . \lambda y . f(x, y) $ or simply $ \lambda xy.f(x,y) $,
+which is a term of type $ \Pi_{(x : A)} \Pi_{(y : B)} B(x, y) $.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dependent Function Types}
+
+We can obtain such types as a particular case of $ \Pi $ types.
+As such, assume $ A $ and $ B $ are both types in context $ \Gamma $.
+First we weaken $ B $ by $ A $ (i.e.\ add $ A $ to the context), then
+form the corresponding $ \Pi $-type:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma \vdash A \text{ type}}
+    \hypo{\Gamma \vdash B \text{ type}}
+    \infer2{\Gamma, x : A \vdash B \text{ type}}
+    \infer1{\Gamma \vdash \Pi_{(x : A)} B \text{ type}}
+  \end{prooftree}.
+\]
+
+What we achieve by this is that we somehow \emph{fix} the type $ A $
+in the intermediate step where we weakened the context $ \Gamma $,
+since now $ A $ (by means of all its arbitrary inhabitants $ x : A $)
+is added to the hypothesis. This means that such particular $ \Pi $
+types contain ordinary functions $ A \to B $, which is also the
+notation that we use for this \emph{function type}.
+
+It follows that all the inference rules for this type can be obtained
+as a particular case of $ \Pi $ types, so we just list them accordingly:
+\begin{itemize}
+\item $ \to $-introduction (formation):
+$ \begin{prooftree}
+  \hypo{\Gamma \vdash A \text{ type}}
+  \hypo{\Gamma \vdash B \text{ type}}
+  \infer2{\Gamma \vdash A \to B \text{ type}}
+\end{prooftree}\to-\text{intro}
+$;
+\item lambda abstraction:
+$ \begin{prooftree}
+  \hypo{\Gamma \vdash B \text{ type}}
+  \hypo{\Gamma, x : A \vdash b(x) : B}
+  \infer2{\Gamma \vdash \lambda x . b(x) : A \to B}
+\end{prooftree}\lambda
+$;
+\item evaluation:
+$ \begin{prooftree}
+  \hypo{\Gamma \vdash f : A \to B}
+  \infer1{\Gamma, x : A \vdash f(x) :B}
+\end{prooftree}\text{ev}
+$;
+\item $ \beta $-reduction:
+$ \begin{prooftree}
+  \hypo{\Gamma \vdash B \text{ type}}
+  \hypo{\Gamma, x : A \vdash b(x) : B}
+  \infer2{\Gamma, x : A \vdash (\lambda y . b(y))(x) \equiv b(x) : B}
+\end{prooftree}\beta
+$;
+\item $ \eta $-conversion:
+$ \begin{prooftree}
+  \hypo{\Gamma \vdash f : A \to B}
+  \infer1{\Gamma \vdash \lambda x . f(x) \equiv f : A \to B}
+\end{prooftree}\eta
+$.
+\end{itemize}
+
+Note that we explicitly omitted mentioning $ A $ in any of the rules
+(i.e.\ we wrote $ \lambda $ and not $ \lambda_A $ for the rule of 
+$ \lambda $-abstraction, similarly for evaluation), since as explained
+at the beginning of this section, function types are obtained precisely
+by \emph{fixing} $ A $, so it is understood.
+
+Now we can obtain the proper identity function of any type $ A $ by using
+the variable rule~\eqref{eq:variable-rule}:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma \vdash A \text{ type}}
+    \infer1{\Gamma, x : A \vdash x : A}
+    \infer1{\Gamma \vdash \dr{id}_A := \lambda x . x : A \to A}
+  \end{prooftree}.
+\]
+
+We won't be getting into more complex constructions with dependent types,
+but we only mention that function composition is now easy to define:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma \vdash A \text{ type}}
+    \hypo{\Gamma \vdash B \text{ type}}
+    \hypo{\Gamma \vdash C \text{ type}}
+    \infer3{\Gamma \vdash \dr{comp} : (B \to C) \to ((A \to B) \to (A \to C))}
+  \end{prooftree}.
+\]
+In particular, the common mathematical notation $ g \circ f $ will
+mean $ \dr{ev}(\dr{ev}(\dr{comp},g),g) $ in this context.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example: The Natural Numbers}
+
+As a closing theoretical example of this chapter, we show how the natural
+numbers can be formed as a type, using the Peano triple and the induction
+principle.
+
+Therefore, we introduce $ \NN $, the \emph{type of natural numbers}, which
+is a closed type, equipped with two special \emph{closed terms}, one for
+zero and another one, for the successor function:
+\[
+  0 : \NN, \quad S : \NN \to \NN.
+\]
+
+Next, the \emph{induction principle}:
+\[
+  \begin{prooftree}
+    \hypo{\Gamma, n : \NN \vdash P \text{ type}}
+    \hypo{\Gamma \vdash p_0 : P(0)}
+    \hypo{\Gamma \vdash p_S : \Pi_{(n : \NN)} P(n) \to P(S(n))}
+    \infer3{\Gamma \vdash \dr{ind}_{\NN} (p_0, p_S) : \Pi_{(n : \NN)} P(n)}.
+  \end{prooftree}\NN-\text{ind}.
+\]
+
+In words, this says that if we start with a type and a fixed natural $ n $
+in a certain context (understood as a set of hypotheses) such that
+in that context, the (dependent) type $ P(0) $ is inhabited by
+a term $ p_0 $ and the (dependent) function type $ P(n) \to P(S(n)) $
+is also inhabited by a term $ p_S $, then the type $ P(n) $ will
+be inhabited. As this latter type is also dependent, it could be
+read as \qq{$ P(n) $ is inhabited for all $ n : \NN $}.
+
+With these at hand, we can define \emph{addition}:
+\[
+  \dr{add} : \NN \to (\NN \to \NN)
+\]
+by induction. It means that we need to construct a function
+$ \dr{add}_0 : \NN \to \NN $ (for the base case) and another
+function for the inductive step:
+\[
+  \dr{add}_S(f) : \NN \to \NN,
+\]
+under the hypotheses $ n : \NN $ and $ f : \NN \to \NN $.
+
+This is easy: take $ \dr{add}_0 $ to be $ \dr{id}_\NN $,
+the identity function, since it adds nothing to its argument
+(actually, it does add, \emph{zero}) and then define the
+inductive step to be:
+\[
+  \dr{add}_S(f) = \lambda m . S(f(m)),
+\]
+which basically means that we are adding one to $ f $ pointwise
+(i.e.\ $ \dr{add}_S(f)(m) = (f(m) \mapsto f(m) + 1) $).
+
+We can derive this formally, but we skip the details and refer the reader
+to \cite[pp.\ 12-13]{rijke}.
+
+So what we get is a general addition function, $ \dr{add} $ which works
+as expected:
+\[
+  \dr{add}(n, m) = n + m
+\]
+and using the basic terms of type $ \NN $, we can derive:
+\[
+  0 + m \equiv m, \quad S(n) + m \equiv S(n + m).
+\]
+
+\vspace{0.3cm}
+
+We stop here with the theoretical presentation and examples, pointing
+the reader to the article \cite{mcbride} for another great reference that
+contains both excellent theoretical insight, as well as illuminating
+practical examples in functional programming.
+
+Furthermore, the implementation of most elements of Martin-L\"{o}f's type
+theory is presented in a very readable manner in \cite{pmltt}.
 
 %%% Local Variables:
 %%% mode: latex
