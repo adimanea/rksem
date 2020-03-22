@@ -1,6 +1,426 @@
 % ! TEX root = ../racket.tex
 \chapter{Pie}
 
+Pie is a language implemented in Racket meant to facilitate programming
+and theorem proving with dependent types. It is best described in the
+book \cite{typer}, which is written in a very original way, by means of
+dialogue, as a theater play, with emphasis on interaction and asking
+questions. In fact, the book is only one in a series generally titled
+\emph{The Little X}, where \emph{X} so far has been
+\emph{Schemer, Lisper, Prover, Haskeller}.
+
+In this chapter, we will present some basic syntax and features of Pie
+first and then insist on its implementation of dependent types. Most
+of the presentation will follow \cite{typer}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Basic Syntax and Features}
+
+Since Pie is written in Racket, its syntax is similar to Racket's.
+Moreover, the language is available as a Racket module, hence it can be
+installed using the Racket packet manager, \texttt{raco}. After that,
+any source code file will start with the pragma (module call)
+\texttt{\#\!\!lang pie} and it will be interpreted accordingly.
+
+Since the language is strongly typed, that is, the user must associate a
+type to each variable or function they use, all the definitions must be
+preceded either by a \texttt{claim} or a \texttt{the} statement.
+
+A \texttt{claim} statement declares the type of a function or variable
+and must precede any definition, whereas a \texttt{the} expression
+does a type annotation for variables. Simple examples follow:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(the (Pair Atom Atom)
+     (cons 'spinach 'cauliflower))
+;; declares that the expression (cons 'spinach 'cauliflower)
+;; makes a Pair of Atoms. more on these below
+
+(claim one Nat)                 ; one is of type Nat
+(define one (add1 zero))        ; zero is primitive
+(the Nat (add1 one))            ; 2 is a Nat
+\end{verbatim}
+}
+
+Two basic types that can be used are \texttt{Nat}, for positive integers,
+\texttt{Atom} for quoted variables (symbols). Then, we can use
+\emph{constructors} and \emph{type constructors}. An expression that is
+preceded by a constructor is called a \emph{value}. For example, one constructor
+of the type \texttt{Nat} is \texttt{zero}, which returns \texttt{0} and another
+one is \texttt{add1}, which is basically the successor function. So for
+example, we can obtain a value like so:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim two Nat)
+(define two
+  (add1
+    (add1 zero)))
+\end{verbatim}
+}
+
+Also, atoms are values, so the type \texttt{Atom} does not have a constructor:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim dog Atom)
+(define dog 'dog)
+\end{verbatim}
+}
+
+Then, further, we can build types using \emph{type constructors}. One example
+is the type constructor \texttt{Pair} which makes a pair of elements having
+(possibly) different types. A constructor for such a type is \texttt{cons}:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim myDogs (Pair Atom Atom))
+(define myDogs (cons 'Ricky 'Rocky))
+\end{verbatim}
+}
+
+We will meet more types and (type) constructors further, so we will explain
+them on the spot. Notice that we can also use lambda expressions, as
+throughout Racket.
+
+One last important feature which we mention here is that the type theory that
+we use is, in a sense, \emph{closed} or \emph{total}. That is, anything must
+have a type... \emph{including types!} Without going into details, we mention
+that the type of types is one all-encompassing \emph{universe}, denoted
+mathematically by $ \kal{U} $ and in Pie, by \texttt{U}. We will meet universes
+when we build $ \Pi $-types in Pie.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Induction and Dependent Types}
+
+We now are heading towards more complex features of Pie, of which
+dependent types are an essential example. But before we get there,
+we will introduce some functions which work on the basis of induction.
+We provide explicit examples instead of focusing on theoretical aspects.
+The theory between the principle of mathematical induction was
+introduced on the type of natural numbers in \S\ref{sec:nat-ind}.
+
+As such, we first introduce the Pie function \texttt{which-Nat}.
+The general syntax is:
+\[
+  \texttt{(which-Nat \ target \ base \ step)},
+\]
+which is a function that acts on \texttt{Nat} variables.
+It works as follows:
+\begin{itemize}
+\item it first checks whether \texttt{target} is \texttt{zero};
+\item if it is, the function returns the value of \texttt{base};
+\item otherwise, \texttt{target} must be some \texttt{(add1 n)},
+  for some \texttt{n}, since these are the only kinds of values of type
+  \texttt{Nat}. In this case, it returns the value of \texttt{(step n)}.
+\end{itemize}
+
+This pattern will be encountered in some other functions as well,
+so we will spend a little on explaining it better. The first argument
+(both for \texttt{which-Nat} and some other similar functions that we
+meet is, in a sense, \qq{the main argument}, since depending on its form,
+the rest happens. In the case of \texttt{Nat} values, we can only encounter
+either \texttt{zero} or \texttt{add1 n}. In the first case, the function
+returns \texttt{base}, as if we are in the base case of an inductive proof.
+In the second case, notice that if \texttt{target} has the form
+\texttt{add1 n}, then we have access to the \emph{preceding} case, \texttt{n}.
+So we also have \texttt{n} and \texttt{n + 1 = (add1 n)}. The function now
+offers the flexibility to go not just from \texttt{n} to \texttt{n + 1},
+but from \texttt{n} to \texttt{(step n)}. By abuse of language, we will still
+call this \emph{the inductive step}. As such, whenever we use \texttt{which-Nat},
+as well as the other similar functions that will appear, we want to make
+sure we know what to do in \emph{the base case} and in the \emph{inductive step}.
+In other words, we must have useful definitions both for \texttt{base}
+and for \texttt{step}.
+
+Some simple examples with \texttt{which-Nat} follow below. Notice that since
+\texttt{which-Nat} is a standard library function for Pie, we don't have
+to \texttt{claim} it.
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(which-Nat zero
+           'naught
+          (lambda (n) 'more))           ;; => 'naught
+(which-Nat 4
+           'naught
+           (lambda (n) 'more))          ;; => 'more
+(which-Nat 5
+           0
+           (lambda (n) (+ 6 n)))        ;; => 10
+\end{verbatim}
+}
+The first case is self explanatory: the \texttt{target} is exactly
+\texttt{zero}, so we just get the base case, which is \texttt{'naught}.
+
+In the second case, the \texttt{target} is not \texttt{zero}, so we
+will evaluate the \texttt{step} case. For this, we first notice that
+\texttt{4 = (add1 3)}, so \texttt{n = 3} and in this case, we get
+the value of \texttt{((lambda (n) 'more) 3)}, which is \texttt{'more}.
+Notice that in this lambda expression, the evaluation at \texttt{n = 3}
+does nothing, since the lambda associates \texttt{'more} to any argument.
+
+In the third case, however, we do have a more meaningful lambda.
+Again, \texttt{target} is not \texttt{zero}, so we get the \texttt{step}
+case. Since \texttt{5 = (add1 4)}, we get:
+\[
+  \texttt{((lambda (n) (+ 6 n)) 4) = 10}.
+\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example: \texttt{Pair} Types and functions}
+
+Let us now define a fully custom type, along with its eliminator
+and a function that acts on values of this type. Following
+\cite{typer}, we will call the type \texttt{Pear}. This is actually
+a custom pair of two natural numbers so in a way, we are redefining
+the type \texttt{(Pair Nat Nat)}. We first present the example and
+comment it afterwards:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim Pear U)                      ; claim the custom type (of universal type)
+(define Pear (Pair Nat Nat))        ; a Pear is a Pair of two Nats
+
+(claim Pear-maker U)                ; the type constructor, with the universal type
+(define Pear-maker                  ; the actual definition of the type constructor
+  (-> Nat Nat Pear))                ; it is a functional type from 2 Nats to a Pear
+
+(claim elim-Pear                    ; the type eliminator
+    (-> Pear Pear-maker Pear))      ; which takes a Pear, a Pear-maker and produces a Pear
+(define elim-Pear                   ; the definition of the eliminator
+  (lambda (pear maker)              ; which is a lambda taking a pear and a maker
+    (maker (car pear) (cdr pear)))) ; which sends the maker on the first part of pear
+                                    ; and on the second part of pear
+
+(claim pearwise+                    ; addition for Pears
+  (-> Pear Pear Pear))              ; takes two Pears and returns a third one
+(define pearwise+                   ; (a, b) + (c, d) = (a + c, b + d)
+  (lambda (x y)                     ; take the two parts (Nats)
+    (elim-Pear x                    ; split the first    (Nat)
+      (lambda (a1 d1)               ; into a1 and d1     (Nats)
+        (elim-Pear y                ; split the second   (Nat)
+          (lambda (a2 d2)           ; into a2 and d2     (Nats)
+            (cons                   ; use the Pair constructor
+              (+ a1 a2)             ; to make a Pair of their added components
+              (+ d1 d2))))))))
+\end{verbatim}
+}
+
+\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{elim-Pear}!}
+
+\vspace{0.3cm}
+
+This was an exercise in the definition of a custom type, along with its
+maker, eliminator and a function among variables of this type. We now focus
+on standard types and examine how functions on types obtained using the
+\texttt{Pair} type constructor are defined using dependent types.
+What we will be writing is already included in the standard library, but their
+breakdown and re-implementation is useful for education purposes.
+
+The basic idea is the following: as we mentioned in the section on
+dependent types (\S\ref{sec:depty}), want we want to achieve is to be able
+to define functions on variables having different types \emph{in the same way}.
+Here is how some functions on \texttt{Pairs} can be implemented:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim elim-Pair                ; "consumer" (eliminator) for Pairs
+  (Pi ((A U) (D U) (X U))       ; will be used throughout, since it's
+    (-> (Pair A D)              ; defined on product (parametrized) types
+        (-> A D X) X)))
+(define elim-Pair
+  (lambda (A D X)
+    (lambda (p f)
+      (f (car p) (cdr p)))))
+
+(claim kar                      ; replacement for car
+  (-> (Pair Nat Nat) Nat))      ; for pairs of Nats
+(define kar
+  (lambda (p)
+    (elim-Pair Nat Nat Nat p
+      (lambda (a d) a))))
+
+(claim kdr                      ; replacement for cdr
+  (-> (Pair Nat Nat Nat)))      ; for pairs of Nats
+(define kdr
+  (lambda (p)
+    (elim-Pair Nat Nat Nat p
+      (lambda (a d) d))))
+
+;; swapping elements in a (Pair Nat Atom)
+(claim swap
+  (-> (Pair Nat Atom)
+      (Pair Atom Nat)))
+(define swap
+  (lambda (p)
+    (elim-Pair Nat Atom (Pair Atom Nat) p)
+      (lambda (a d) (cons d a))))
+\end{verbatim}
+}
+
+We now explain the code above, since it contains some aspects that have not
+been met so far. First, notice that we define the eliminator for \texttt{Pair}
+types\footnotemark, but in such a way that it uses dependent types. This way,
+we use the same definition regardless of the actual types that will appear in
+the arguments by a supplementary abstraction on types.
+\footnotetext{Formally, we should say something like \texttt{(Pair X Y)},
+  where \texttt{X} and \texttt{Y} are types, since \texttt{Pair} itself is just
+  a \emph{type constructor} that takes two arguments which are types to produce
+  a type. But with this remark, we acknowledge the language abuse which we've
+  done and continue doing it.}
+
+Therefore, we first need to write that \texttt{elim-Pair} will be a \texttt{Pi}
+type that depends on three types \texttt{A : U, D : U, X : U}. Then, what it will
+actually do is to provide a function whose first argument is of type
+\texttt{Pair A D} and the second argument is another function of type
+\texttt{A -> D -> X} and finally, the output will have type \texttt{X}. The action
+will become clear in the definition that follows the \texttt{claim}.
+As such, how this works is the following:
+\begin{itemize}
+\item it first abstracts with respect to types. This is a key step in a dependent
+  type, since as we mentioned, it must work on various types of arguments that
+  it is fed and this is the place where the types of those arguments are made
+  explicit;
+\item then, the action is another abstraction, this time on two arguments, one
+  being a function \texttt{f} and a pair \texttt{p}. How it works is that it splits
+  the \texttt{p} in two, using \texttt{car} and \texttt{cdr} and it applies the
+  function to both of these halves. Its use will become even more transparent
+  in the examples that follow.
+\end{itemize}
+
+Then we implement \texttt{kar}, which mimics the behaviour of \texttt{car}
+for \texttt{(Pair Nat Nat)} arguments, i.e.\ it returns the first part.
+After \texttt{claim}ing its type, which is precisely \texttt{(Pair Nat Nat) -> Nat},
+we \texttt{define} it as follows:
+\begin{itemize}
+\item we use \texttt{elim-Pair}, since it is the only \qq{consumer} of \texttt{Pair}
+  types;
+\item the first arguments of \texttt{elim-Pair} are the actual types with respect
+  to which we do the first abstraction (i.e.\ the types that enter in \texttt{Pi}).
+  In this case, all three of them are \texttt{Nat};
+\item lastly, the non-type argument \texttt{p}, which is exactly the pair of
+  naturals. How this works is to provide a function which, given two arguments, it
+  returns the first one.
+\end{itemize}
+
+Let's do a bit of \qq{pattern-matching} in this definition, namely let's match
+the concrete arguments in \texttt{kar}'s definition with the generic arguments
+in the definition of \texttt{elim-Pair}. First of all, as we mentioned,
+\texttt{A = D = X = Nat}. Then, the second argument of \texttt{elim-Pair}
+must be of type \texttt{(Pair Nat Nat) -> (Nat -> Nat -> Nat) -> Nat}.
+That is, it must accept a pair of \texttt{Nat}s and a function of two
+\texttt{Nat} arguments that produces a third \texttt{Nat} and finally it
+must return a \texttt{Nat}. But this becomes irrelevant in this case, since
+in \texttt{kar} we are abstracting by some generic \texttt{p} and make it
+act like a \texttt{lambda} that returns the first half of its arguments.
+That is, what \texttt{kar} is doing (after mentioning the types) is the assignment:
+\[
+  \texttt{p} \mapsto \left( (a, d) \mapsto a \right).
+\]
+It is as if \texttt{p} gets renamed to \texttt{first}.
+
+Similarly, \texttt{kdr} is a sort of \texttt{second}.
+
+\todo[inline,noline,backgroundcolor=green!40]{clarify the non-type argument of \texttt{elim-Pair}
+  (too many functions...)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example: \texttt{List} Types and Functions}
+
+A sort of generalization of \texttt{Pair} types are \emph{lists}.
+We now show how some functions on \texttt{List} types\footnotemark can
+be implemented using dependent types.
+\footnotetext{Again, as in the case of \texttt{Pair}, \texttt{List} is a
+  \emph{type constructor}, so formally it is not correct to say
+  \qq{\texttt{List} type}. It should be something like \texttt{List X} type,
+  where \texttt{X} is a type. But as in the case of \texttt{Pair}s, we
+  acknowledge and keep using this expression.}
+
+First, the prerequisites. \texttt{(List X)} is a type, where \texttt{X}
+is a type and this type has two \emph{constructors}:
+\begin{itemize}
+\item \texttt{nil}, which makes an empty list (similar to \texttt{zero}
+  for \texttt{Nat});
+\item \texttt{::}, which is the equivalent of \texttt{cons} for pairs.
+\end{itemize}
+
+Also as in the case of \texttt{Nat}, we have a special \qq{inductive}
+function \texttt{rec-list}. Its general syntax is:
+\[
+  \texttt{(rec-List target base step)}
+\]
+and this produces an element of type \texttt{X} when:
+\begin{itemize}
+\item \texttt{target} is of type \texttt{(List E)};
+\item \texttt{base} is of type \texttt{X};
+\item \texttt{step} is of type \texttt{(-> E (List E) X X)}.
+\end{itemize}
+
+How this works is similar to \texttt{which-Nat} with a twist:
+\begin{itemize}
+\item if \texttt{target} is \texttt{nil}, it returns the value
+  of \texttt{base};
+\item if \texttt{target} is some \texttt{(:: elt rest)},
+  where \texttt{elt} is a variable and \texttt{rest} is a list, it
+  recursively calls itself with \texttt{target} replaced by \texttt{rest}.
+\end{itemize}
+
+Here is a use case, where we redefine the length function for a list. We will
+use again \texttt{Pi} types, since we want it to work for lists of elements
+of any type.
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim length                       ; length of a list
+  (Pi ((E U))                       ; using dependent types
+    (-> (List E) Nat)))             ; takes a list and returns a natural
+(define length
+  (lambda (E)                       ; abstract the type
+    (lambda (es)                    ; abstract the argument
+      (rec-List es                  ; make the argument to be the target
+                0
+                step-length E))))   ; we need the "inductive step"
+
+;; "inductive step" for computing length of a list
+(claim step-length
+  (Pi ((E U))                       ; a dependent function
+    (-> E (List E) Nat Nat)))       ; takes a type, a list of elements of that type,
+                                    ; a Nat and returns a Nat
+(define step-length
+  (lambda (E)                       ; abstract the parameter type
+    (lambda (e es length-es)        ; the rest of the arguments
+      (add1 length-es))))
+
+;; special version for Atom
+(claim length-Atom
+  (-> (List Atom) Nat))
+(define length-atom
+  (length Atom))
+\end{verbatim}
+}
+\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{Pi}! it seems the only argument of \texttt{length} is the abstracted type?!}
+\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{rec-Nat} and \texttt{rec-List}!}
+
+
+
 
 %%% Local Variables:
 %%% mode: latex
