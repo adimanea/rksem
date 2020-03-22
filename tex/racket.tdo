@@ -1,3 +1,7 @@
 \contentsline {todo}{change bib style to go well with websites}{4}{section*.1}% 
 \contentsline {todo}{skip it and explain directly on code?}{21}{section*.4}% 
 \contentsline {todo}{is it OK?}{30}{section*.5}% 
+\contentsline {todo}{clarify \texttt {elim-Pear}!}{35}{section*.6}% 
+\contentsline {todo}{clarify the non-type argument of \texttt {elim-Pair} (too many functions...)}{37}{section*.7}% 
+\contentsline {todo}{clarify \texttt {Pi}! it seems the only argument of \texttt {length} is the abstracted type?!}{38}{section*.8}% 
+\contentsline {todo}{clarify \texttt {rec-Nat} and \texttt {rec-List}!}{38}{section*.9}% 
