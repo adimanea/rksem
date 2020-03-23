@@ -3,6 +3,16 @@
 
 #lang pie
 
+;; inductive step for increasing length
+(claim step-length
+	   (Pi ((E U))
+		   (-> E (List E) Nat
+			   Nat)))
+(define step-length
+  (lambda (E)
+	(lambda (e es length-es)
+	  (add1 length-es))))
+
 ;; the length of a list
 (claim length
 	   (Pi ((E U))
@@ -13,17 +23,7 @@
 	(lambda (es)
 	  (rec-List es
 				0
-				step-length E))))   ; we need the inductive step
-
-;; inductive step for increasing length
-(claim step-length
-	   (Pi ((E U))
-		   (-> E (List E) Nat
-			   Nat)))
-(define step-length
-  (lambda (E)
-	(lambda (e es length-es)
-	  (add1 length-es))))
+				(step-length E)))))   ; we need the inductive step
 
 ;; special version for Atoms
 (claim length-Atom
