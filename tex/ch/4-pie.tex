@@ -20,7 +20,7 @@ Since Pie is written in Racket, its syntax is similar to Racket's.
 Moreover, the language is available as a Racket module, hence it can be
 installed using the Racket packet manager, \texttt{raco}. After that,
 any source code file will start with the pragma (module call)
-\texttt{\#\!\!lang pie} and it will be interpreted accordingly.
+\texttt{\#lang pie} and it will be interpreted accordingly.
 
 Since the language is strongly typed, that is, the user must associate a
 type to each variable or function they use, all the definitions must be
@@ -101,6 +101,7 @@ when we build $ \Pi $-types in Pie.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Induction and Dependent Types}
+\label{sec:induction-pi}
 
 We now are heading towards more complex features of Pie, of which
 dependent types are an essential example. But before we get there,
@@ -180,6 +181,7 @@ case. Since \texttt{5 = (add1 4)}, we get:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example: \texttt{Pair} Types and functions}
+\label{sec:pair-ex}
 
 Let us now define a fully custom type, along with its eliminator
 and a function that acts on values of this type. Following
@@ -195,15 +197,15 @@ comment it afterwards:
 (claim Pear U)                      ; claim the custom type (of universal type)
 (define Pear (Pair Nat Nat))        ; a Pear is a Pair of two Nats
 
-(claim Pear-maker U)                ; the type constructor, with the universal type
-(define Pear-maker                  ; the actual definition of the type constructor
-  (-> Nat Nat Pear))                ; it is a functional type from 2 Nats to a Pear
+(claim Pear-maker U)                ; type constructor, with the universal type
+(define Pear-maker                  ; actual definition of the type constructor
+  (-> Nat Nat Pear))                ; a functional type from 2 Nats to a Pear
 
 (claim elim-Pear                    ; the type eliminator
-    (-> Pear Pear-maker Pear))      ; which takes a Pear, a Pear-maker and produces a Pear
+    (-> Pear Pear-maker Pear))      ; takes a (Pear, Pear-maker), gives a Pear
 (define elim-Pear                   ; the definition of the eliminator
-  (lambda (pear maker)              ; which is a lambda taking a pear and a maker
-    (maker (car pear) (cdr pear)))) ; which sends the maker on the first part of pear
+  (lambda (pear maker)              ; is a lambda taking a pear and a maker
+    (maker (car pear) (cdr pear)))) ; sends the maker on the first part of pear
                                     ; and on the second part of pear
 
 (claim pearwise+                    ; addition for Pears
@@ -220,7 +222,139 @@ comment it afterwards:
 \end{verbatim}
 }
 
-\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{elim-Pear}!}
+Since all the definitions are actually lambda expressions, it could seem
+difficult to test some examples. Here is a use case, which we will comment
+afterwards:
+{
+  \small
+\begin{verbatim}
+(elim-Pear (cons 3 17)
+           (lambda (a d) (cons d a)))
+;; is the same as
+((lambda (pear maker)
+    (maker (car pear) (cdr pear)))
+  (cons 3 17)
+  (lambda (a d) (cons d a)))
+;; which finally reduces to
+(cons 17 3)
+\end{verbatim}
+}
+
+The explanations are something like this. Note that in order to correctly
+evaluate \texttt{elim-Pear}, its arguments must be a \texttt{Pear}
+(that is, a \qq{custom} \texttt{Pair}), which we must write using a
+\texttt{cons}, to make sure the output has the required type. Otherwise,
+for example, just using \texttt{(3 17)} or some other seemingly clear
+pair would not do. The second argument must be a \texttt{Pear-maker},
+which we can see in the code that it is a function that takes two
+\texttt{Nat}s and returns a \texttt{Pear}. In our case, it is a
+lambda expression with two arguments which uses \texttt{cons} to make sure
+it returns a \texttt{Pear}.
+
+Then we actually evaluate the lambda expression which is equivalent to
+the \texttt{elim-Pear} expression. The outermost lambda uses two arguments,
+\texttt{pear} and \texttt{maker}, so when evaluating, they bind as:
+\begin{itemize}
+\item \texttt{pear} becomes \texttt{(cons 3 17)};
+\item \texttt{maker} becomes \texttt{(lambda (a d) (cons d a))}, which
+  is just a flip function for \texttt{Pair}s (or \texttt{Pear}s).
+\end{itemize}
+Looking at the outermost lambda again, we see that what it does to its arguments
+is to apply the \texttt{maker} to the halves of the \texttt{pear}. In our case,
+taking the \texttt{car} of \texttt{pear} returns \texttt{3} and its \texttt{cdr}
+is \texttt{17}. So we just \texttt{cons} them in reverse order and get
+\texttt{(17 3)}. In fact, the answer of the REPL is:
+\[
+  \texttt{(the (Pair Nat Nat) (cons 17 3))},
+\]
+which shows the types explicitly.
+
+To make matters more difficult, but also more verbose and more in the DIY
+style we are taking here, if one tries to use the \texttt{pearwise+} sum,
+one finds surprisingly that the \texttt{+} function is not defined! Therefore,
+addition is not a part of the standard library of Pie. This makes sense in a way,
+since using dependent types enforces custom definitions either in a uniform
+way using \texttt{Pi} or special definitions for each type. In this case,
+in order to define addition for the type \texttt{Nat}, which we need for the
+components of a \texttt{Pear = (Pair Nat Nat)} type, we also require another
+function which behaves somewhat inductively. This is \texttt{iter-Nat},
+whose general syntax is similar to what we will be seeing more of in
+\S\ref{sec:induction-pi} and \S\ref{sec:inductive-ex}. That is, we have:
+\[
+  \texttt{(iter-Nat target base step)},
+\]
+which works as follows:
+\begin{itemize}
+\item if the value of \texttt{target} is \texttt{zero}, it returns
+  the value of \texttt{base};
+\item otherwise, if \texttt{target} is some \texttt{(add1 n)},
+  the value of the expression is:
+  \[
+    \texttt{(step (iter-Nat n base step))}.
+  \]
+  In other words, it performs the \qq{inductive processing step}
+  on the previous case.
+\end{itemize}
+
+Having this at hand, we can define addition for the \texttt{Nat} type.
+\begin{figure}[!htbp]
+  
+  {
+    \small
+\begin{verbatim}
+#lang pie
+
+;; first, define the inductive step
+(claim step+ (-> Nat Nat))              ; it processes one Nat and returns another
+(define step+                           ; just add one,
+  (lambda (+n-1)                        ; but we renamed the argument to +n-1
+    (add1 +n-1)))                       ; we are using the previous case
+
+;; now the addition
+(claim + (-> Nat Nat Nat))              ; addition for the type Nat
+(define +                               
+  (lambda (n j)
+    (iter-Nat n j step+)))
+\end{verbatim}
+  }
+  \caption{Addition for the \texttt{Nat} type}
+  \label{fig:plus-nat}
+\end{figure}
+
+Two remarks are in order at this point. First, a general Racket remark,
+which in fact applies to most Lisps: variable names can use whatever
+symbols the user wishes, including \texttt{+, -, /, ?} etc. In fact,
+there are even common practices with them, for example, calling a predicate
+(a function that returns a Boolean) with a question mark at the end. We have
+met this in \S\ref{ch:proust} for symbol parsing with \texttt{symbol?}.
+
+The second remark is about the actual definition of \texttt{+}. Notice that
+it is a two-argument function which just calls \texttt{iter-Nat}. By
+definition, if the first argument \texttt{n} is \texttt{zero}, we just get
+\texttt{j} (the second argument), since $ 0 + j = j $. Otherwise, we use
+the \qq{inductive step} \texttt{step+} to keep adding \texttt{1}. Notice,
+moreover, that by the definition of \texttt{iter-Nat}, whenever we use the
+\texttt{step} case, the \texttt{target} argument decreases. So it means that
+\texttt{step+} will be called exactly \texttt{n} times, for \texttt{n, n-1,}
+down to \texttt{1}.
+
+We should also add the remark that no other \texttt{Nat} is defined except
+for \texttt{zero} by default. So any addition we want to test must be
+preceded by the \texttt{claim} and the definition of the numbers,
+such as:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim three Nat)
+(define three
+  (add1 (add1 (add1 zero))))
+
+;; now test addition
+(+ (add1 zero) three)           ; => (the Nat 4)
+\end{verbatim}
+}
 
 \vspace{0.3cm}
 
@@ -263,14 +397,14 @@ Here is how some functions on \texttt{Pairs} can be implemented:
     (elim-Pair Nat Nat Nat p
       (lambda (a d) d))))
 
-;; swapping elements in a (Pair Nat Atom)
-(claim swap
-  (-> (Pair Nat Atom)
-      (Pair Atom Nat)))
-(define swap
-  (lambda (p)
-    (elim-Pair Nat Atom (Pair Atom Nat) p)
-      (lambda (a d) (cons d a))))
+;; flipping two elements of a Pair
+(claim flip
+  (Pi ((A U) (D U))
+    (-> (Pair A D) (Pair D A))))
+(define flip
+  (lambda (A D)                 ; abstract types first
+    (lambda (p)                 ; then the actual pair
+      (cons (cdr p) (car p))))) ; flip its halves
 \end{verbatim}
 }
 
@@ -337,11 +471,32 @@ It is as if \texttt{p} gets renamed to \texttt{first}.
 
 Similarly, \texttt{kdr} is a sort of \texttt{second}.
 
-\todo[inline,noline,backgroundcolor=green!40]{clarify the non-type argument of \texttt{elim-Pair}
-  (too many functions...)}
+A very similar example was the custom \texttt{elim-Pear} function we defined
+and used in \S\ref{sec:pair-ex}.
+
+Now to test the \texttt{flip} function, we need to call it accordingly.
+For example, we can first make it a particular flip function for certain
+types:
+\[
+  \texttt{(flip Nat Atom)}
+\]
+is just the function that requires a \texttt{(Pair Nat Atom)} argument
+which it binds to \texttt{p} and is then:
+\[
+  \texttt{(lambda (p) (cons (cdr p) (car p)))}.
+\]
+A particular example is:
+\[
+  \texttt{((flip Nat Atom) (cons 17 'apple))},
+\]
+which replies with:
+\[
+  \texttt{(the (Pair Atom Nat) (cons 'apple 17))}.
+\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example: \texttt{List} Types and Functions}
+\label{sec:inductive-ex}
 
 A sort of generalization of \texttt{Pair} types are \emph{lists}.
 We now show how some functions on \texttt{List} types\footnotemark can
@@ -416,10 +571,109 @@ of any type.
   (length Atom))
 \end{verbatim}
 }
-\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{Pi}! it seems the only argument of \texttt{length} is the abstracted type?!}
-\todo[inline,noline,backgroundcolor=green!40]{clarify \texttt{rec-Nat} and \texttt{rec-List}!}
 
+Since \texttt{length} abstracts on the type first and then the list,
+a test should be written like:
+\[
+  \texttt{(length Nat (:: 1 (:: 2 (:: 3 nil))))} \quad \texttt{; => (the Nat 3)}
+\]
 
+We spend some space here to detail the \texttt{rec-List} function, but before doing
+that, we go a little back to its simpler version, \texttt{rec-Nat}, for arguments
+of type \texttt{Nat}. The general syntax follows the pattern we've seen so far:
+\[
+  \texttt{(rec-Nat target base step)}
+\]
+and also as before, when the value of \texttt{target} is \texttt{zero},
+we get the value of \texttt{base}. For the \qq{inductive step}, assume
+the value of \texttt{target} is some \texttt{(add1 n)}. Then \texttt{step} must
+be a function of two arguments, of which the first will be bound to \texttt{n}
+and the second will be bound to a recursive call of the same \texttt{rec-Nat}
+expression, with \texttt{target} replaced by \texttt{n}.
+
+Example:
+{
+  \small
+\begin{verbatim}
+(rec-Nat 
+  (add1 zero)                   ; target, so n = zero, but target = 1
+  0                             ; base
+  (lambda (n-1 almost)          ; step (two-argument function)
+    (add1 (add1 almost))))
+
+;; first, using rec-Nat definition, reduces to:
+((lambda (n-1 almost)
+    (add1 (add1 almost)))
+  zero
+  (rec-Nat zero                 ; recursive call with target = 0
+    0                           ; same base case
+    (lambda (n-1 almost)        ; same step function
+      (add1 (add1 almost)))))
+
+;; then using lambda rules of computation reduces to:
+(add1 (add1
+        (rec-Nat zero
+                 0
+                 (lambda (n-1 almost)
+                    (add1 (add1 almost))))))
+
+;; and finally
+(add1 (add1 0))                 ; => (the Nat 2) provided 2 is claimed and defined!
+\end{verbatim}
+}
+
+A very simple and interesting application of \texttt{rec-Nat} is to define
+the function for a Gauss sum. When calling \texttt{(gauss n)}, it should
+return the sum of all the integers up to (including) $ n $, which is
+$ \dfrac{n(n-1)}{2} $. We will be using addition for the \texttt{Nat}
+type, defined in \ref{fig:plus-nat}.
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+;; the inductive step
+(claim step-gauss
+  (-> Nat Nat Nat))
+(define step-gauss
+  (lambda (n-1 gauss-n-1)
+    (+ (add1 n-1) gauss-n-1)))
+
+;; now the Gauss function
+(claim gauss
+  (-> Nat Nat))
+(define gauss
+  (lambda (n)
+    (rec-Nat n
+      0
+      step-gauss)))
+\end{verbatim}
+}
+
+\vspace{0.3cm}
+
+Now the explanation for \texttt{rec-List} is similar to the \texttt{rec-Nat} case,
+with the appropriate \qq{translations}:
+\begin{itemize}
+\item \texttt{zero} is replaced by \texttt{nil};
+\item \texttt{add1} is \texttt{::}.
+\end{itemize}
+
+For typing, it follows that the eliminator \texttt{(rec-List target base step)}
+has type \texttt{X} when:
+\begin{itemize}
+\item \texttt{target} has type \texttt{(List E)} (since it will be \qq{decomposed});
+\item \texttt{base} has type \texttt{X} (since it gets returned in the base case);
+\item \texttt{step} has type \texttt{(-> E (List E) X X)}, which should be
+  parsed as \texttt{(E, (List E) -> X) -> X}. This is because \texttt{step} should
+  be a two-argument function, first of which being the \texttt{List E} of \texttt{target}
+  with an element stripped off and the second argument should be the entire
+  \texttt{rec-List} expression, called with the modified \texttt{target}.
+\end{itemize}
+
+Now the innards of \texttt{length} should be transparent: it uses \texttt{rec-List}
+to increase the length of the list by one, while popping out elements
+from it (the \texttt{target} argument).
 
 
 %%% Local Variables:
