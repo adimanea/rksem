@@ -1,11 +1,15 @@
 % ! TEX root = ../racket.tex
 \chapter{Proust}
 \label{ch:proust}
+\index{Racket}
+\index{Racket!modules}
 
 This chapter will provide an example of a great use of Racket to craft
 a \qq{nano proof assistant}, called Proust. The presentation closely
 follows \cite{proust} and it will contain further clarifications as
-needed.
+needed. For a very basic Racket introduction, we have added in the
+Appendix some special syntactic features and we also point the reader
+to the excellent official documentation (\cite{racket}).
 
 As the author mentions, the article is intended as a DIY approach
 for a simple proof assistant (in fact, the name derives from a weird
@@ -35,6 +39,8 @@ define custom syntax for explicit type annotations and functional types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Grammar and Basic Parsing}
+\index{Racket!structures}
+\index{Racket!structures!transparency}
 
 First, we specify the language that we will use to make proof terms,
 which will be a mix of untyped lambda calculus and simple and function
@@ -105,10 +111,15 @@ that is a legal \texttt{expr}.
     [else (error 'parse "bad syntax: ~a" s)]))
 \end{verbatim}
 }
+\index{Racket!quote}
+\index{Racket!unquote}
+\index{Racket!quasiquote}
+\index{Racket!unqoute!splice}
 
 Notice the very clever use of the quoting and unquoting (including splice)
-mechanism in the definition of \texttt{parse-expr}, as well as the square bracket
-delimitation of the matching cases. The quote for the patterns ensures that
+mechanism (detailed in \ref{ch:a-racket}) in the definition of
+\texttt{parse-expr}, as well as the square bracket delimitation of the matching
+cases. The quote for the patterns ensures that
 we are searching for expressions that are either (literally) \texttt{(lambda ...)}
 or \texttt{(... ...)}, but inside the quoting we actually want to see
 what's there, so we evaluate the components using the unquote.
@@ -123,6 +134,7 @@ Most of the syntax should be clear and it is also accompanied by
 comments which should ease understanding. The only new piece of syntax
 which we comment on is the \emph{ellipse} (\texttt{...}), which is used
 to match anything that follows (\qq{the rest}).
+\index{Racket!ellipse}
 
 Similarly, we parse type expressions:
 {
@@ -186,6 +198,7 @@ only indicate \cite{contract} for further information. Also, for
 (judgments in) contexts, we refer the reader to our \S\ref{sec:depty},
 where we see that a context $ \Gamma $ is basically made of lists of
 typed variable declarations of the form $ x : A $.
+\index{Racket!contract}
 
 Now, given the fact that a context is a list of a symbol and a type,
 we can \texttt{pretty-print} it as well using the function:
@@ -267,6 +280,7 @@ Then the function that tries to make a type inference.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basic Testing}
+\index{Racket!testing}
 
 Now we can define a function that checks some basic proofs like so:
 {
@@ -326,16 +340,12 @@ we have:
 {
   \small
 \begin{verbatim}
-;; c1 = lambda sz . sz : ((A -> B) -> (A -> B))
+;; c1 = lambda sz . sz : N -> N
 (check-expect
-  (check-proof '((lambda s => (lambda z => (s z))) : ((A -> B) -> (A -> B))))
-    true)
+  (check-proof '((lambda s => (lambda z => (s z))) : (N -> N))))
 (test)                  ;; => All 1 test passed.
 \end{verbatim}
 }
-
-\todo[inline,noline,backgroundcolor=green!40]{is it OK?}
-
 
 
 %%% Local Variables:

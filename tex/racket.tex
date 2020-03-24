@@ -32,16 +32,18 @@
 \pagestyle{plain} % restore page numbering
 
 % TODOs
-\addcontentsline{toc}{chapter}{\protect\numberline{}TO ADD/CLARIFY}
-\listoftodos[TO ADD/CLARIFY]
+% \addcontentsline{toc}{chapter}{\protect\numberline{}TO ADD/CLARIFY}
+% \listoftodos[TO ADD/CLARIFY]
 
 \addcontentsline{toc}{chapter}{\protect\numberline{}Introduction and Motivation}
 \include{ch/0-intro}
 
 \include{ch/1-mltt}
-\include{ch/2-rkt}
 \include{ch/3-proust}
 \include{ch/4-pie}
+
+\addcontentsline{toc}{chapter}{\protect\numberline{}Appendix: Basic Racket Syntax}
+\include{ch/a1-racket}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +55,7 @@
 % BIBLIOGRAPHY
 \addcontentsline{toc}{chapter}{\protect\numberline{}References}
 \bibliography{racket.bib}
-\bibliographystyle{alpha}
+\bibliographystyle{plain}
 % \nocite{*}
 
 \end{document}

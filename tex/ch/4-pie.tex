@@ -21,10 +21,14 @@ Moreover, the language is available as a Racket module, hence it can be
 installed using the Racket packet manager, \texttt{raco}. After that,
 any source code file will start with the pragma (module call)
 \texttt{\#lang pie} and it will be interpreted accordingly.
+\index{Pie!\texttt{raco} module}
 
 Since the language is strongly typed, that is, the user must associate a
 type to each variable or function they use, all the definitions must be
 preceded either by a \texttt{claim} or a \texttt{the} statement.
+\index{Pie!\texttt{claim}}
+\index{Pie!\texttt{the}}
+\index{Pie!\texttt{define}}
 
 A \texttt{claim} statement declares the type of a function or variable
 and must precede any definition, whereas a \texttt{the} expression
@@ -44,6 +48,9 @@ does a type annotation for variables. Simple examples follow:
 (the Nat (add1 one))            ; 2 is a Nat
 \end{verbatim}
 }
+
+\index{Pie!types!\texttt{Nat}}
+\index{Pie!types!\texttt{Atom}}
 
 Two basic types that can be used are \texttt{Nat}, for positive integers,
 \texttt{Atom} for quoted variables (symbols). Then, we can use
@@ -98,6 +105,7 @@ have a type... \emph{including types!} Without going into details, we mention
 that the type of types is one all-encompassing \emph{universe}, denoted
 mathematically by $ \kal{U} $ and in Pie, by \texttt{U}. We will meet universes
 when we build $ \Pi $-types in Pie.
+\index{Pie!types!\texttt{U} (universe)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Induction and Dependent Types}
@@ -110,6 +118,7 @@ We provide explicit examples instead of focusing on theoretical aspects.
 The theory between the principle of mathematical induction was
 introduced on the type of natural numbers in \S\ref{sec:nat-ind}.
 
+\index{Pie!induction!\texttt{which-Nat}}
 As such, we first introduce the Pie function \texttt{which-Nat}.
 The general syntax is:
 \[
@@ -182,6 +191,7 @@ case. Since \texttt{5 = (add1 4)}, we get:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example: \texttt{Pair} Types and functions}
 \label{sec:pair-ex}
+\index{Pie!types!\texttt{Pair}}
 
 Let us now define a fully custom type, along with its eliminator
 and a function that acts on values of this type. Following
@@ -239,6 +249,8 @@ afterwards:
 (cons 17 3)
 \end{verbatim}
 }
+\index{Pie!types!constructor}
+\index{Pie!types!eliminator}
 
 The explanations are something like this. Note that in order to correctly
 evaluate \texttt{elim-Pear}, its arguments must be a \texttt{Pear}
@@ -320,6 +332,8 @@ Having this at hand, we can define addition for the \texttt{Nat} type.
   \caption{Addition for the \texttt{Nat} type}
   \label{fig:plus-nat}
 \end{figure}
+
+\index{Pie!induction!\texttt{iter-Nat}}
 
 Two remarks are in order at this point. First, a general Racket remark,
 which in fact applies to most Lisps: variable names can use whatever
@@ -497,6 +511,8 @@ which replies with:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example: \texttt{List} Types and Functions}
 \label{sec:inductive-ex}
+\index{Pie!types!\texttt{List}}
+
 
 A sort of generalization of \texttt{Pair} types are \emph{lists}.
 We now show how some functions on \texttt{List} types\footnotemark can
@@ -578,6 +594,8 @@ a test should be written like:
   \texttt{(length Nat (:: 1 (:: 2 (:: 3 nil))))} \quad \texttt{; => (the Nat 3)}
 \]
 
+\index{Pie!induction!\texttt{rec-Nat}}
+
 We spend some space here to detail the \texttt{rec-List} function, but before doing
 that, we go a little back to its simpler version, \texttt{rec-Nat}, for arguments
 of type \texttt{Nat}. The general syntax follows the pattern we've seen so far:
@@ -651,7 +669,7 @@ type, defined in \ref{fig:plus-nat}.
 }
 
 \vspace{0.3cm}
-
+\index{Pie!induction!\texttt{rec-List}}
 Now the explanation for \texttt{rec-List} is similar to the \texttt{rec-Nat} case,
 with the appropriate \qq{translations}:
 \begin{itemize}

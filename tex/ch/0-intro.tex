@@ -5,23 +5,24 @@
 The main motivation for starting the work on this project is my interest
 in the programming language Racket. This grew from me getting acquainted
 with Emacs and Lisps, from a user standpoint at first, but then my interest
-grew and I started reading more about lambda calculus and various other
+sparked further and I started reading more about lambda calculus and various other
 related subjects. Before long, I discovered John McCarthy's pioneering
-work in trying to make lambda calculus suitable for programming languages,
-but what really captured my interest were the theoretical foundations that
+work in trying to make lambda calculus suitable for programming languages.
+But what really captivated me were the theoretical foundations that
 McCarthy's articles \cite{mccarthy60, mccarthy61, mccarthy62} set for this
 task, in a time when programming was either electrical engineering or
 pure mathematics. His work was said to have introduced a paradigm shift
 in computer science that is comparable to the non-Euclidean geometry
-revolution. The next step was discovering \cite{sicp}, which showed me how
-an apparently simple programming language such as Scheme can be used
-for wonderful constructions and various degrees of abstraction. This is
-further supported by the thorough specification and revisions that were
-published by the Scheme Community, the latest being \cite{r7rs}.
+revolution. The next step was discovering the influential \qq{SICP}
+(\cite{sicp}), which showed me how an apparently simple programming
+language such as Scheme can be used for wonderful constructions and
+various degrees of abstraction. This is further supported by the
+thorough specification and revisions that were published by the
+Scheme Community, the latest being \cite{r7rs}.
 
 Further reading in the world of Lisp dialects, I have discovered Racket,
 whose appeal was instantaneous to me, since it is so often described not
-as a general purpose programming language derived from Scheme,\footnotemark
+as a general purpose programming language derived from Scheme\footnotemark,
 but rather as a toolbox for constructing languages to solve various
 problems. In fact, as I see it, it offers the necessary items for one to
 properly understand, craft and teach languages that exhibit particular
@@ -60,14 +61,19 @@ the creators of the field, at least in terms of making its presentation
 appropriate for computer science applications, Per Martin-L\"{o}f, \cite{mltt}.
 While Martin-L\"{o}f's lectures focus more on the theoretical side of things,
 the excellent \cite{pmltt} provides enough details to see how the concepts
-can be used in actual programming.
+can be used in actual programming. However, in this work we will be presenting
+only the basics of typing judgments that are specific to Martin-L\"{o}f's
+type theory, as well as an introduction to untyped lambda calculus. Another
+theoretical feature of interest is that of dependent types, of which we sketch
+a brief introduction.
 
 The second preliminary part of the dissertation will focus on Racket itself.
 We will try to provide a so-called \qq{crash-course} to introduce some
 elements of syntax. Again, we will be focusing on items that will be used
-throughout the dissertation.
+throughout the dissertation and for streamlining the content and since we appreciate
+that the syntax is quite self-explanatory, we decided to add it as an appendix.
 
-A first, excellent example will follow, along the lines of P.\ Ragde's
+A first, excellent example follows the theoretical part, along the lines of P.\ Ragde's
 article, \cite{proust}. There, the author showcases a toy proof assistant,
 called \emph{Proust}, that they have written in Racket, the purpose being
 twofold. On the one hand, it shows the power that the language has for
@@ -78,12 +84,19 @@ will be implementing a small portion of the tools that are available in
 Coq and Agda in an intentionally verbose style so that their functions are
 transparent.
 
-Finally, further examples are provided, which will exhibit features of
-interest from type theory and intuitionistic logic.
+Finally, a more complex example is explored, that of \emph{Pie}. Developed by
+Racket programmers, it is a domain-specific language as well as a proof
+assistant particularly featuring dependent types. We are convinced that
+presenting the syntax and some basic examples of Pie will not only help in
+understanding some fundamental characteristics of dependent types, but it will
+also show some concrete examples, focused on functional programming.
 
-\todo[inline,noline,backgroundcolor=green!40]{change bib style to go well %
-  with websites}
+\vspace{0.3cm}
 
+Apart from the references that are scattered thoughout the dissertation, our
+hope is that the material is self-contained and presented in such a way that
+it could be used as a teaching material at least for an introductory level,
+to spark the interest both in type theory and its implementation.
 
 %%% Local Variables:
 %%% mode: latex
