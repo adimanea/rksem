@@ -1,0 +1,482 @@
+#+TITLE: Dissertation Demos
+#+AUTHOR: Adrian Manea
+#+STARTUP: overview
+
+* BASIC RACKET
+
+  [[[[file:basics.rkt][   LOCAL FILE]]	 ]]
+
+  #+BEGIN_SRC racket :tangle basics.rkt :exports code
+  ;; Basics on Racket (Appendix)
+  #lang racket
+
+  ;; quote
+  '(+ 1 2)            ; => '(+ 1 2)
+
+  ;; quasiquote & unquote
+  (define x 3)
+  `(+ 2 ,x)           ; => '(+ 2 3)
+  (+ 2 x)             ; => 5
+
+  ;; splice unquote
+  (define y '(1 2 3))
+  `(+ 4 ,@y)          ; => '(+ 4 1 2 3)
+
+  ;; ERROR
+  ;; (+ 4 y)             ; => contract violation: + expected number
+
+  ;; anonymous function via lambda
+  (define (mod2 n)
+	((lambda (t)
+	  (remainder t 2)) n))
+  (mod2 3)                ; => 1
+
+  (define (mod3 x)
+	(cond
+	  ((equal? (remainder x 3) 1) write "it's 1")
+	  ((equal? (remainder x 3) 2) write "it's 2")
+	  (#t write "it's 0")))
+  (mod3 5)                ; => "it's 2"
+  (mod3 1)                ; => "it's 1"
+  (mod3 6)                ; => "it's 0"
+
+  (define (add-or-quote x)
+	(cond
+	  ((equal? (remainder x 2) 0) ((lambda (t) (+ 1 2)) x))
+	  (#t ((lambda (t) 'hello) x))))
+  (add-or-quote 5)        ; => 'hello
+  (add-or-quote 6)        ; => 3
+  #+END_SRC
+
+* PROUST
+
+  [[   [[file:proust.rkt][LOCAL FILE]]  ]]
+
+  #+BEGIN_SRC racket :tangle proust.rkt
+  ;; P. Ragde -- Proust, a nano proof assistant (2016)
+  ;; Special thanks to the author!
+
+  #lang racket
+
+  (struct Lam (var body) #:transparent)          ; lambda abstraction
+  (struct App (func arg) #:transparent)          ; function application
+  (struct Ann (expr type) #:transparent)         ; explicit type annotations
+  (struct Arrow (domain codomain) #:transparent) ; functional types
+
+  ;; GRAMMAR
+  ;; EXPRESSIONS
+  ;; expr ::= (lambda x => expr)
+  ;;        | (expr expr)
+  ;;        | (expr : type)
+  ;;        | x (variable)            <------ NO CONSTANTS ALLOWED!
+  ;; TYPES
+  ;; type ::= (type -> type)
+  ;;        | X
+
+  ;; Parse types
+  (define (parse-type t)
+	(match t                                  ; pattern match the type
+	  [`(,t1 -> ,t2)                          ; is it functional?
+	   (Arrow (parse-type t1)                 ; make it an Arrow
+			  (parse-type t2))]
+	  (`(,t1 -> ,t2 -> ,r ...)                ; is it a multifunc?
+	   (Arrow (parse-type t1)                 ; make it a "multiarrow"
+			  (parse-type `(,t1 -> ,@r))))
+	  [(? symbol? X) X]                       ; is it simple? return it
+	  [else (error "can't parse this type")]))
+
+  ;; Test
+  (parse-type '(Int -> Nat))                  ; => (Arrow 'Int 'Nat)
+  (parse-type 'String)                        ; => 'String
+  (parse-type '(Int -> Nat -> String))        ; => (Arrow 'Int (Arrow 'Int 'String))
+
+  (define (parse-expr s)
+	(match s                              ; pattern match the argument
+	  [`(lambda ,(? symbol? x) => ,e)     ; is it a lambda?
+	   (Lam x (parse-expr e))]            ; make it a Lam
+	  [`(,e0 ,e1)                         ; is it an application?
+	   (App (parse-expr e0)               ; make it an App
+			(parse-expr e1))]
+	  [`(,e : ,t)                         ; is it a type annotation (e : t)?
+	   (Ann (parse-expr e)                ; make it an Ann
+			(parse-type t))]
+	  [`(,e1 ,e2 ,e3 ,r ...)              ; is it a general list?
+	   (parse-expr
+		`((,e1 ,e2) ,e3 ,@r))]            ; parse it in pairs
+	  [(? symbol? x) x]                   ; else, it's a symbol, return it
+	  [else (error 'parse "bad syntax ~a" s)]))       ; fail with reason
+
+  ;; Test
+  (parse-expr '(f x))                     ; => (App 'f 'x)
+  (parse-expr '(lambda x => x))           ; => (Lam 'x 'x)
+  (parse-expr '(lambda x => (x y)))       ; => (Lam 'x (App 'x 'y))
+  ;; (parse-expr 3)                          ; => parse: bad syntax 3     <-- WILL STOP EVALUATION
+  (parse-expr '(x : Nat))                 ; => (Ann 'x 'Nat)
+  (parse-expr '(x y z t))                 ; => (App (App (App 'x 'y) 'z) 't)
+  (parse-expr '(x (lambda y => (z t) (a : Int))))  ; => (App (App 'x (Lam 'y (App 'z 't))) (Ann 'a 'Int))
+
+
+
+  ;; Pretty printing ("unparsing")
+  ;; pretty-print-expr : expr -> String
+  (define (pretty-print-expr e)
+	(match e
+	  [(Lam x b)                                  ; lambdas
+	   (format "(lambda ~a => ~a)" x (pretty-print-expr b))]
+	  [(App e1 e2)                                ; function application
+	   (format "(~a ~a)" (pretty-print-expr e1) (pretty-print-expr e2))]
+	  [(? symbol? x) (format "~a" x)]             ; variables
+	  [(Ann e t) (format "(~a : ~a)"              ; type annotations
+						 (pretty-print-expr e)
+						 (pretty-print-expr t))]))
+
+  ;; pretty-print-type : Type -> String
+  (define (pretty-print-type t)
+	(match t
+	  [(Arrow t1 t2)                              ; functional types
+	   (format "(~a -> ~a)"
+			   (pretty-print-type t1)
+			   (pretty-print-type t2))]
+	  [else t]))                                  ; simple types
+
+  ;; Context = (Listof (List Symbol Type))
+  (define (pretty-print-context ctx)
+	(cond
+	  [(empty? ctx) ""]
+	  [else (string-append (format "~a : ~a, "
+								   (first (first ctx))
+								   (pretty-print-type (second (first ctx))))
+						   (pretty-print-context (rest ctx)))]))
+
+  ;; Test
+  (pretty-print-context (list (list 'x 'Int) (list 'z '(A -> B)))) ; => "x : Int, z : A -> B"
+  (pretty-print-context (list (list 'x 'Int) (list 'f (pretty-print-expr (parse-expr '(lambda z => t))))))
+  ;;                                                         |_________________|
+  ;;                                                           mutual inverses
+  ;; => "x : Int, f : (lambda z => t)"
+
+  ;; CHECKING LAMBDAS
+  ;; type-check : Context Expr Type -> Boolean
+  ;; produces true if expr has type t in context ctx (else, error)
+  (define (type-check ctx expr type)
+	(match expr
+	  [(Lam x t)                      ; is it a lambda expression?
+	   (match type                    ; then the type must be an Arrow
+		 [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
+		 [else (cannot-check ctx expr type)])]
+	  [else (if (equal? (type-infer ctx expr) type) true      ; fail for any other type
+				(cannot-check ctx expr type))]))
+
+  ;; the error function
+  (define (cannot-check ctx expr type)
+	(error 'type-check "cannot typecheck ~a as ~a in context ~a"
+		   (pretty-print-expr expr)
+		   (pretty-print-type type)
+		   (pretty-print-context ctx)))
+
+  ;; type-infer : Context Expr -> Type
+  ;; tries to produce type of expr in context ctx (else, error)
+  (define (type-infer ctx expr)
+	(match expr
+	  [(Lam _ _) (cannot-infer ctx expr)]         ; lambdas are handled in type-check
+	  [(Ann e t) (type-check ctx e t) t]          ; check type annotation
+	  [(App f a)                                  ; function application
+	   (define tf (type-infer ctx f))
+	   (match tf                                  ; must be Arrow type
+		 [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; when the rest typechecks
+		 [else (cannot-infer ctx expr)])]
+	  [(? symbol? x)                              ; for symbols
+	   (cond
+		 [(assoc x ctx) => second]                ; if it's a (ctx) list, the second is the type
+		 [else (cannot-infer ctx expr)])]))       ; else, fail
+
+  ;; the error function
+  (define (cannot-infer ctx expr)
+	(error 'type-infer "cannot infer type of ~a in context ~a"
+		   (pretty-print-expr)
+		   (pretty-print-context ctx)))
+
+  ;; BASIC TESTING
+  (require test-engine/racket-tests)
+
+  (define (check-proof p)                         ; for empty contexts
+	(type-infer empty (parse-expr p)) true)
+
+  ;; lambda x . x : A -> A
+  (check-expect (check-proof '((lambda x => x) : (A -> A))) true)
+
+  ;; lambda xy.x : A -> (B -> A)
+  (check-expect (check-proof '((lambda x => (lambda y => x)) : (A -> (B -> A))))
+				true)
+
+  ;; lambda xy.yx : (A -> ((A -> B) -> B))
+  (check-expect
+   (check-proof '((lambda x => (lambda y => (y x))) : (A -> ((A -> B) -> B))))
+   true)
+
+  (test)          ; => All 3 tests passed!
+  #+END_SRC
+* PIE
+** Basic Syntax
+
+[[   [[file:pie-basics.rkt][LOCAL FILE]]   ]]
+
+#+BEGIN_SRC racket :tangle pie-basics.rkt :exports code
+  #lang pie
+
+  (the (Pair Atom Atom)
+	   (cons 'spinach 'cauliflower))
+  ;; declares that the cons expression has the specified type
+
+  (claim one Nat)             ; one will be of type Nat
+  (define one (add1 zero))    ; zero is primitive
+  (the Nat (add1 one))        ; declares that 2 : Nat
+
+  (claim two Nat)
+  (define two
+	(add1
+	 (add1 zero)))
+  ;; in REPL:
+  ;; > two
+  ;; (the Nat two)
+
+  (claim myDogs (Pair Atom Atom))
+  (define myDogs (cons 'Ricky 'Rocky))
+  ;; in REPL
+  ;; > myDogs
+  ;; (the (Pair Atom Atom) (cons 'Ricky 'Rocky))
+
+#+END_SRC
+** Induction and Dependent Types
+
+[[   [[file:pie-induction.rkt][LOCAL FILE]]   ]]
+
+#+BEGIN_SRC racket :tangle pie-induction.rkt :exports code
+  #lang pie
+
+  ;; A couple of the most used "inductive" functions
+
+  ;; (which-Nat target base step)
+  ;; - if target is zero => return base
+  ;; - else, return (step (- target 1))
+  (which-Nat zero
+			 'naught
+			 (lambda (n) 'more))      ; => (the Atom 'naught)
+
+  (which-Nat 4
+			 'naught
+			 (lambda (n) 'more))      ; => (the Atom 'more)
+
+  (which-Nat 5
+			 0
+			 (lambda (n) (add1 7)))   ; => (the Nat 8)
+
+
+  ;; (iter-Nat target base step)
+  ;; - if target is zero => return base;
+  ;; - else, target is some (add1 n) and return (step (iter-Nat n base step))
+
+  ;; We will use this to define addition
+  ;; First, define the inductive step
+  (claim step+ (-> Nat Nat))          ; processes one Nat and returns another
+  (define step+
+	(lambda (+n-1)
+	  (add1 +n-1)))
+
+  ;; Now the addition
+  (claim + (-> Nat Nat Nat))          ; addition for the Nat type
+  (define +
+	(lambda n j
+			(iter-Nat n j step+)))
+
+
+  ;; (rec-Nat target base step)
+  ;; - if target is zero, return base;
+  ;; - else, target is some (add1 n) and return (step (n (rec-Nat n base step)))
+  ;; Example
+  (rec-Nat
+   (add1 zero)                ; target = 1 => n = 0
+   0                          ; base
+   (lambda (n-1 almost)       ; step (two-arg function)
+	 (add1 (add1 almost))))
+  ;; => (the Nat 2)
+
+  ;; Example: Gauss sum
+  ;; the inductive step
+  (claim step-gauss
+		 (-> Nat Nat Nat))
+  (define step-gauss
+	(lambda (n-1 gauss-n-1)
+	  (+ (add1 n-1) gauss-n-1)))
+
+  ;; now the Gauss function
+  (claim gauss (-> Nat Nat))
+  (define gauss
+	(lambda (n)
+	  (rec-Nat n
+			   0
+			   step-gauss)))
+  ;; Test
+  (gauss 15)                  ; => (the Nat 120)
+
+#+END_SRC
+** =Pair= Types and Functions
+*** Custom =Pear= Type
+[[  [[file:pie-pair-types-func.rkt][LOCAL FILE]]  ]]
+
+#+BEGIN_SRC racket :tangle pie-pair-types-func.rkt :exports code
+  #lang pie
+
+  (claim Pear U)                  ; claim the custom type
+  (define Pear (Pair Nat Nat))    ; a Pear is a Pair of two Nats
+
+  (claim Pear-maker U)            ; claim of the type constructor
+  (define Pear-maker              ; actual definition
+	(-> Nat Nat Pear))            ; Pear-maker : (Nat, Nat) -> Pear
+
+  (claim elim-Pear
+			 (-> Pear Pear-maker Pear))             ; claim the type eliminator
+  (define elim-Pear               ; the definition of the eliminator
+	(lambda (pear maker)          ; is a lambda taking a pear and a maker function
+	  (maker (car pear)           ; which sends the maker on the first part of the pear
+			 (cdr pear))))        ; then on the second part
+
+
+  (require "addition.rkt")        ; we need Nat addition (DIY)
+
+  (claim pearwise+                ; claim the addition for this custom type
+		 (-> Pear Pear Pear))     ; with type (Pear, Pear) -> Pear
+  (define pearwise+               ; (a, b) + (c ,d) = (a + c, b + d)
+	(lambda (x y)
+	  (elim-Pear x
+				 (lambda (a1 d1)
+				   (elim-Pear y
+							  (lambda a2 d2)
+							  (cons
+							   (+ a1 a2)
+							   (+ d1 d2)))))))
+
+  (elim-Pear (cons 3 17)
+			 (lambda (a d) (cons d a)))
+  ;; => (the (Pair Nat Nat) (cons 17 3))
+
+  (pearwise+ (cons 1 2) (cons 5 7))
+  ;; => (the (Pair Nat Nat) (cons 6 9))
+#+END_SRC
+*** Standard =Pair= Type
+
+[[   [[file:pie-pair-types-func.rkt][LOCAL FILE]]   ]]
+
+#+BEGIN_SRC racket :tangle pie-pair-types-func.rkt :exports code
+  #lang pie
+
+  (claim elim-Pair                    ; "consumer" (eliminator) for Pairs
+		 (Pi ((A U) (D U) (X U))
+			 (-> (Pair A D)
+				 (-> A D X) X)))
+  (define elim-Pair
+	(lambda (A D X)                   ; abstract the type variables first
+	  (lambda (p f)                   ; then the rest (f = eliminator, p = pair)
+		(f (car p) (cdr p)))))
+
+  (claim kar                          ; DIY car = first
+		 (-> (Pair Nat Nat) Nat))
+  (define kar
+	(lambda (p)
+	  (elim-Pair Nat Nat Nat p        ; make the types concrete
+				 (lambda (a d) a))))  ; take first component
+
+  (claim kdr                          ; DIY cdr = second
+		 (-> (Pair Nat Nat) Nat))
+  (define kdr
+	(lambda (p)
+	  (elim-Pair Nat Nat Nat p        ; make the types concrete
+				 (lambda (a d) d))))  ; take second component
+
+  ;; flipping two elements of a Pair
+  (claim flip
+		 (Pi ((A U) (D U))
+			 (-> (Pair A D) (Pair D A))))
+  (define flip
+	(lambda (A D)                     ; abstract the type variables first
+	  (lambda (p)                     ; then the pair
+		(cons (cdr p) (car p)))))
+
+  ;; Examples
+  (kdr (cons 5 3))                    ; => (the Nat 3)
+  (kar (cons 8 4))                    ; => (the Nat 8)
+  ((flip Nat Atom) (cons 17 'apple))  ; => (the (Pair Atom Nat) (cons 'apple 17))
+#+END_SRC
+** =List= Type and Functions
+*** Length of a List
+
+[[  [[file:pie-list-length.rkt][LOCAL FILE]]   ]]
+
+#+BEGIN_SRC racket :tangle pie-list-length.rkt :exports code
+  #lang pie
+
+  ;; "inductive step" first
+  (claim step-length
+		 (Pi ((E U))
+			 (-> E (List E) Nat Nat)))
+  (define step-length
+	(lambda (E)                               ; abstract the type first
+	  (lambda (e es length-es)                ; then the rest
+		(add1 length-es))))                   ; just increase by 1 at each step (see also Gauss)
+
+  (claim length                               ; length of a List
+		 (Pi ((E U))                          ; of elements of type E
+			 (-> (List E) Nat)))              ; goes from List to Nat
+  (define length
+	(lambda (E)                               ; abstract the type parameter
+	  (lambda (es)                            ; then the actual list
+		(rec-List es
+				  0
+				  (step-length E)))))           ; call the inductive step with this type
+
+  ;; special version for E = Atom
+  (claim length-Atom
+		 (-> (List Atom) Nat))
+  (define length-Atom
+	(length Atom))
+
+  ;; Test
+  (length Nat (:: 1 (:: 2 (:: 3 nil))))       ; => (the Nat 3)
+  (length-Atom (:: 'cat nil))                 ; => (the Nat 1)
+  (length-Atom (:: 'cat (:: 'dog nil)))       ; => (the Nat 2)
+#+END_SRC
+
+*** Appending a List to Another List
+
+[[   [[file:pie-list-append.rkt][LOCAL FILE]]   ]]
+
+#+BEGIN_SRC racket :tangle pie-list-append.rkt :exports code
+  ;; Definining the functions to append to a list,
+  ;; using steps and induction, as well as dependent types.
+  #lang pie
+
+  ;; the inductive step first
+  (claim step-append
+		 (Pi ((E U))
+			 (-> E (List E) (List E)
+				 (List E))))
+  (define step-append
+	(lambda (E)
+	  (lambda (e es append-es)
+		(:: e append-es))))
+
+  (claim append
+		 (Pi ((E U))
+			 (-> (List E) (List E)
+				 (List E))))
+  (define append
+	(lambda (E)
+	  (lambda (start end)
+		(rec-List start
+				  end
+				  (step-append E)))))
+
+  ;; Test
+  (append Nat (:: 5 nil) (:: 3 nil))  ; => (the (List Nat) (:: 5 (:: 3 nil)))
+#+END_SRC
+* TODO HoTT
