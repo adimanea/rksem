@@ -3,7 +3,7 @@
 #lang pie
 
 ;; we need the append defined previously
-(require list-append)
+(require "list-append.rkt")
 
 ;; helper: a special cons,
 ;; that appends at the end of a list: snoc

@@ -39,3 +39,8 @@
 							  (cons
 							   (+ a1 a2)        ;; then add the parts
 							   (+ d1 d2))))))))
+
+(elim-Pear (cons 3 17)
+           (lambda (a d) (cons d a)))
+
+(pearwise+ (cons 1 2) (cons 5 7))
