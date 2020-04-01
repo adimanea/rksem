@@ -103,7 +103,7 @@ that is a legal \texttt{expr}.
              (parse-expr e1))]
     [`(,e : ,t)                         ; is it a type annotation (e : t)?
         (Ann (parse-expr e)             ; make it an Ann
-             (parse-expr t))]
+             (parse-type t))]
     [`(,e1 ,e2 ,e3 ,r ...)              ; is it a general list?
         (parse-expr 
             `((,e1 ,e2) ,e3 ,@r))]      ; parse it by parts

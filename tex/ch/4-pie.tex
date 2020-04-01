@@ -568,7 +568,7 @@ of any type.
     (lambda (es)                    ; abstract the argument
       (rec-List es                  ; make the argument to be the target
                 0
-                step-length E))))   ; we need the "inductive step"
+                (step-length E))))) ; we need the "inductive step"
 
 ;; "inductive step" for computing length of a list
 (claim step-length
@@ -583,7 +583,7 @@ of any type.
 ;; special version for Atom
 (claim length-Atom
   (-> (List Atom) Nat))
-(define length-atom
+(define length-Atom
   (length Atom))
 \end{verbatim}
 }
