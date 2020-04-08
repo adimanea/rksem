@@ -810,3 +810,181 @@ For such items, we can define functions that take the =head=,
 #+END_SRC
 
 * 7: It All Depends on the Motive
+There is a specific function for /dependent types/, which explicitly
+uses the parameter on which the output type is dependent on. That is
+=ind-Nat=, which requires an extra argument of type =(-> Nat U)=,
+called a *motive*. The general syntax is =(ind-Nat target mot base step)=,
+where =mot= is the motive, with type =(-> Nat U)=.
+
+The /typing rule/ of =ind-Nat= is:
+- =target= is =Nat=;
+- =mot= is =(-> Nat U)=;
+- =base= is =(mot zero)=;
+- =step= is =(Pi ((n-1 Nat)) (-> (mot n-1) (mot (add1 n-1))))=;
+- then the output of =(ind-Nat target mot base step)= has type =(mot target)=.
+
+The first /computation rule/ of =ind-Nat= is:
+#+BEGIN_SRC racket
+  #lang pie
+
+  (ind-Nat zero
+		   mot
+		   base
+		   step)      ; ==> (mot zero), which coincides with `base'
+#+END_SRC
+
+The second /computation rule/ of =ind-Nat= is:
+#+BEGIN_SRC racket
+  #lang pie
+
+  (ind-Nat (add1 n)
+		   mot
+		   base
+		   step)
+  ;; is the same as
+  (step n
+		(ind-Nat n
+				 mot
+				 base
+				 step))
+  ;; and returns
+  (mot (add1 n))
+#+END_SRC
+
+* 8: One Piece at a Time
+One can use holes in programs, as TOODs. Sometimes, Pie tries to hint something
+that can be used instead of the TODO, other times it just leaves the hole.
+#+BEGIN_SRC racket
+  #lang pie
+
+  (claim peas
+		 (Pi ((n Nat))
+			 (Vec Atom n)))
+  (define peas
+	TODO)
+
+  ;; Pie responds (has no clue)
+  TODO: (Pi ((n Nat))
+			(Vec Atom n))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (claim peas
+		 (Pi ((n Nat))
+			 (Vec Atom n)))
+  (define peas
+	(lambda (n)
+	  TODO))
+
+  ;; Pie responds (can guess)
+  TODO: n : Nat
+  -------------
+  (Vec Atom n)
+#+END_SRC
+
+* 8: Pick a Number, Any Number
+We will find here about *equality types* and also about treating conditionals
+as types.
+
+*The law of Equality*: An expression ~(= X from to)~ is a type if =X= is a type,
+=from= and =to= have type =X=. For example:
+#+BEGIN_SRC racket
+  #lang pie
+
+  (= Atom 'kale 'blackberries)        ; is a type
+
+  (= Nat (+ 1 1) 2)                   ; is a type
+
+  (= (car (cons (Nat 'kale))
+		  17)
+	 (+ 14 3))                        ; is a type
+#+END_SRC
+
+The constructor of the equality type is =same=:
+The expression =(same e)= has type ~(= X e e)~ when =e= has type =X=.
+
+=cong= is a functor that can operate on equality types:
+- if =f= has type =(-> X Y)=;
+- if =target= has type ~(= X from to)~;
+- then =(cong target f)= has type ~(= Y (f from) (f to))~.
+
+This can be put in a diagram:
+#+BEGIN_EXAMPLE
+  X			(=	X	from		to)
+  |					|
+  | f				| (cong [-] f)
+  |					|
+  V					V
+  Y			(= X	(f from)	(f to))
+#+END_EXAMPLE
+
+One can also use =cong= with =same=:
+If =x= has type =X= and =f= has type =(-> X Y)=, then
+=(cong (same x) f)= has type ~(= Y (f x) (f x))~ and is equal to
+=(same (f x))=.
+
+Also, conditionals can be seen as types: the expression =(-> X Y)= can be
+read as the statement /"if X then Y"/.
+
+* 10: It Also Depends on the List
+We will find here about *sum types*.
+
+The expression =(Sigma ((x A)) D)= is a type when =A= is a type
+and =D= is a type when =x= has type =A=, i.e. =D= is a family of
+types over =A=, parametrized by =x=.
+
+For example, the expression =(cons 'bagel (same 'bread))= has type
+~(Sigma ((bread Atom)) (= Atom bread 'bagel))~.
+
+=cons= is the type constructor for sum tipes: if =p= has type
+=(Sigma ((x a)) D)=, then =p= is the same as =(cons (car p) (cdr p))=.
+
+For sum types, we have the =ind-List= expression, whose /typing rule/ is:
+- if =target= has type =(List E)=;
+- =mot= has type =(-> (List E) U)=;
+- =base= has type =(mot nil)=;
+- =step= has type =(Pi ((e E) (es (List e))) (-> (mot es) (mot (:: e es))))=
+then =(ind-List target mot base step)= has type =(mot target)=.
+
+The first /computation rule/ is:
+=(ind-List nil mot base step)= is the same as =base= and has type =(mot nil)=.
+
+The second /computation rule/ is:
+=(ind-List (:: e es) mot base step)= has type =(mot (:: e es))= and is
+computed with =(step e es (ind-List es mot base step))=.
+
+This can be further generalized to =ind-Vec= (chapter 11).
+
+* 13: Even Half a Baker's Dozen
+=Either= is an example of a /sum type/; more precisely =(Either L R)= is a type
+when =L,R= are types.
+
+Its /constructors/ are =left= and =right=:
+- the expression =(left lt)= has type =(Either L R)= when =lt= has type =L=;
+- the expression =(right rt)= has type =(Either L R)= when =rt= has type =R=.
+
+The /eliminator/ for =Either= types is =ind-Either=. Its /typing rule/ is:
+- if =target= has type =(Either L R)=;
+- =mot= has type =(-> (Either L R) U)=;
+- =base-left= has type =(Pi ((x L)) (mot (left x)))=;
+- =base-right= has type =(Pi ((y R)) (mot (right y)))=
+then =(ind-Either target mot base-left base-right)= has type =(mot target)=.
+
+
+Then its /first computation rule/ is:
+=(ind-Either (left x) mot base-left base-right)= has type =(mot (left x))=
+and is the same as =(base-left x)=.
+
+Its /second computation rule/ is:
+=(ind-Either (right y) mot base-left base-right)= has type =(mot (right y))=
+and is the same as =(base-right y)=.
+
+* 14: There's Safety in Numbers
+Now we will learn about the *unit type*.
+
+=Trivial= is the unit type, whose only inhabitant is =sole=.
+
+The uniqueness property says that if =e= has type =Trivial=, then
+=e= is the same as =sole=.
+
+Also, =Absurd= is used as ⊥, the bottom.
