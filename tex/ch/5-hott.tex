@@ -1,0 +1,313 @@
+% ! TEX root = ../racket.tex
+\chapter{Some HoTT Pie by the Book}
+
+...or rather \emph{some Pie by the HoTT book!} In this final chapter, we make
+a basic attempt at implementing some of the homotopy type theory features in
+Pie. The theory will closely follow \cite{hott} (also known as
+\qq{The HoTT book}) and some of the references therein, while the implementation
+part will be made along the lines of \cite{typer}, along with the standard
+Racket documentation \cite{racket}.
+
+For the purposes of this dissertation, we will limit ourselves to the notions
+introduced in the first chapter of the HoTT book, with the hope that more
+work will follow. The presentation will be structured by starting with the
+main theoretical aspects of each item that will be presented, from a mathematical
+and type-theoretical point of view and then the Pie implementation. If the
+item is already part of the Pie standard library, we will present and explain
+it, otherwise, we will detail our take on it.
+
+Finally, we note that to the best of our knowledge at the moment of writing
+this thesis, there are no similar attempts of homotopy type theory in Racket
+or any domain-specific language built with it. The standard, well-known
+approaches feature either Coq, via \emph{The Coq HoTT Project} (\cite{coqhott})
+or Agda (\cite{agdahott}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Preamble: Set Theory and Type Theory}
+
+Before we get to the actual implementation, we make a short stop to discuss
+some specific differences between set theory and type theory. We should point
+out that many of the type-theoretical and logical aspects of homotopy type
+theory (hereafter referred to as HoTT) are taken from Per Martin-L\"{of}'s
+work, some of which we touched in the first chapter of the dissertation.
+Nevertheless, given the complexity and the size of the HoTT project, multiple
+changes have appeared, some more radical, some only to modernize the
+presentation. Hence, although this discussion could well belong to
+Martin-L\"{o}f's theory, we chose to present it here, as it is more coherent
+with the (modern) HoTT.
+
+The main starting point is that type theory aims to provide foundational
+results for mathematics, overcoming the difficulties that set theory was shown
+to contain\footnote{On a similar note, \emph{topos theory} is another approach
+  that has a similar goal, coming from topology and category theory. While the
+  subject is way beyond the scope of this dissertation, we mention it and refer
+  the interested reader to the excellent book \cite{macsh} or the more introductive
+  \cite{goldb}. A historical overview of the topic is presented, for example,
+  in \cite{abuse}.}. For this reason, many discussions have been sparked as to
+what differentiates type theory from all the previous attempts of formalizing the
+foundations of mathematics in set theory. Without going into technical,
+complex, discussions, we mention some basic points that are relevant to the
+current presentation. We rely for this on the overview presented in
+\cite[\S 1.1]{hott}.
+
+First, it should be pointed out that set theory, as used in the foundational
+research, is comprised of two parts:
+\begin{itemize}
+\item the deductive layer of first order logic, that is used to reason, i.e.\
+  to write proofs;
+\item the axioms that are formulated in this system and which regulate
+  the objects that live in the theory. In this case, the Zermelo-Fraenkel
+  with the Choice Axiom (usually written as ZFC) is the most used
+  axiomatic system.
+\end{itemize}
+It follows that set theory is not actually about sets \emph{per se}, but
+rather about the interactions between the sets, as objects instantiated
+by the second (axiomatic) layer by the rules of the first (deductive) layer,
+which help us make propositions.
+
+On the other hand, type theory is built upon itself, in a way. What we
+mean is that type theory is its own deductive system. Whereas set theory
+is based on \emph{sets} and \emph{propositions} (about sets), type theory
+is only about \emph{types}. As such, the primitive notion of type can be
+subject to various interpretations which become (parts of) mathematical
+theories: some types can be seen as propositions, some as sets, some as
+topological spaces, categories and so forth. It follows that the mathematical
+(\emph{formal}) act of \emph{proving a theorem} inside set theory becomes the
+\emph{constructive} (i.e.\ intuitionistic) act of \emph{constructing an object},
+namely an inhabitant of a type.
+
+Another key difference is related to the structure of deductions themselves.
+In general, we can make a deductive system from (inference) \emph{rules}
+and \emph{judgments}, which are derived by the rules. In the case of
+first order logic, which regulates set theory, the basic judgment is
+that a proposition has a proof. From it, one can construct derived proofs,
+such as, for example, the proof of $ A \land B $, which is made of a proof
+of $ A $ in conjunction with a proof of $ B $, by a rule of proof construction.
+
+On the other hand, the basic judgment of type theory is of the form $ a : A $,
+read \qq{\emph{element $ a $ has type $ A $}}. But this judgment is analogous
+to the provability of proposition $ A $, were it to be interpreted as a type.
+That is, exposing an inhabitant $ a $ of the type $ A $ \emph{is not} similar to
+showing an element of a set $ a \in A $. Membership is taken for granted in type
+theory when we make a typing judgment. That is, the judgment $ a : A $ cannot
+be proved or disproved so it cannot be used in composite judgments such as
+\emph{if $ a : A $ then $ b : B $}. Intuitively, this is because whenever we
+want to model the use of a certain element, we think of its \qq{natural type},
+i.e.\ one which we are sure it inhabits, then start from there. We never,
+even in common mathematical speech, start with something like
+\emph{Let $ a = \dfrac{\sqrt[3]{1 + \sqrt[5]{5}}}{\ln 7} : \NN $} if we are not sure
+that it is true first. Usually, if we need to use $ a $ in some proof,
+we start with it as an inhabitant of a type which we are sure it belongs to,
+e.g.\ \emph{let $ a : \RR $}\footnote{Note that we have not provided examples
+  of types yet and if this example induces the confusion that all sets are
+  types or vice versa (or at least, numeric sets), feel free to skip this
+  discussion, as we will not insist on it anyway.}.
+
+Lastly, a very important difference between sets and types is the treatment
+of \emph{equality}. In common set theory, equality is a proposition, meaning
+that it can be proved or disproved for various sets or elements. In type theory,
+however, \emph{equality is a type}. That is, taking, say $ a, b : A $, there
+exists the type $ a =_A b $, which is inhabited if and only if $ a $ and $ b $
+represent the same element. Before going further, a quick detour: What would
+an inhabitant of an equality type look like? What \qq{instantiates} the fact
+that is commonly written as $ a = b $? This is not an easy question and we only
+mention that this is one of the starting points of the \emph{homotopy} part of
+HoTT. That is, using Martin-L\"{o}f's brilliant idea of making equality a type,
+homotopies (formally known as \emph{homotopy maps}) entered the scene. They
+provide a kind of \qq{relaxed} form of equality by means of, e.g.\ in topology,
+\emph{continuous deformations}. Since in topology, continuity is one of the
+most important properties, if a space can be continuously transformed into
+another one, we simply say that \qq{they are the same}\footnote{This is the
+  origin of the famously funny \qq{facts} which state that
+  \href{https://upload.wikimedia.org/wikipedia/commons/2/26/Mug\_and\_Torus\_morph.gif}{%
+    a bagel is the same as a cup} or
+  \href{https://upload.wikimedia.org/wikipedia/commons/2/24/Spot\_the\_cow.gif}{%
+    a cow is the same as a sphere}.}
+What this example shows is that there are at least some interpretations of
+type theory where (the local notion of) equality can have witnesses, which
+are, in this case, \emph{homotopy maps}.
+\index{types!equality}
+\index{types!equality!propositional}
+\index{types!equality!definitional}
+\index{types!equality!judgmental}
+\index{types!homotopy}
+
+Back to the original discussion, when the type $ a =_A b $ is inhabited,
+we say that the elements $ a $ and $ b $ are \emph{propositionally equal}.
+That is, the fact that an equality type is inhabited provides an example
+of propositional equality. But there is another kind of equality, called
+\emph{judgmental} or \emph{definitional} equality, which is more akin to the
+common mathematical sense. For example, $ 3^2 $ and $ 9 $ are equal by definition
+(of multiplication, in this case), so they exhibit a definitional equality.
+It is \emph{judgmental} in the sense that it can be proved, e.g.\ by using
+the definition of multiplication in the example we provided. We finish by
+mentioning that this kind of equality can be used for whole function equality,
+for example, by means of the distinction between intensional and extensional
+concepts which we mentioned in Remark \ref{rk:int-ext}. For example,
+the function $ x \mapsto (x + 2) $ is \emph{judgmentally equal} to
+the function $ y \mapsto (y + 3 - 1) $. Usually, definitional equality is
+denoted by $ \equiv $, so $ 3^2 \equiv 9 $ etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \section{Function Types}
+
+% Although we have touched on the subject of functions in type theory in
+% \S\ref{sec:unty-lambda} and \S\ref{sec:dep-fun} (for the dependent case),
+% we revisit the subject for a treatment in the formulation of HoTT.
+
+% We start by noting that in HoTT (as in the case of multiple other type
+% theories), \emph{functions are primitive}. That is, whereas in set theory
+% they are defined as subsets of a Cartesian product, in type theory they
+% are not defined, just introduced and used.
+
+% We could prescribe the rules that are specific to function types in the
+% form of proof trees as in \S\ref{ch:mltt}, but we prefer a more explanatory
+% approach.
+
+% A first use of functions is through \emph{application}. Formally, this means
+% that we have an \emph{elimination rule}: given a function type $ A \to B $,
+% inhabited by some $ f : A \to B $ and some inhabitant $ a : A $, we
+% obtain an inhabitant $ f(a) : B $, which we call the \emph{application (evaluation)}
+% of $ f $ in $ a $. Note also that it is not uncommon to write this as $ fa $.
+
+% An \emph{introduction rule} for function types shows us how to construct
+% inhabitants of the type, which in consequence, will instantiate the type.
+% This can be done either explicitly, i.e.\ by mentioning an equation that
+% contains the inhabitant of the domain or not (for example, $ f : A \to B, %
+% f(x) = 2x $ and we call $ E(x) $ the equation that defines the function)
+% or via \emph{typed} $ \lambda $-abstraction, e.g.\
+% $ \left(\lambda(x : A) . 2x\right) : A \to B $.
+
+% A definitional equality shows how to use lambda abstraction, thus making
+% a \emph{computation rule}:
+% \[
+%   (\lambda x . E(x))(a) \equiv E(a/x),
+% \]
+% where $ E(a/x) $ means the expression $ E $ where every occurrence of $ x $
+% has been replaced by $ a $. This rule is known in lambda calculus by the
+% name of \emph{$\beta$-reduction}, which we have met before in \S\ref{sec:dep-pi}.
+
+% Furthermore, what in $ \lambda $-calculus is known as $ \eta $-conversion
+% (see also \S\ref{sec:dep-pi}) we call \emph{the uniqueness principle for %
+%   function types}. This states that a function is completely defined by its
+% values, thus making an extensional definition.
+
+% Lastly, we also have a judgmental equality that basically spells out
+% the rule known as $ \alpha $-conversion. This states that the bound variable
+% in a lambda expression is a dummy variable, which means that, for example,
+% $ \lambda (x : A).E(x) \equiv \lambda (y : A).E(y/x) $.
+
+% \vspace{0.3cm}
+
+% As for the Pie implementation of function types, they are built in
+% (in fact, inherited directly from Typed Racket, namely
+% the \texttt{\#lang typed/racket} module). As such, a function type is written as
+% \texttt{(-> A B)} and its inhabitants are \texttt{claim}ed accordingly,
+% while the definition will make use of a \texttt{lambda} expression.
+
+% For example:
+% {
+%   \small
+% \begin{verbatim}
+% #lang pie
+
+% (claim twice (-> Nat Nat))
+% (define twice
+%   (lambda (x) (+ x x)))             ; assume Nat addition has been defined
+% \end{verbatim}
+% }
+
+% Given the \texttt{claim}, the definition automatically coerces \texttt{x} to
+% be of type \texttt{Nat}, but we could have easily written it in Typed Racket,
+% which doesn't need the \texttt{claim}, but makes the type explicit in the
+% definition:
+% {
+%   \small
+% \begin{verbatim}
+% #lang typed/racket
+
+% (define twice
+%   (lambda ([x : Natural]) (+ x x)))     ; + is built-in
+% \end{verbatim}
+% }
+
+% We close this by remarking that the Pie snippet is, in some sense, clearer by
+% virtue of the \texttt{claim}, but keeping in mind that \texttt{lambda} is actually
+% the \emph{type constructor} for functional types, both implementations should
+% be equally easy to understand.
+
+% \vspace{0.3cm}
+
+% Finally, we also have \emph{dependent function types}, which we will completely
+% skip here, as they have been the subject of \S\ref{sec:dep-pi}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Product Types}
+
+Before getting into this subject, note that we skipped the presentation of
+function types and dependent ($\Pi$) function types, which have been the subject
+of \S\ref{sec:dep-fun} and \S\ref{sec:dep-pi}, respectively. As such, we will
+focus on new types, assuming the others presented, constructed and understood.
+
+Product types follow the categorical notion of product in an arbitrary
+category and generalize the Cartesian product for sets. As such, the basic
+construction is denoted by $ A \times B $, for objects $ A, B $.
+
+In type theory, we start with types $ A, B : \kal{U} $ (both having the
+universe type, $ \kal{U} $) and we \emph{introduce} the type
+$ A \times B : \kal{U} $, called their \emph{(Cartesian) product type}.
+In particular, the nullary product leads to the \emph{unit type},
+$ \pmb{1} : \kal{U} $. Canonical elements of type $ A \times B $
+are \emph{pairs} $ (a, b) : A \times B $, where $ a : A $ and $ b : B $.
+The only element of type $ \pmb{1} $ is denoted $ \ast : \pmb{1} $.
+
+Note that since functions are primitive for type theory, ordered pairs
+are also primitive. So we assume that for arbitrary types $ A, B $,
+which are inhabited by some $ a : A, b : B $ say, we know what
+$ (a, b) : A \times B $ means. This serves as the \emph{introduction rule}
+for the product type, with the added remark that there is only one way
+of constructing the sole inhabitant  $ \ast :  \pmb{1} $.
+
+Now we want to see \emph{eliminators} for this type, i.e.\ how it is used.
+Hence, we need to construct some non-dependent function $ f : A \times B \to C $
+to inhabit the function type $ A \times B \to C $ and whose equations or
+lambda-abstractions will show us what to do with pairs. But we know how to
+form function types, so we form the type $ A \to B \to C $, parsed as
+$ A \to (B \to C) $ and it follows that one inhabitant $ g $of this type is a
+function that associates to each inhabitant $ a : A $ an inhabitant of
+$ B \to C $, say $ g(a) $ which in turn associates to each inhabitant of $ B $ an
+inhabitant of $ C $, i.e.\ $ g(a)(b) : C $.
+
+Following this, we use the definitional equality:
+\[
+  f: A \times B \to C, \quad f(a, b) :\equiv g(a)(b),
+\]
+which is the elimination rule for products.
+
+Two particular cases of interest are the \emph{canonical projections}:
+\begin{align*}
+  p_1 & : A \times B \to A, \quad p_1(a, b) :\equiv a \\
+  p_2 & : A \times B \to B, \quad p_2(a, b) :\equiv b.
+\end{align*}
+
+\vspace{0.3cm}
+
+As for the Pie implementation, this is exactly the \texttt{Pair} type, which
+is built-in the language. Moreover, given the associativity of iterated
+Cartesian product, i.e.\ $ A \times B \times C = (A \times B) \times C $,
+generalized inductively, we get arbitrary products as \texttt{Pair}s of
+\texttt{Pair}s. Another way of generalizing this is via the \texttt{List}
+type. Hence, we refer the reader to our \S\ref{sec:pair-ex} and \S\ref{sec:inductive-ex}.
+
+\todo[inline,noline,backgroundcolor=green!40]{add \texttt{rec}, \texttt{uniq} and \texttt{ind}?}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dependent Pair Types ($ \Sigma $)}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
