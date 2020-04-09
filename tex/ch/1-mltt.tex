@@ -643,7 +643,8 @@ $ a $ and sometimes denote it shorter with $ B(a) $.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependent $ \Pi $ Types}
-\index{types!dependent!$ \Pi $ (product)}
+\index{types!dependent!$ \Pi $ (function)}
+\label{sec:dep-pi}
 
 How do we actually \qq{parametrize} a type in general by another type?
 And assume we did that. What are the well-formed terms that inhabit
@@ -672,8 +673,8 @@ rule and the $ \Pi $-equality rule, presented below:
   \end{prooftree} \Pi-\text{eq}
   $.
 \end{itemize}
-\index{types!dependent!$ \Pi $ (product)!formation}
-\index{types!dependent!$ \Pi $ (product)!equality}
+\index{types!dependent!$ \Pi $ (function)!formation}
+\index{types!dependent!$ \Pi $ (function)!equality}
 
 In words, if we start with a context $ \Gamma $ and weaken it with
 a declaration of a fresh variable $ x : A $ (assumed arbitrary)
@@ -705,7 +706,7 @@ and $ x' \neq x $), we have the $ \Pi $-renaming rule:
       \Pi_{(x' : A)} B(x') \text{ type}}
   \end{prooftree} \Pi-x'/x.
 \]
-\index{types!dependent!$ \Pi $ (product)!renaming}
+\index{types!dependent!$ \Pi $ (function)!renaming}
 
 The well-formed terms that inhabit such $ \Pi $-types are special cases
 of $ \lambda $-abstractions. Their special quality consists in that they
@@ -718,7 +719,7 @@ that it can be captured in an inference rule:
     \infer1{\Gamma \vdash \lambda x.b(x) : \Pi_{(x : A)} B(x)}
   \end{prooftree} \lambda_A.
 \]
-\index{types!dependent!$ \Pi $ (product)!$ \lambda $-abstraction}
+\index{types!dependent!$ \Pi $ (function)!$ \lambda $-abstraction}
 
 Notice how we specified everywhere that both the terms $ b $ and the
 types $ B $ \emph{depend} on the choice of $ x : A $.
@@ -834,7 +835,7 @@ The actual use of functions is contained in the \emph{evaluation rule}:
     \infer1{\Gamma, x : A \vdash f(x) : B(x)}
   \end{prooftree}\dr{ev}_A.
 \]
-\index{types!dependent!$ \Pi $ (product)!function evaluation}
+\index{types!dependent!$ \Pi $ (function)!function evaluation}
 
 Moreover, basic conversions can be performed inside functional terms,
 both of implying that evaluation and lambda abstraction are mutually
@@ -855,8 +856,8 @@ inverse operations:
   $, which says nothing else that another name for a lambda abstraction
   of the form $ \lambda x . f(x) $ is $ f $.
 \end{itemize}
-\index{types!dependent!$ \Pi $ (product)!$ \beta $-reduction}
-\index{types!dependent!$ \Pi $ (product)!$ \eta $-conversion}
+\index{types!dependent!$ \Pi $ (function)!$ \beta $-reduction}
+\index{types!dependent!$ \Pi $ (function)!$ \eta $-conversion}
 
 Note that as in the case of regular (untyped) lambda calculus, functions of
 multiple arguments can be written as iterating lambda abstraction
@@ -866,8 +867,9 @@ $ \lambda x . \lambda y . f(x, y) $ or simply $ \lambda xy.f(x,y) $,
 which is a term of type $ \Pi_{(x : A)} \Pi_{(y : B)} B(x, y) $.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Dependent Function Types}
-\index{types!dependent!$ \to $ (function)}
+\section{Function Types}
+\index{types!$ \to $ (function)}
+\label{sec:dep-fun}
 
 We can obtain such types as a particular case of $ \Pi $ types.
 As such, assume $ A $ and $ B $ are both types in context $ \Gamma $.
@@ -926,11 +928,11 @@ $ \begin{prooftree}
 \end{prooftree}\eta
 $.
 \end{itemize}
-\index{types!dependent!$ \to $ (function)!formation}
-\index{types!dependent!$ \to $ (function)!$ \lambda $-abstraction}
-\index{types!dependent!$ \to $ (function)!$ \lambda $-evaluation}
-\index{types!dependent!$ \to $ (function)!$ \beta $-reduction}
-\index{types!dependent!$ \to $ (function)!$ \eta $-conversion}
+\index{types!$ \to $ (function)!formation}
+\index{types!$ \to $ (function)!$ \lambda $-abstraction}
+\index{types!$ \to $ (function)!$ \lambda $-evaluation}
+\index{types!$ \to $ (function)!$ \beta $-reduction}
+\index{types!$ \to $ (function)!$ \eta $-conversion}
 
 Note that we explicitly omitted mentioning $ A $ in any of the rules
 (i.e.\ we wrote $ \lambda $ and not $ \lambda_A $ for the rule of 
@@ -960,7 +962,7 @@ but we only mention that function composition is now easy to define:
 \]
 In particular, the common mathematical notation $ g \circ f $ will
 mean $ \dr{ev}(\dr{ev}(\dr{comp},g),g) $ in this context.
-\index{types!dependent!$ \to $ (function)!composition}
+\index{types!$ \to $ (function)!composition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example: The Natural Numbers}
