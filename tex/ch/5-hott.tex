@@ -150,100 +150,6 @@ the function $ y \mapsto (y + 3 - 1) $. Usually, definitional equality is
 denoted by $ \equiv $, so $ 3^2 \equiv 9 $ etc.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \section{Function Types}
-
-% Although we have touched on the subject of functions in type theory in
-% \S\ref{sec:unty-lambda} and \S\ref{sec:dep-fun} (for the dependent case),
-% we revisit the subject for a treatment in the formulation of HoTT.
-
-% We start by noting that in HoTT (as in the case of multiple other type
-% theories), \emph{functions are primitive}. That is, whereas in set theory
-% they are defined as subsets of a Cartesian product, in type theory they
-% are not defined, just introduced and used.
-
-% We could prescribe the rules that are specific to function types in the
-% form of proof trees as in \S\ref{ch:mltt}, but we prefer a more explanatory
-% approach.
-
-% A first use of functions is through \emph{application}. Formally, this means
-% that we have an \emph{elimination rule}: given a function type $ A \to B $,
-% inhabited by some $ f : A \to B $ and some inhabitant $ a : A $, we
-% obtain an inhabitant $ f(a) : B $, which we call the \emph{application (evaluation)}
-% of $ f $ in $ a $. Note also that it is not uncommon to write this as $ fa $.
-
-% An \emph{introduction rule} for function types shows us how to construct
-% inhabitants of the type, which in consequence, will instantiate the type.
-% This can be done either explicitly, i.e.\ by mentioning an equation that
-% contains the inhabitant of the domain or not (for example, $ f : A \to B, %
-% f(x) = 2x $ and we call $ E(x) $ the equation that defines the function)
-% or via \emph{typed} $ \lambda $-abstraction, e.g.\
-% $ \left(\lambda(x : A) . 2x\right) : A \to B $.
-
-% A definitional equality shows how to use lambda abstraction, thus making
-% a \emph{computation rule}:
-% \[
-%   (\lambda x . E(x))(a) \equiv E(a/x),
-% \]
-% where $ E(a/x) $ means the expression $ E $ where every occurrence of $ x $
-% has been replaced by $ a $. This rule is known in lambda calculus by the
-% name of \emph{$\beta$-reduction}, which we have met before in \S\ref{sec:dep-pi}.
-
-% Furthermore, what in $ \lambda $-calculus is known as $ \eta $-conversion
-% (see also \S\ref{sec:dep-pi}) we call \emph{the uniqueness principle for %
-%   function types}. This states that a function is completely defined by its
-% values, thus making an extensional definition.
-
-% Lastly, we also have a judgmental equality that basically spells out
-% the rule known as $ \alpha $-conversion. This states that the bound variable
-% in a lambda expression is a dummy variable, which means that, for example,
-% $ \lambda (x : A).E(x) \equiv \lambda (y : A).E(y/x) $.
-
-% \vspace{0.3cm}
-
-% As for the Pie implementation of function types, they are built in
-% (in fact, inherited directly from Typed Racket, namely
-% the \texttt{\#lang typed/racket} module). As such, a function type is written as
-% \texttt{(-> A B)} and its inhabitants are \texttt{claim}ed accordingly,
-% while the definition will make use of a \texttt{lambda} expression.
-
-% For example:
-% {
-%   \small
-% \begin{verbatim}
-% #lang pie
-
-% (claim twice (-> Nat Nat))
-% (define twice
-%   (lambda (x) (+ x x)))             ; assume Nat addition has been defined
-% \end{verbatim}
-% }
-
-% Given the \texttt{claim}, the definition automatically coerces \texttt{x} to
-% be of type \texttt{Nat}, but we could have easily written it in Typed Racket,
-% which doesn't need the \texttt{claim}, but makes the type explicit in the
-% definition:
-% {
-%   \small
-% \begin{verbatim}
-% #lang typed/racket
-
-% (define twice
-%   (lambda ([x : Natural]) (+ x x)))     ; + is built-in
-% \end{verbatim}
-% }
-
-% We close this by remarking that the Pie snippet is, in some sense, clearer by
-% virtue of the \texttt{claim}, but keeping in mind that \texttt{lambda} is actually
-% the \emph{type constructor} for functional types, both implementations should
-% be equally easy to understand.
-
-% \vspace{0.3cm}
-
-% Finally, we also have \emph{dependent function types}, which we will completely
-% skip here, as they have been the subject of \S\ref{sec:dep-pi}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Product Types}
 
 Before getting into this subject, note that we skipped the presentation of
@@ -305,6 +211,18 @@ type. Hence, we refer the reader to our \S\ref{sec:pair-ex} and \S\ref{sec:induc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependent Pair Types ($ \Sigma $)}
+
+\todo[inline,noline,backgroundcolor=green!40]{\S10 Typer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Coproduct Types}
+
+\todo[inline,noline,backgroundcolor=green!40]{\texttt{Either}, \S13}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example: The Type of Booleans}
+
+\todo[inline,noline,backgroundcolor=green!40]{\S1.8 HoTT}
 
 
 %%% Local Variables:
