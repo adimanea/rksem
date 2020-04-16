@@ -2,7 +2,7 @@
 ;; rec_(A x B) : (Pi_(C : U) (A -> B -> C)) -> (A x B) -> C
 ;; rec_(A x B) (C, g, (a, b)) := g(a)(b)
 
-;; PROBLEM: The Pi should be only for C!
+;; PROBLEM: The Pi should be only for C! Is this possible?
 
 #lang pie
 
@@ -31,15 +31,6 @@
 (p1 (cons 2 3))                                                 ;; => (the Nat 2)
 
 
-;; for unit type
-;; (claim recU
-;;        (Pi ((C U)) (-> C Trivial C)))
-;; (define recU
-;;   (lambda (C)
-;;     (lambda (c sole)
-;;       c)))
-            
-
 ;; for unit type (Atom hack)
 (claim recA
        (Pi ((C U)) (-> C Atom C)))
@@ -50,3 +41,14 @@
 
 ;; test
 ((recA Nat) zero 'something)                                    ;; => (the Nat 0)
+
+;; for unit type
+(claim recU
+       (Pi ((C U)) (-> C Trivial C)))
+(define recU
+  (lambda (C)
+    (lambda (c d)       ;; d can only be sole
+      c)))
+
+;; test
+((recU Trivial) sole sole)                                      ;; => (the Trivial sole)
