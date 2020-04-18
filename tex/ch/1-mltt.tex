@@ -64,7 +64,131 @@ mathematics than set theory. As such, there are significant differences
 between sets and types, which are excellently summarized at
 \cite[\S1.1]{hott}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preamble: Set Theory and Type Theory}
+
+Before we get to more technical details, we make a short stop to discuss
+some specific differences between set theory and type theory. We should point
+out that many of the type-theoretical and logical aspects of homotopy type
+theory (hereafter referred to as HoTT) are taken from Per Martin-L\"{o}f's
+work, some of which we touch on below.
+Nevertheless, given the complexity and the size of the HoTT project, multiple
+changes have appeared, some more radical, some only to modernize the
+presentation.
+
+The main starting point is that type theory aims to provide foundational
+results for mathematics, overcoming the difficulties that set theory was shown
+to contain\footnote{On a similar note, \emph{topos theory} is another approach
+  that has a similar goal, coming from topology and category theory. While the
+  subject is way beyond the scope of this dissertation, we mention it and refer
+  the interested reader to the excellent book \cite{macsh} or the more introductive
+  \cite{goldb}. A historical overview of the topic is presented, for example,
+  in \cite{abuse}.}. For this reason, many discussions have been sparked as to
+what differentiates type theory from all the previous attempts of formalizing the
+foundations of mathematics in set theory. Without going into technical,
+complex discussions, we mention some basic points that are relevant to the
+current presentation. We rely for this on the overview presented in
+\cite[\S 1.1]{hott}.
+
+First, it should be pointed out that set theory, as used in the foundational
+research, is comprised of two parts:
+\begin{itemize}
+\item the deductive layer of first order logic, that is used to reason, i.e.\
+  to write proofs;
+\item the axioms that are formulated in this system and which regulate
+  the objects that live in the theory. In this case, the Zermelo-Fraenkel
+  with the Choice Axiom (usually written as ZFC) is the most used
+  axiomatic system.
+\end{itemize}
+It follows that set theory is not actually about sets \emph{per se}, but
+rather about the interactions between the sets, as objects instantiated
+by the second (axiomatic) layer by the rules of the first (deductive) layer,
+which help us make propositions.
+
+On the other hand, type theory is built upon itself, in a way. What we
+mean is that type theory is its own deductive system. Whereas set theory
+is based on \emph{sets} and \emph{propositions} (about sets), type theory
+is only about \emph{types}. As such, the primitive notion of type can be
+subject to various interpretations which become (parts of) mathematical
+theories: some types can be seen as propositions, some as sets, some as
+topological spaces, categories and so forth. It follows that the mathematical
+(\emph{formal}) act of \emph{proving a theorem} inside set theory becomes the
+\emph{constructive} (i.e.\ intuitionistic) act of \emph{constructing an object},
+namely an inhabitant of a type.
+
+Another key difference is related to the structure of deductions themselves.
+In general, we can make a deductive system from (inference) \emph{rules}
+and \emph{judgments}, which are derived by the rules. In the case of
+first order logic, which regulates set theory, the basic judgment is
+that a proposition has a proof. From it, one can construct derived proofs,
+such as, for example, the proof of $ A \land B $, which is made of a proof
+of $ A $ in conjunction with a proof of $ B $, by a rule of proof construction.
+
+On the other hand, the basic judgment of type theory is of the form $ a : A $,
+read \qq{\emph{element $ a $ has type $ A $}}. But this judgment is analogous
+to the provability of proposition $ A $, were it to be interpreted as a type.
+That is, exposing an inhabitant $ a $ of the type $ A $ \emph{is not} similar to
+showing an element of a set $ a \in A $. Membership is taken for granted in type
+theory when we make a typing judgment. That is, the judgment $ a : A $ cannot
+be proved or disproved so it cannot be used in composite judgments such as
+\emph{if $ a : A $ then $ b : B $}. Intuitively, this is because whenever we
+want to model the use of a certain element, we think of its \qq{natural type},
+i.e.\ one which we are sure it inhabits, then start from there. We never,
+even in common mathematical speech, start with something like
+\emph{Let $ a = \dfrac{\sqrt[3]{1 + \sqrt[5]{5}}}{\ln 7} : \NN $} if we are not sure
+that it is true first. Usually, if we need to use $ a $ in some proof,
+we start with it as an inhabitant of a type which we are sure it belongs to,
+e.g.\ \emph{let $ a : \RR $}\footnote{Note that we have not provided examples
+  of types yet and if this example induces the confusion that all sets are
+  types or vice versa (or at least, numeric sets), feel free to skip this
+  discussion, as we will not insist on it anyway.}.
+
+Lastly, a very important difference between sets and types is the treatment
+of \emph{equality}. In common set theory, equality is a proposition, meaning
+that it can be proved or disproved for various sets or elements. In type theory,
+however, \emph{equality is a type}. That is, taking, say $ a, b : A $, there
+exists the type $ a =_A b $, which is inhabited if and only if $ a $ and $ b $
+represent the same element. Before going further, a quick detour: What would
+an inhabitant of an equality type look like? What \qq{instantiates} the fact
+that is commonly written as $ a = b $? This is not an easy question and we only
+mention that this is one of the starting points of the \emph{homotopy} part of
+HoTT. That is, using Martin-L\"{o}f's brilliant idea of making equality a type,
+homotopies (formally known as \emph{homotopy maps}) entered the scene. They
+provide a kind of \qq{relaxed} form of equality by means of, e.g.\ in topology,
+\emph{continuous deformations}. Since in topology, continuity is one of the
+most important properties, if a space can be continuously transformed into
+another one, we simply say that \qq{they are the same}\footnote{This is the
+  origin of the famously funny \qq{facts} which state that
+  \href{https://upload.wikimedia.org/wikipedia/commons/2/26/Mug\_and\_Torus\_morph.gif}{%
+    a bagel is the same as a cup} or
+  \href{https://upload.wikimedia.org/wikipedia/commons/2/24/Spot\_the\_cow.gif}{%
+    a cow is the same as a sphere}.}
+What this example shows is that there are at least some interpretations of
+type theory where (the local notion of) equality can have witnesses, which
+are, in this case, \emph{homotopy maps}.
+\index{types!equality}
+\index{types!equality!propositional}
+\index{types!equality!definitional}
+\index{types!equality!judgmental}
+\index{types!homotopy}
+
+Back to the original discussion, when the type $ a =_A b $ is inhabited,
+we say that the elements $ a $ and $ b $ are \emph{propositionally equal}.
+That is, the fact that an equality type is inhabited provides an example
+of propositional equality. But there is another kind of equality, called
+\emph{judgmental} or \emph{definitional} equality, which is more akin to the
+common mathematical sense. For example, $ 3^2 $ and $ 9 $ are equal by definition
+(of multiplication, in this case), so they exhibit a definitional equality.
+It is \emph{judgmental} in the sense that it can be proved, e.g.\ by using
+the definition of multiplication in the example we provided. We finish by
+mentioning that this kind of equality can be used for whole function equality,
+for example, by means of the distinction between intensional and extensional
+concepts which we mention in Remark \ref{rk:int-ext}. For example,
+the function $ x \mapsto (x + 2) $ is \emph{judgmentally equal} to
+the function $ y \mapsto (y + 3 - 1) $. Usually, definitional equality is
+denoted by $ \equiv $, so $ 3^2 \equiv 9 $ etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Fundamentals of MLTT}
 \index{proof!tree}

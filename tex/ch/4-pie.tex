@@ -693,6 +693,293 @@ Now the innards of \texttt{length} should be transparent: it uses \texttt{rec-Li
 to increase the length of the list by one, while popping out elements
 from it (the \texttt{target} argument).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{More on Product Types}
+
+This section and its subsequents will be heavily based on the first chapter of
+\cite{hott} and the idea is to insist on some theoretical aspects of certain
+composite types, after which we will see if and how they can be implemented
+in Pie. There are some intentional design decisions that impose certain
+limits on Pie and we will see how they can be eluded.
+
+First, assume we have two types $ A, B : \kal{U} $ and we want to introduce
+their product type $ A \times B : \kal{U} $, which is called their
+\emph{(Cartesian) product type.} In the particular case when make the
+void choice both for $ A $ and $ B $, we get the \emph{unit type},
+also called the \emph{nullary product type}, denoted by $ \pmb{1} : \kal{U} $.
+
+The canonical elements of type $ A \times B $ will be pairs of the form
+$ (a, b) $, where $ a : A $ and $ b : B $, whereas the unique element of
+type $ \pmb{1} $ is denoted by some generic $ \ast : \pmb{1} $.
+
+Note that if in set theory, both functions and (ordered) pairs are constructed,
+in type theory they are taken as primitive concepts, both of them.
+
+Hence, we have above, in MLTT parlance, the \emph{introduction rules}:
+$ A \times B \text{ type} $, for $ A \text{ type } $ and $ B \text{ type} $.
+Or, using universes: $ A \times B : \kal{U} $, for $ A, B : \kal{U} $ and
+similarly for the unit type $ \ast : \pmb{1} $ (for the void choice).
+
+For the constructor of this type, we make use of the \emph{uniqueness principle}
+(which can be proved using equality types and for which we refer the reader
+to \cite[p.\ 29]{hott}), which states that all elements of type $ A \times B $
+are ordered pairs. So if we know how to construct ordered pairs, we can inhabit
+product types. But there is nothing to prove, since we assumed that pairs are
+primitive concepts. That is, starting with $ a : A $ and $ b : B $, we can
+directly construct $ (a, b) : A \times B $.
+
+Now we need the \emph{type eliminators}, which show us how to use ordered pairs.
+For this purpose, we want to construct functions out of product types, i.e.\
+functions which take pairs as arguments. We will do this by relying on previously
+introduced types, namely function types (with their constructor, $ \lambda $).
+So, we start with a function $ g : A \to B \to C $, or, in other words, with
+the function type $ A \to B \to C $, inhabited by some $ g $. This type can be
+parsed as $ (A \to B) \to C $, so $ g $ is some $ \lambda a . \lambda b . \Phi $\footnotemark,
+where $ \Phi $ is a functional expression that may or may not contain $ a $ and $ b $.\footnotemark
+\footnotetext{This explicit, iterated lambda expression is sometimes called the
+  \emph{uncurried} version for a two-argument function. There is also the
+  \emph{curried} version, written as $ \lambda ab.\Phi $, which is explicit
+  enough.}
+\footnotetext{We should have been more explicit by using \emph{typed} lambda
+  expressions, i.e.\ $ \lambda (a : A) . \lambda (b : B) . \Phi $, but we
+  omitted the types, hoping they are understood from the context.}
+
+Using this $ g $, we want to construct $ f : A \times B \to C $. This
+is easy and we have the \emph{elimination rule} for product types
+which is the definitional equality below:
+\[
+  f((a, b)) :\equiv g(a)(b).
+\]
+
+There are two particular cases of interest, namely the \emph{canonical projection}
+functions:
+\[
+  p_1 : (a, b) \mapsto a, \quad p_2 : (a, b) \mapsto b.
+\]
+
+And furthermore, they can be put in a more general framework using a function
+that is called a \emph{recursor} for product types:
+\begin{align*}
+  &\dr{rec}_{A \times B} : \prod_{C : \kal{U}} (A \to B \to C) \to A \times B \to C \\
+  &\dr{rec}_{A \times B}(C, g, (a, b)) :\equiv g(a)(b).
+\end{align*}
+
+This function is parametrized by some type $ C : \kal{U} $ and has two arguments:
+one is a two-valued \emph{dependent function} $ A \to B \to C $ and the other
+is a pair of type $ A \times B $. Using this, we can recover the projection
+functions by the following definitional equalities:
+\begin{align*}
+  p_1 &:\equiv \dr{rec}_{A \times B}(A, \lambda ab . a) \\
+  p_2 &:\equiv \dr{rec}_{A \times B}(B, \lambda ab . b).
+\end{align*}
+
+For the unit type, this is trivial:
+\[
+  \dr{rec}_{\pmb{1}} : \prod_{C : \kal{U}} C \to \pmb{1} \to C, \quad %
+  \dr{rec}_{\pmb{1}}(C, c, \ast) :\equiv c.
+\]
+
+\vspace{0.3cm}
+
+Now onto the Pie implementation. We have already met the \texttt{Pair} type
+constructor, which can be seen as the Cartesian product. That is, if
+\texttt{A} and \texttt{B} are types, \texttt{(Pair A B)} is a product
+type. We already know which are its eliminators, namely \texttt{car} and
+\texttt{cdr}, which are, respectively, the first and second projection.
+Moreover, its constructor is \texttt{cons}.
+
+Therefore, we continue by adding the unit type and the recursor.
+The unit type is built-in Pie and it is called \texttt{Trivial}. Its
+only element (or constructor) is called \texttt{sole}. Hence, the
+expression \texttt{(the Trivial sole)} does the typing $ \ast : \pmb{1} $.
+
+As for the recursor, there are two particular shortcomings of Pie, which are
+actually intentional design decisions\footnotemark, but they can be overcame.
+\footnotetext{Thank you, David Thrane Christiansen for explaining them to me!}
+
+First, there are no ``generic types'' in Pie, so there is no equivalent of
+$ A : \kal{U} $, so we have to use particular types that are built-in the
+language, such as \texttt{Nat} or \texttt{Atom}.
+
+Second, the \texttt{Pi} type constructor for dependent types must bind
+all types that appear in its \texttt{claim}. That is, we will not be able
+to make explicit the fact that the recursor $ \dr{rec}_{A \times B} $ uses
+some \emph{fixed} types $ A $ and $ B $ and the only type parameter is
+$ C $.
+
+Those being said, an implementation can be as follows:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim recAxB
+       (Pi ((A U) (B U) (C U))              ; as if all are type params
+           (-> (-> A B C) (Pair A B) C)))
+(define recAxB
+  (lambda (A B C)                           ; abstract (all) the types first
+    (lambda (g p)                           ; g is (lambda ab.F) and p is a Pair
+      ((g (car p)) (cdr p)))))
+\end{verbatim}
+}
+
+And now for example, we can test as follows:
+{
+  \small
+\begin{verbatim}
+((recAxB Nat Nat Nat) 
+    (lambda (x y) (add1 y)) (cons 2 3))     ; => (the Nat 4)
+;;  |------ g ------------| |--- p ----|
+\end{verbatim}
+}
+
+We can also define the first projection for the \texttt{Nat} type
+using the recursor by:
+{
+  \small
+\begin{verbatim}
+(claim p1 (-> (Pair Nat Nat) Nat))
+(define p1
+  ((recAxB Nat Nat Nat)
+     (lambda (x y) x)))
+
+;; test
+(p1 (cons 2 3))                             ; => (the Nat 2)
+\end{verbatim}
+}
+
+For the particular case of the unit type, we have:
+{
+  \small
+\begin{verbatim}
+(claim recU
+  (Pi ((C U)) (-> C Trivial C)))
+(define recU
+  (lambda (C)
+    (lambda (c d) c)))                      ; d can only be sole
+
+;; test
+((recU Trivial) sole sole)                  ; => (the Trivial sole)
+((recU Nat) zero sole)                      ; => (the Nat 0)
+\end{verbatim}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Dependent Pair Types}
+
+% Given a pair type, we can allow one of the arguments to be a parameter.
+% We get this by constructing \emph{dependent pair types} or $ \Sigma $ types.
+% That is, we start with a fixed type $ A : \kal{U} $ and a \emph{type family}
+% $ B : A \to \kal{U} $, which is inhabited by some $ B(x) $ for $ x : A $.
+% In other words, for each $ x : A $, we construct a (possibly different)
+% dependent type $ B(x) $. The $ \Sigma $ types are denoted by
+% $ \Sum_{x : A} B(x) $.
+
+% To construct elements of a dependent pair types, we basically explain the
+% concept: they are inhabited by ordered pairs, of which the second element has
+% a variable type. That is, we have $ (a, b) : \Sum_{x : A} B(x) $ starting
+% from $ a : A $ and $ b : B(a) $. Of course, in the particular case
+% when $ B $ is constant (i.e.\ we always choose the same $ x : A $ as
+% parameter or no parameter at all or we simply ignore the parameter and
+% always choose the same $ B $), we get the regular Cartesian product
+% type, which is written as:
+% \[
+%   \Sum_{x : A} B \equiv A \times B.
+% \]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Coproduct (Sum) Types}
+
+Starting with two types $ A, B : \kal{U} $, we can form their \emph{coproduct}
+or \emph{sum} type, denoted by $ A + B : \kal{U} $. This corresponds to disjoint
+unions in set theory, i.e.\ unions in which one can always identify precisely
+from where are the elements taken, either from the first term or from the second.
+
+The nullary version, where we don't choose neither $ A $ nor $ B $ is the
+\emph{null type}, which doesn't distinguish its elements and which we denote
+by $ \pmb{0} : \kal{U} $.
+
+Having said this, it is clear that to construct elements of type $ A + B $,
+we need the so-called \emph{left (right) injections}, which we denote by
+$ \dr{inl}(a) : A + B $ for some $ a : A $ and $ \dr{inr}(b) : A + B $
+for some $ b : B $.
+
+Now, eliminators for this type, i.e. functions $ f : A + B \to C $ are
+constructed by components. That is, we need functions $ g_l : A \to C $
+and $ g_r : B \to C $ and then define:
+\[
+  f(\dr{inl}(a)) :\equiv g_l(a), \quad
+  f(\dr{inr}(b)) :\equiv g_r(b)
+\]
+and invoke a \emph{uniqueness principle} for coproduct types, which states
+that all elements of such type are left (or right) injections. This means
+that the definition above is by \emph{exhaustive case analysis.}
+
+As in the case of product types, we have a recursor for sum types,
+namely:
+\begin{align*}
+  &\dr{rec}_{A + B} : \prod_{C : \kal{U}} (A \to C) \to (B \to C) \to A + B \to C \\
+  &\dr{rec}_{A + B} (C, g_l, g_r, \dr{inl}(a)) :\equiv g_l(a) \\
+  &\dr{rec}_{A + B} (C, g_l, g_r, \dr{inr}(b)) :\equiv g_r(b).
+\end{align*}
+
+Since there are no elements of type $ \pmb{0} $, we trivially construct
+a function $ f : \pmb{0} \to C $ by providing no equations. So basically
+the recursor is:
+\[
+  \dr{rec}_{\pmb{0}} : \prod_{C : \kal{U}} \pmb{0} \to C,
+\]
+which constructs a canonical element of type $ C $ starting from nothing.
+This is the type theoretical expression of the logical principle
+\emph{ex falso quodlibet}, which states that a false statement can imply
+anything. That is, starting with a false assumption, we can derive anything.
+
+\vspace{0.3cm}
+
+Now onto the Pie implementation. Conveniently enough, Pie already contains
+the coproduct types, whose type constructor is \texttt{Either}. That is,
+if \texttt{A} and \texttt{B} are types, then \texttt{(Either A B)} is their
+sum type written mathematically as $ A + B $. Its constructors are
+\texttt{left} and \texttt{right}, which means that \texttt{a} is of type
+\texttt{A}, then \texttt{(left a)} has type \texttt{(Either A B)}
+and if \texttt{b} is of type \texttt{B}, then \texttt{(right b)} has
+type \texttt{(Either A B)}.
+
+Also, \texttt{Absurd} is the empty type.
+
+This means we can readily adapt the recursor for product types in order to
+get the version for sum types:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim recA+B-left
+    (Pi ((A U) (B U) (C U))
+        (-> (-> A C) (-> B C) (Either A B) C)))
+
+(claim recA+B-right
+    (Pi ((A U) (B U) (C U))
+        (-> (-> A C) (-> B C) (Either A B) C)))
+
+(define recA+B-left
+  (lambda (A B C)
+    (lambda (gl gr (left a)
+      (gl a)))))
+
+(define recA+B-right
+  (lambda (A B C)
+    (lambda (gl gr (right b)
+      (gr b)))))
+
+;; test
+???
+\end{verbatim}
+}
+
+
+
+
 
 %%% Local Variables:
 %%% mode: latex
