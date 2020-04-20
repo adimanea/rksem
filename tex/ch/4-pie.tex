@@ -889,11 +889,18 @@ For the particular case of the unit type, we have:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Coproduct (Sum) Types}
+\index{types!coproduct}
 
 Starting with two types $ A, B : \kal{U} $, we can form their \emph{coproduct}
 or \emph{sum} type, denoted by $ A + B : \kal{U} $. This corresponds to disjoint
 unions in set theory, i.e.\ unions in which one can always identify precisely
-from where are the elements taken, either from the first term or from the second.
+from where are the elements taken, either from the first term or from the second\footnotemark.
+\footnotetext{From a logical point of view and taking into consideration the
+  connection between types and propositions, coproduct types correspond to
+  \emph{logical (exclusive) disjunctions}. That is, the type $ A + B $, when $ A $ and
+  $ B $ are interpreted as propositions, is meant to mean $ A $ \emph{xor} $ B $.
+  In words, this is ``\emph{Either $ A $ or $ B $}'', which is reflected
+  best in the Haskell syntax \texttt{data Either a b = Left a | Right b}.}
 
 The nullary version, where we don't choose neither $ A $ nor $ B $ is the
 \emph{null type}, which doesn't distinguish its elements and which we denote
@@ -971,9 +978,95 @@ get the version for sum types:
   (lambda (A B C)
     (lambda (gl gr (right b)
       (gr b)))))
+\end{verbatim}
+}
 
-;; test
-???
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example: The Type of Booleans}
+\index{types!Boolean}
+
+Pie does not contain the type of Boolean variables, but this can
+be implemented easily. Moreover, we will follow the presentation from
+\cite[\S1.8]{hott} and show how this type can be defined using the notions
+that we have met so far.
+
+First, it is clear that the type of Booleans can be defined as a coproduct
+type. Intuitively, this means that we are using the \emph{excluded middle}
+principle and we think that any proposition (resp.\ type) is either true
+(resp.\ inhabited) or false (resp.\ uninhabited). This means that the type
+of Booleans, which we denote by \texttt{Bool} or $ \pmb{2} $ can be seen as
+the coproduct of two unit types, $ \pmb{2} = \pmb{1} + \pmb{1} $.
+
+Although seemingly simple, this type is of big theoretical importance. More
+precisely, it can be used to define binary products and coproducts, but the
+details exceed the scope of this dissertation.
+
+Hence, the \emph{type formation} rule is simple: we already have unit types
+and we already know how to make a coproduct. Therefore, the type $ \pmb{2} $
+is readily made for us from previous constructions.
+
+Being a coproduct type, its constructors are the injections, $ \dr{inl} $
+and $ \dr{inr} $, which in this case, apply to the sole element of the
+unit type: $ \dr{inl}(\ast) : \pmb{2} $ and $ \dr{inr}(\ast) : \pmb{2} $.
+In order to differentiate the components, we will denote by $ 0_{\pmb{2}} $
+the left element and by $ 1_{\pmb{2}} $ the right element.
+
+Now for the eliminator, i.e.\ to show how inhabitants of this type are
+used, we need a function $ f : \pmb{2} \to C $, for some type $ C : \kal{U} $.
+From the uniqueness principle, we know that there are only two elements of
+type $ \pmb{2} $, so in order to define such a function, it is sufficient to
+choose two elements, say $ c_0, c_1 : C $. Then we define by a simple exhaustive
+case analysis:
+\[
+  f(0_{\pmb{2}}) :\equiv c_0, \quad f(1_{\pmb{2}}) :\equiv c_1.
+\]
+
+We continue by noting that the recursor for this type corresponds to a
+simple branching (\texttt{if-then-else}) statement in programming or in
+other words, a two-case \texttt{switch} statement. That is, we have:
+\[
+  \dr{rec}_{\pmb{2}} : \prod_{C : \kal{U}} C \to C \to \pmb{2} \to C,
+\]
+which is defined by the equations (again, exhaustive case analysis):
+\[
+  \begin{cases}
+    \dr{rec}_{\pmb{2}}(C, c_0, c_1, 0_{\pmb{2}}) &:\equiv c_0 \\
+    \dr{rec}_{\pmb{2}}(C, c_0, c_1, 1_{\pmb{2}}) &:\equiv c_1
+  \end{cases}.
+\]
+
+In words, the ``\texttt{switch}ed'' statement has a dependent function
+type $ \prod_{C : \kal{U}} C \to C \to \pmb{2} $, which is basically
+a correspondence (mix) between the elements $ c_0, c_1 $ and if this
+correspondence ends up in $ 0_{\pmb{2}} : \pmb{2} $, then we return $ c_0 $,
+otherwise we return $ c_1 $.
+
+\vspace{0.3cm}
+
+In Pie syntax, since we already have the coproduct type at our disposal,
+with the \texttt{Either} type constructor, as well as the unit type,
+which is \texttt{Trivial}, the Boolean type is \texttt{(Either Trivial Trivial)}.
+If we take, say, the left component to mean false and the right, to mean true, then
+\texttt{false} is \texttt{(left sole)} and \texttt{true} is \texttt{(right sole)}.
+
+Now the recursor can be defined like so:
+{
+  \small
+\begin{verbatim}
+#lang pie
+
+(claim recBool
+  (Pi ((C U)) 
+    (-> C C (Either Trivial Trivial) C)))
+(define recBool
+  (lambda (C)
+    (lambda (c0 c1 (left sole))
+      c0)))
+
+(define recBool
+  (lambda (C)
+    (lambda (c0 c1 (right sole))
+      c1)))
 \end{verbatim}
 }
 
