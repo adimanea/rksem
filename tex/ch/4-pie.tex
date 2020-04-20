@@ -954,30 +954,166 @@ type \texttt{(Either A B)}.
 
 Also, \texttt{Absurd} is the empty type.
 
-This means we can readily adapt the recursor for product types in order to
+However, for case analysis, we need another important theoretical item.
+This is what Conor McBride called a \emph{motive} in \cite{motive} and
+informally, it is a parametrized type choice. That is, it is a function
+$ \dr{mot} : A \to \kal{U} $, where $ A $ is some available type. Although
+this concept is worth discussing at length, we will restrict ourselves to
+an understanding based on some examples. Aside from the \texttt{rec-} and
+\texttt{which-} functions that were used to construct (more or less)
+inductively certain elements, there is another family of such functions,
+prefixed by \texttt{ind-}. We will explain it first in the case of the
+\texttt{Nat} type, as it is the most familiar background for inductive
+definitions. As such, the general syntax of the \texttt{ind-Nat} function is:
+\begin{equation}
+  \label{eq:ind-nat}
+  \texttt{(ind-Nat \ target \ mot \ base \ step)},
+\end{equation}
+which deserves further explanation. As stated above, \texttt{mot} is a
+parametrized type choice, which in the case of \texttt{ind-Nat} means \texttt{mot}
+is \texttt{(-> Nat U)}. This allows to change the type for each \texttt{Nat}
+argument or, in other words, to have a \emph{sequence of types} (indexed
+by natural numbers). The use of such a feature is evident in the case of
+polymorphic lists, for example.
+
+Further, \texttt{base} has type \texttt{(mot zero)}, thus preserving the
+intuitive meaning of ``base case'' and \texttt{step} has a type of the form:
+\[
+  \texttt{(Pi ((n-1 Nat)) (-> (mot n-1) (mot (add1 n-1))))},
+\]
+again preserving the intuitive meaning of ``inductive step''. In words,
+\texttt{step} has a type that is dependent of the previous case and it
+is actually a function which relates the previous type \texttt{(mot n-1)}
+with the current type, \texttt{(mot (add1 n-1))} (\texttt{(add1 n-1)} is
+actually \texttt{n}).
+
+Finally, the whole \texttt{ind-Nat} expression returns a type that is
+\texttt{(mot target)}.
+
+We can detail further, knowing that \texttt{target} can have only
+two values, \texttt{zero} or \texttt{(add1 n)}:
+\begin{itemize}
+\item if \texttt{target} is \texttt{zero}, then the whole \texttt{ind-Nat}
+  expression from equation~\eqref{eq:ind-nat}
+  has type \texttt{(mot zero)} and it coincides with \texttt{base};
+\item if \texttt{target} is \texttt{(add1 n)}, then the whole \texttt{ind-Nat}
+  expression from equation~\eqref{eq:ind-nat} has type \texttt{(mot (add1 n))}
+  and it coincides with:
+  \[
+    \texttt{(step \ n \ (ind-Nat \ n \ mot \ base \ step))}.
+  \]
+\end{itemize}
+
+\vspace{0.3cm}
+
+This \texttt{ind-} function comes in handy when discussing the
+simpler case of \texttt{Either} types. For this case, the
+respective \texttt{ind-Either} function has a simpler syntax:
+\begin{equation}
+  \label{eq:ind-either}
+  \texttt{(ind-Either \ target \ mot \ base-left \ base-right)}.
+\end{equation}
+
+As in the case of \texttt{ind-Nat}, the motive \texttt{mot} means
+an appropriate parametrized choice of type. Therefore, in this
+case, \texttt{mot} has type \texttt{(-> (Either L R) U)}. Then,
+\texttt{base-left} shows what type is chosen for the \texttt{left}
+part of the \texttt{Either} type. This means that the type of
+\texttt{base-left} is:
+\[
+  \texttt{(Pi ((x L)) (mot (left x)))}
+\]
+and similarly for \texttt{base-right}.
+
+Note that unlike the \texttt{ind-Nat} function, we don't have a
+\texttt{step} for \texttt{ind-Either}, since there are no steps
+when constructing an \texttt{Either} type; there are only two cases,
+so the target can be either some \texttt{(left x)} or some
+\texttt{(right y)}.
+
+The typing rule for this function states that, under the typing
+assumptions above, the expression from equation~\eqref{eq:ind-either}
+has type \texttt{(mot target)}.
+
+How this works for case analysis is explained in the computation rules:
+\begin{itemize}
+\item \texttt{(ind-Either (left x) mot base-left base-right)} is an
+  expression with type \texttt{(mot (left x))} which is computed
+  via \texttt{(base-left x)};
+\item \texttt{(ind-Either (right y) mot base-left base-right)} is an
+  expression with type \texttt{(mot (right y))} which is computed
+  using \texttt{(base-right y)}.
+\end{itemize}
+
+Now we can adapt the recursor for product types in order to
 get the version for sum types:
 {
   \small
 \begin{verbatim}
 #lang pie
 
-(claim recA+B-left
+(claim recA+B
     (Pi ((A U) (B U) (C U))
         (-> (-> A C) (-> B C) (Either A B) C)))
 
-(claim recA+B-right
-    (Pi ((A U) (B U) (C U))
-        (-> (-> A C) (-> B C) (Either A B) C)))
-
-(define recA+B-left
+(define recA+B
   (lambda (A B C)
-    (lambda (gl gr (left a)
-      (gl a)))))
+    (lambda (gl gr tgt)
+      (ind-Either tgt
+        (lambda (_) C)
+        (lambda (_) (gl _))
+        (lambda (_) (gr _))))))
+\end{verbatim}
+}
 
-(define recA+B-right
+How this works is explained below:
+\begin{itemize}
+\item we are abstracting over the types first, as it is needed in the \texttt{Pi},
+  hence the first \texttt{(lambda A B C)};
+\item then, the arguments are \texttt{gl : A -> C}, \texttt{gr : B -> C} and
+  \texttt{tgt : (Either A B)}, so \texttt{tgt} is some \texttt{(left x)} or
+  \texttt{(right y)};
+\item using the \texttt{Either}-eliminator \texttt{ind-Either}, we have the
+  motive which always returns something of type \texttt{C};
+\item next, the \texttt{base-left} case corresponds to when \texttt{tgt} is
+  some \texttt{(left x)}. For that case, we want to apply \texttt{gl} to \texttt{x};
+\item otherwise, \texttt{tgt} is \texttt{(right y)}, so we apply \texttt{gr} to \texttt{y}.
+\end{itemize}
+
+Notice how the placeholder syntax \texttt{(\_)} is very useful in this case, as it
+automatically knows what to do. Namely, for example, for the \texttt{left x} case,
+we want to apply \texttt{gl} to \texttt{x}, discarding the \texttt{left}, which is
+automatically done using the placeholder.
+
+This could have worked equally well with explicit syntax, such as:
+{
+  \small
+\begin{verbatim}
+(define recA+B
   (lambda (A B C)
-    (lambda (gl gr (right b)
-      (gr b)))))
+    (lambda (gl gr tgt)
+      (ind-Either tgt
+        (lambda (mot) C)
+        (lambda (x) (gl x))
+        (lambda (y) (gr y))))))
+\end{verbatim}
+}
+but one can argue that it could be confusing since we know that the last two
+\texttt{lambda}s must correspond to some \texttt{left} or \texttt{right} cases.
+So it's probably better to leave the arguments hidden.
+
+We can now test for the \texttt{Nat} type like so, for example:
+{
+  \small
+\begin{verbatim}
+((recA+B Nat Nat Nat)           ; A = B = C = Nat
+     (lambda (x) (add1 x))      ; gl = +1
+     (lambda (y) zero)          ; gr = 0
+     (left 3))                  ; => (the Nat 4)
+((recA+B Nat Nat Nat)
+     (lambda (x) (add1 x))
+     (lambda (y) zero)
+     (right 3))                 ; => (the Nat 0)
 \end{verbatim}
 }
 
@@ -1049,29 +1185,68 @@ which is \texttt{Trivial}, the Boolean type is \texttt{(Either Trivial Trivial)}
 If we take, say, the left component to mean false and the right, to mean true, then
 \texttt{false} is \texttt{(left sole)} and \texttt{true} is \texttt{(right sole)}.
 
-Now the recursor can be defined like so:
+In order to implement this in Pie, let us first make some shorthand
+notations in accordance to what we discussed above:
 {
   \small
 \begin{verbatim}
 #lang pie
 
-(claim recBool
-  (Pi ((C U)) 
-    (-> C C (Either Trivial Trivial) C)))
-(define recBool
-  (lambda (C)
-    (lambda (c0 c1 (left sole))
-      c0)))
+(claim Bool U)              ; claim the Bool type
+(define Bool 
+  (Either Trivial Trivial)) ; Bool (2) is 1 (Trivial) + 1 (Trivial)
 
-(define recBool
-  (lambda (C)
-    (lambda (c0 c1 (right sole))
-      c1)))
+;; the truth values
+(claim true Bool)
+(define true (left sole))
+(claim false Bool)
+(define false (right sole))
 \end{verbatim}
 }
 
+Now we can define the recursor for this type, which is actually an \texttt{if}
+statement:
+{
+  \small
+\begin{verbatim}
+;; ... (the snippet above) ...
 
+(claim if
+  (Pi ((A U))
+    (-> Bool A A A)))
+(define if
+  (lambda (A expr f t)
+    (ind-Either expr
+      (lambda (_) A)
+      (lambda (_) f)
+      (lambda (_) t))))
+\end{verbatim}
+}
 
+In order to explain this definition, first recall the general form
+of \texttt{ind-Either} from equation~\eqref{eq:ind-either}. What we're testing
+is \texttt{expr}, which has type \texttt{Bool} (i.e.\ \texttt{(Either Trivial Trivial)}),
+then the motive chooses something of type \texttt{A} every time and the last
+two \texttt{lambda}s are the \texttt{base-left} and the \texttt{base-right} cases.
+That is, if what we're testing is some \texttt{(left x)}, it returns \texttt{f}
+and if it is some \texttt{(right y)}, it returns \texttt{t}. But recall that
+since \texttt{Bool} the sum type of false and true, the \texttt{left} and
+\texttt{right} statements are actually the false, respectively the true branches
+of an \texttt{if} statement.
+
+We can test this readily like so:
+{
+  \small
+\begin{verbatim}
+;; ... (the snippet above) ...
+(if Nat true zero 1)            ; => (the Nat 0)
+(if Nat false zero 1)           ; => (the Nat 1)
+
+;; unfolded syntax
+(if Nat (left sole) 5 2)        ; => (the Nat 5)
+(if Nat (right sole) 5 2)       ; => (the Nat 2)
+\end{verbatim}
+}
 
 
 %%% Local Variables:
