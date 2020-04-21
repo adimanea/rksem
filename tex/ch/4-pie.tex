@@ -1,13 +1,14 @@
 % ! TEX root = ../racket.tex
 \chapter{Pie}
 
-Pie is a language implemented in Racket meant to facilitate programming
+\indent\indent Pie is a language implemented in Racket meant to facilitate programming
 and theorem proving with dependent types. It is best described in the
 book \cite{typer}, which is written in a very original way, by means of
 dialogue, as a theater play, with emphasis on interaction and asking
 questions. In fact, the book is only one in a series generally titled
 \emph{The Little X}, where \emph{X} so far has been
-\emph{Schemer, Lisper, Prover, Haskeller}.
+\emph{Schemer, Lisper, Prover, Haskeller}. This style follows the model started
+by Heyting's presentation of intuitionistic logic in \cite{heyting}.
 
 In this chapter, we will present some basic syntax and features of Pie
 first and then insist on its implementation of dependent types. Most
@@ -16,7 +17,7 @@ of the presentation will follow \cite{typer}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Basic Syntax and Features}
 
-Since Pie is written in Racket, its syntax is similar to Racket's.
+\indent\indent Since Pie is written in Racket, its syntax is similar to Racket's.
 Moreover, the language is available as a Racket module, hence it can be
 installed using the Racket packet manager, \texttt{raco}. After that,
 any source code file will start with the pragma (module call)
@@ -104,7 +105,7 @@ we use is, in a sense, \emph{closed} or \emph{total}. That is, anything must
 have a type... \emph{including types!} Without going into details, we mention
 that the type of types is one all-encompassing \emph{universe}, denoted
 mathematically by $ \kal{U} $ and in Pie, by \texttt{U}. We will meet universes
-when we build $ \Pi $-types in Pie.
+when we build $ \prod $-types in Pie.
 \index{Pie!types!\texttt{U} (universe)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -122,7 +123,7 @@ introduced on the type of natural numbers in \S\ref{sec:nat-ind}.
 As such, we first introduce the Pie function \texttt{which-Nat}.
 The general syntax is:
 \[
-  \texttt{(which-Nat \ target \ base \ step)},
+  \texttt{(which-Nat target base step)},
 \]
 which is a function that acts on \texttt{Nat} variables.
 It works as follows:
@@ -636,7 +637,7 @@ Example:
                     (add1 (add1 almost))))))
 
 ;; and finally
-(add1 (add1 0))                 ; => (the Nat 2) provided 2 is claimed and defined!
+(add1 (add1 0))                 ; => (the Nat 2)
 \end{verbatim}
 }
 
@@ -695,22 +696,23 @@ from it (the \texttt{target} argument).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{More on Product Types}
+\label{sec:more-prod}
 
-This section and its subsequents will be heavily based on the first chapter of
+\indent\indent This section and its subsequents will be heavily based on the first chapter of
 \cite{hott} and the idea is to insist on some theoretical aspects of certain
 composite types, after which we will see if and how they can be implemented
 in Pie. There are some intentional design decisions that impose certain
 limits on Pie and we will see how they can be eluded.
 
 First, assume we have two types $ A, B : \kal{U} $ and we want to introduce
-their product type $ A \times B : \kal{U} $, which is called their
+their product type, denoted by $ A \times B : \kal{U} $, which is called their
 \emph{(Cartesian) product type.} In the particular case when make the
 void choice both for $ A $ and $ B $, we get the \emph{unit type},
 also called the \emph{nullary product type}, denoted by $ \pmb{1} : \kal{U} $.
 
 The canonical elements of type $ A \times B $ will be pairs of the form
 $ (a, b) $, where $ a : A $ and $ b : B $, whereas the unique element of
-type $ \pmb{1} $ is denoted by some generic $ \ast : \pmb{1} $.
+type $ \pmb{1} $ is denoted by some generic $ \star : \pmb{1} $.
 
 Note that if in set theory, both functions and (ordered) pairs are constructed,
 in type theory they are taken as primitive concepts, both of them.
@@ -718,7 +720,7 @@ in type theory they are taken as primitive concepts, both of them.
 Hence, we have above, in MLTT parlance, the \emph{introduction rules}:
 $ A \times B \text{ type} $, for $ A \text{ type } $ and $ B \text{ type} $.
 Or, using universes: $ A \times B : \kal{U} $, for $ A, B : \kal{U} $ and
-similarly for the unit type $ \ast : \pmb{1} $ (for the void choice).
+similarly for the unit type $ \star : \pmb{1} $ (for the void choice).
 
 For the constructor of this type, we make use of the \emph{uniqueness principle}
 (which can be proved using equality types and for which we refer the reader
@@ -734,13 +736,13 @@ functions which take pairs as arguments. We will do this by relying on previousl
 introduced types, namely function types (with their constructor, $ \lambda $).
 So, we start with a function $ g : A \to B \to C $, or, in other words, with
 the function type $ A \to B \to C $, inhabited by some $ g $. This type can be
-parsed as $ (A \to B) \to C $, so $ g $ is some $ \lambda a . \lambda b . \Phi $\footnotemark,
-where $ \Phi $ is a functional expression that may or may not contain $ a $ and $ b $.\footnotemark
-\footnotetext{This explicit, iterated lambda expression is sometimes called the
+parsed as $ (A \to B) \to C $, so $ g $ is some $ \lambda a . \lambda b . \Phi $\footnote{%
+  This explicit, iterated lambda expression is sometimes called the
   \emph{uncurried} version for a two-argument function. There is also the
   \emph{curried} version, written as $ \lambda ab.\Phi $, which is explicit
   enough.}
-\footnotetext{We should have been more explicit by using \emph{typed} lambda
+where $ \Phi $ is a functional expression that may or may not contain $ a $ and $ b $.\footnote{%
+  We should have been more explicit by using \emph{typed} lambda
   expressions, i.e.\ $ \lambda (a : A) . \lambda (b : B) . \Phi $, but we
   omitted the types, hoping they are understood from the context.}
 
@@ -776,7 +778,7 @@ functions by the following definitional equalities:
 For the unit type, this is trivial:
 \[
   \dr{rec}_{\pmb{1}} : \prod_{C : \kal{U}} C \to \pmb{1} \to C, \quad %
-  \dr{rec}_{\pmb{1}}(C, c, \ast) :\equiv c.
+  \dr{rec}_{\pmb{1}}(C, c, \star) :\equiv c.
 \]
 
 \vspace{0.3cm}
@@ -791,7 +793,7 @@ Moreover, its constructor is \texttt{cons}.
 Therefore, we continue by adding the unit type and the recursor.
 The unit type is built-in Pie and it is called \texttt{Trivial}. Its
 only element (or constructor) is called \texttt{sole}. Hence, the
-expression \texttt{(the Trivial sole)} does the typing $ \ast : \pmb{1} $.
+expression \texttt{(the Trivial sole)} does the typing $ \star : \pmb{1} $.
 
 As for the recursor, there are two particular shortcomings of Pie, which are
 actually intentional design decisions\footnotemark, but they can be overcame.
@@ -890,6 +892,8 @@ For the particular case of the unit type, we have:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Coproduct (Sum) Types}
 \index{types!coproduct}
+\index{Pie!types!\texttt{Either}}
+\label{sec:coprod}
 
 Starting with two types $ A, B : \kal{U} $, we can form their \emph{coproduct}
 or \emph{sum} type, denoted by $ A + B : \kal{U} $. This corresponds to disjoint
@@ -940,6 +944,7 @@ which constructs a canonical element of type $ C $ starting from nothing.
 This is the type theoretical expression of the logical principle
 \emph{ex falso quodlibet}, which states that a false statement can imply
 anything. That is, starting with a false assumption, we can derive anything.
+\index{types!empty ($\perp$)}
 
 \vspace{0.3cm}
 
@@ -954,6 +959,9 @@ type \texttt{(Either A B)}.
 
 Also, \texttt{Absurd} is the empty type.
 
+\index{Pie!types!\texttt{Absurd}}
+\index{Pie!types!motive}
+
 However, for case analysis, we need another important theoretical item.
 This is what Conor McBride called a \emph{motive} in \cite{motive} and
 informally, it is a parametrized type choice. That is, it is a function
@@ -967,7 +975,7 @@ prefixed by \texttt{ind-}. We will explain it first in the case of the
 definitions. As such, the general syntax of the \texttt{ind-Nat} function is:
 \begin{equation}
   \label{eq:ind-nat}
-  \texttt{(ind-Nat \ target \ mot \ base \ step)},
+  \texttt{(ind-Nat target mot base step)},
 \end{equation}
 which deserves further explanation. As stated above, \texttt{mot} is a
 parametrized type choice, which in the case of \texttt{ind-Nat} means \texttt{mot}
@@ -1000,18 +1008,20 @@ two values, \texttt{zero} or \texttt{(add1 n)}:
   expression from equation~\eqref{eq:ind-nat} has type \texttt{(mot (add1 n))}
   and it coincides with:
   \[
-    \texttt{(step \ n \ (ind-Nat \ n \ mot \ base \ step))}.
+    \texttt{(step n (ind-Nat n mot base step))}.
   \]
 \end{itemize}
 
 \vspace{0.3cm}
+
+\index{induction!\texttt{ind-Either}}
 
 This \texttt{ind-} function comes in handy when discussing the
 simpler case of \texttt{Either} types. For this case, the
 respective \texttt{ind-Either} function has a simpler syntax:
 \begin{equation}
   \label{eq:ind-either}
-  \texttt{(ind-Either \ target \ mot \ base-left \ base-right)}.
+  \texttt{(ind-Either target mot base-left base-right)}.
 \end{equation}
 
 As in the case of \texttt{ind-Nat}, the motive \texttt{mot} means
@@ -1143,7 +1153,7 @@ is readily made for us from previous constructions.
 
 Being a coproduct type, its constructors are the injections, $ \dr{inl} $
 and $ \dr{inr} $, which in this case, apply to the sole element of the
-unit type: $ \dr{inl}(\ast) : \pmb{2} $ and $ \dr{inr}(\ast) : \pmb{2} $.
+unit type: $ \dr{inl}(\star) : \pmb{2} $ and $ \dr{inr}(\star) : \pmb{2} $.
 In order to differentiate the components, we will denote by $ 0_{\pmb{2}} $
 the left element and by $ 1_{\pmb{2}} $ the right element.
 

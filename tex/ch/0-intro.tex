@@ -1,9 +1,10 @@
 % ! TEX root = ../racket.tex
 
 \chapter*{Introduction and Motivation}
+\pagestyle{plain}                       % ignore header
 
-The main motivation for starting the work on this project is my interest
-in the programming language Racket. This grew from me getting acquainted
+\indent\indent The main motivation for starting the work on this project is my interest
+in the Racket programming language. This grew from me getting acquainted
 with Emacs and Lisps, from a user standpoint at first, but then my interest
 sparked further and I started reading more about lambda calculus and various other
 related subjects. Before long, I discovered John McCarthy's pioneering
@@ -49,29 +50,27 @@ is big and flexible enough to be expressive for concepts of type theory,
 logic and proofs and on the other, it can be used in a piecemeal setup
 to serve as a great teaching toolbox for my purposes.
 
-\vspace{0.3cm}
-
-The plan of the work is as follows. We will start with some basic elements
+The plan of the work is as follows. We start with some basic elements
 of type theory and intuitionistic logic. While the subject is hugely developed
-and used in many parts of (theoretical) computer science, we will try to make
+and used in many parts of (theoretical) computer science, we try to make
 the work as self-contained as possible and as such, include in the preliminaries
 strictly the topics that will be developed further. For simplicity, but also
-for historical reasons, we will be focusing on the main work by one of
+for historical reasons, we focus on the main work by one of
 the creators of the field, at least in terms of making its presentation
 appropriate for computer science applications, Per Martin-L\"{o}f, \cite{mltt}.
-While Martin-L\"{o}f's lectures focus more on the theoretical side of things,
+While Martin-L\"{o}f's lectures touch more on the theoretical side of things,
 the excellent \cite{pmltt} provides enough details to see how the concepts
-can be used in actual programming. However, in this work we will be presenting
+can be used in actual programming. However, in this work we present
 only the basics of typing judgments that are specific to Martin-L\"{o}f's
 type theory, as well as an introduction to untyped lambda calculus. Another
 theoretical feature of interest is that of dependent types, of which we sketch
 a brief introduction.
 
-The second preliminary part of the dissertation will focus on Racket itself.
-We will try to provide a so-called \qq{crash-course} to introduce some
-elements of syntax. Again, we will be focusing on items that will be used
-throughout the dissertation and for streamlining the content and since we appreciate
-that the syntax is quite self-explanatory, we decided to add it as an appendix.
+Another preliminary part of the dissertation is on Racket itself.
+We try to provide a so-called \qq{crash-course} to introduce some
+elements of syntax. For streamlining the content and since we appreciate
+that the syntax is quite self-explanatory, we decided to add it only as a
+short appendix.
 
 A first, excellent example follows the theoretical part, along the lines of P.\ Ragde's
 article, \cite{proust}. There, the author showcases a toy proof assistant,
@@ -89,14 +88,22 @@ Racket programmers, it is a domain-specific language as well as a proof
 assistant particularly featuring dependent types. We are convinced that
 presenting the syntax and some basic examples of Pie will not only help in
 understanding some fundamental characteristics of dependent types, but it will
-also show some concrete examples, focused on functional programming.
-
-\vspace{0.3cm}
+also show some concrete examples, focused on functional programming. In the second
+part of the Pie chapter, we digress a bit towards \emph{homotopy type %
+  theory}. For this purpose, using the so-called ``HoTT book'' (\cite{hott}) as
+a guide, we detail some basic implementations in Pie of concepts that are not
+readily available in the language or are missing from the excellent
+\cite{typer} book.
 
 Apart from the references that are scattered thoughout the dissertation, our
 hope is that the material is self-contained and presented in such a way that
-it could be used as a teaching material at least for an introductory level,
-to spark the interest both in type theory and its implementation.
+it could be used as a teaching material to spark the interest both in type
+theory and its implementations.
+
+The author extends his thanks both to the advisor,
+Traian Șerbănuță and to the authors of the tools that take
+the main stage of this dissertation, Prabhakar Ragde and David Thrane Christiansen,
+for many useful discussions, hints and help!
 
 %%% Local Variables:
 %%% mode: latex

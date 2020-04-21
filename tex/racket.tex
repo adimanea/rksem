@@ -5,14 +5,30 @@
 \input{includes/thms}
 \input{includes/formatting}
 
+\pagestyle{fancy}
+\lhead{\color{gray}\textsc{Crafting Provers in Racket}}
+\rhead{\color{gray}\thechapter {} \textsc{\leftmark}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}     % only chapter number
+
 \begin{document}
 
-\thispagestyle{empty}
-\pagestyle{plain} % fix for page numbers
+% \thispagestyle{empty}
+% \pagestyle{plain} % fix for page numbers
 
-\title{\huge\textbf{Crafting Provers in Racket}}
-\vspace{1cm}
-\author{\Large\textsc{Adrian Manea} \\ \large{Coordinator: Assoc.\ Prof.\ Traian \c{S}erb\u{a}nu\c{t}\u{a}}}
+
+\title{{\huge\textbf{Crafting Provers in Racket}} \\
+  {\Large Masters of Science Thesis}}
+
+\author{\Large\textsc{Adrian Manea} \\
+  {\large{Advisor: Assoc.\ Prof.\ Traian \c{S}erb\u{a}nu\c{t}\u{a}}} \\[6cm]
+
+  Security and Applied Logic Masters Program \\
+  Faculty of Mathematics and Computer Science \\
+  University of Bucharest \\[4cm]
+
+  Bucharest, July 2020}
+
+\date{}
 
 \maketitle
 
@@ -24,12 +40,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MAIN CONTENT
 \pagenumbering{arabic}
-\pagestyle{fancy}
-\fancyhf{}
-\rhead{\footnotesize{\color{gray}Proofs in Racket}}
-\lhead{\footnotesize{\color{gray}Adrian Manea}}
 
-\pagestyle{plain} % restore page numbering
+% \pagestyle{plain} % restore page numbering
 
 % TODOs
 % \addcontentsline{toc}{chapter}{\protect\numberline{}TO ADD/CLARIFY}
@@ -42,6 +54,9 @@
 \include{ch/3-proust}
 \include{ch/4-pie}
 % \include{ch/5-hott}
+
+\addcontentsline{toc}{chapter}{\protect\numberline{}Conclusions and Further Work}
+\include{ch/concl}
 
 \addcontentsline{toc}{chapter}{\protect\numberline{}Appendix: Basic Racket Syntax}
 \include{ch/a1-racket}

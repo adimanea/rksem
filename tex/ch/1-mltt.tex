@@ -2,16 +2,18 @@
 
 \chapter{Martin-L\"of Type Theory}
 \label{ch:mltt}
+\pagestyle{fancy}                           % restore header
 
 
 We start the theoretical part of this work focusing on Martin-L\"of's take
 on intuitionistic logic and type theory. Before we do that, however, a quick
-note on the historical evolution of the subject. For brevity, we will
-use the abbreviation MLTT for Martin-L\"of's Type Theory.
+note on the historical evolution of the subject, its motivation and intentions.
+For brevity, we will use throughout the abbreviation MLTT for Martin-L\"of's
+formulation of type theory, as presented best in \cite{mltt}.
 
 \section{Brief Historical Overview}
 \index{types!theory}
-Type theory was first developed by Bertrand Russell and some of his
+\indent\indent Type theory was first developed by Bertrand Russell and some of his
 collaborators and then expanded by Frank Ramsey and others. It was used
 first to introduce a kind of hierarchy of (mathematical) concepts
 that would \qq{solve} Russell's paradox. At the same time, in the first
@@ -58,20 +60,14 @@ We will not go into more historical or philosophical details of this subject
 and instead further focus on the mathematical aspects that were then
 implemented in proof assistants.
 
-It is worth mentioning, however, that type theory (along with topos theory)
-has evolved into a domain which claims to serve as a better foundation for
-mathematics than set theory. As such, there are significant differences
-between sets and types, which are excellently summarized at
-\cite[\S1.1]{hott}.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preamble: Set Theory and Type Theory}
 
-Before we get to more technical details, we make a short stop to discuss
-some specific differences between set theory and type theory. We should point
-out that many of the type-theoretical and logical aspects of homotopy type
-theory (hereafter referred to as HoTT) are taken from Per Martin-L\"{o}f's
-work, some of which we touch on below.
+\indent\indent Before we get to more technical details, we make a short apparent
+detour to discuss some specific differences between set theory and type theory.
+We should point out that many of the type-theoretical and logical aspects of
+homotopy type theory (hereafter referred to as HoTT) are taken from Per
+Martin-L\"{o}f's work, some of which we touch on below.
 Nevertheless, given the complexity and the size of the HoTT project, multiple
 changes have appeared, some more radical, some only to modernize the
 presentation.
@@ -103,9 +99,9 @@ research, is comprised of two parts:
 It follows that set theory is not actually about sets \emph{per se}, but
 rather about the interactions between the sets, as objects instantiated
 by the second (axiomatic) layer by the rules of the first (deductive) layer,
-which help us make propositions.
+which help make propositions.
 
-On the other hand, type theory is built upon itself, in a way. What we
+On the other hand, type theory is built upon itself. What we
 mean is that type theory is its own deductive system. Whereas set theory
 is based on \emph{sets} and \emph{propositions} (about sets), type theory
 is only about \emph{types}. As such, the primitive notion of type can be
@@ -126,7 +122,7 @@ of $ A $ in conjunction with a proof of $ B $, by a rule of proof construction.
 
 On the other hand, the basic judgment of type theory is of the form $ a : A $,
 read \qq{\emph{element $ a $ has type $ A $}}. But this judgment is analogous
-to the provability of proposition $ A $, were it to be interpreted as a type.
+to the provability of proposition $ A $, \emph{only} were it to be interpreted as a type.
 That is, exposing an inhabitant $ a $ of the type $ A $ \emph{is not} similar to
 showing an element of a set $ a \in A $. Membership is taken for granted in type
 theory when we make a typing judgment. That is, the judgment $ a : A $ cannot
@@ -157,7 +153,7 @@ homotopies (formally known as \emph{homotopy maps}) entered the scene. They
 provide a kind of \qq{relaxed} form of equality by means of, e.g.\ in topology,
 \emph{continuous deformations}. Since in topology, continuity is one of the
 most important properties, if a space can be continuously transformed into
-another one, we simply say that \qq{they are the same}\footnote{This is the
+another one, we simply say that \qq{they are the same}.\footnote{This is the
   origin of the famously funny \qq{facts} which state that
   \href{https://upload.wikimedia.org/wikipedia/commons/2/26/Mug\_and\_Torus\_morph.gif}{%
     a bagel is the same as a cup} or
@@ -165,7 +161,12 @@ another one, we simply say that \qq{they are the same}\footnote{This is the
     a cow is the same as a sphere}.}
 What this example shows is that there are at least some interpretations of
 type theory where (the local notion of) equality can have witnesses, which
-are, in this case, \emph{homotopy maps}.
+are, in this case, \emph{homotopy maps}. However, we chose to not add any
+details on this subject in the rest of the dissertation, as it would require
+too many sophisticated preliminaries in order to be properly understood.
+We only add that equality types are present in most type theories (including
+MLTT, where they originate, of course) and are implemented in most proof assistants,
+such as Coq, Agda, Idris, Lean, Pie and more.
 \index{types!equality}
 \index{types!equality!propositional}
 \index{types!equality!definitional}
@@ -186,16 +187,17 @@ for example, by means of the distinction between intensional and extensional
 concepts which we mention in Remark \ref{rk:int-ext}. For example,
 the function $ x \mapsto (x + 2) $ is \emph{judgmentally equal} to
 the function $ y \mapsto (y + 3 - 1) $. Usually, definitional equality is
-denoted by $ \equiv $, so $ 3^2 \equiv 9 $ etc.
+denoted by $ :\equiv $, so $ 3^2 :\equiv 9 $.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Fundamentals of MLTT}
 \index{proof!tree}
 \index{proof!natural deduction}
-MLTT draws inspiration from \emph{Gentzen natural deduction system} from the 1930s,
-explained in more modern terms in \cite{girard}. As such, judgments will be
-written in the so-called \emph{proof tree form}, such as:
+
+\indent\indent MLTT draws inspiration from \emph{Gentzen natural deduction system}
+from the 1930s, explained in more modern terms in \cite{girard}. As such,
+judgments will be written in the so-called \emph{proof tree form}, such as:
 \[
   \begin{prooftree}
     \hypo{A}
@@ -223,7 +225,7 @@ Also, the judgment $ a = b \in A $ means more than meets the eye:
 \item $ A $ is a proposition or a set;
 \item $ a $ and $ b $ are proofs or elements respectively;
 \item $ a $ and $ b $ are identical elements of the set $ A $ or
-  represent identical proofs of the proposition $ A $.
+  identical proofs of the proposition $ A $.
 \end{itemize}
 
 In fact, more than these readings can be given for the simple judgment
@@ -251,7 +253,9 @@ What is characteristic of MLTT is that in order to ascertain that we have a set
 (proposition), we must prescribe an \emph{introduction} rule, by means of showing
 how a \emph{canonical} element of the set (proof of the proposition, respectively)
 is constructed an \emph{equality} rule which shows how we know that two canonical
-elements are equal.
+elements are equal. Although admittedly ambiguous, in this context, equality
+actually means identity, so we have to know when two canonical elements are
+\emph{actually the same}; this has nothing to do with equality types.
 
 For example, for the set of positive integers (using the Peano approach and denoting
 by $ a' $ the successor of the element $ a $), we can give the rules:
@@ -324,16 +328,24 @@ We can be more precise than that, noting further:
 \begin{itemize}
 \item the proposition $ \perp $ has no possible proof;
 \item $ (a, b) $ is a proof of $ A \land B $, provided that $ a $ is a proof
-  of $ A $ and $ b $ is a proof of $ B $;
+  of $ A $ and $ b $ is a proof of $ B $. We find this again when discussing
+  \emph{product types} at \S\ref{sec:more-prod} and the \texttt{Pair} type in Pie
+  at \S\ref{sec:pair-ex};
 \item $ i(a) $ or $ j(b) $ are proofs of $ A \lor B $, provided that $ a $
   is a proof of $ A $ and $ b $ is a proof of $ B $, where $ i $ and $ j $
-  are the canonical inclusions (which we detail later);
+  are the canonical inclusions (which we detail later as \emph{coproduct types} in
+  \S\ref{sec:coprod});
 \item $ \lambda x . b(x) $ is a proof of $ A \supset B $, provided that
-  $ b(a) $ is a proof of $ B $ under the hypothesis that $ a $ is a proof of $ A $;
+  $ b(a) $ is a proof of $ B $ under the hypothesis that $ a $ is a proof of $ A $.
+  This is detailed in \texttt{lambda} abstractions and function types;
 \item $ \lambda x . b(x) $ is a proof of $ (\forall x)B(x) $, provided that
-  $ b(a) $ is a proof of $ B(a) $, where $ a $ is some individual;
+  $ b(a) $ is a proof of $ B(a) $, where $ a $ is some individual. This belongs
+  to \emph{dependent pair types}, which we touch on in \S\ref{sec:depty} and
+  \S\ref{sec:dep-pi};
 \item $ (a, b) $ is a proof of $ (\exists x)B(x) $, given that $ a $ is an
-  individual and $ b $ is a proof of $ B(a) $.
+  individual and $ b $ is a proof of $ B(a) $. These are discussed in
+  the context of \emph{dependent function types}, which we mostly skip for
+  brevity.
 \end{itemize}
 
 Also, the presentation can be extended further to \emph{types}. From a historical,
@@ -357,7 +369,7 @@ interpretations (for intuitionistic logic).
 \label{sec:unty-lambda}
 \index{theory!untyped $ \lambda $ calculus}
 
-Since in the Proust application that we present in \S\ref{ch:proust}
+\indent\indent Since in the Proust application that we present in \S\ref{ch:proust}
 we will build a small proof assistant to verify proofs based on
 untyped lambda calculus, we will spend some space here to rigorously
 introduce some basic notions of this formalism. The simply typed version
@@ -493,7 +505,7 @@ presenting the Proust \qq{nano prover} in \S\ref{ch:proust}.
 \index{types!dependent!judgment}
 \index{types!dependent!rule!inference}
 
-In many cases, it is very useful to have \emph{dependent types}, namely
+\indent\indent In many cases, it is very useful to have \emph{dependent types}, namely
 types which, in a way, are \emph{parametrized} by other types. A particular
 illustrating example is when we want to define, say, a function that selects
 the first element of a list, but we don't want to define it separately
@@ -655,7 +667,7 @@ They actually say that  \emph{judgmental equality is %
 \item reflexivity for terms:
   $ \begin{prooftree}
     \hypo{\Gamma \vdash a : A}
-    \infer1{\Gamma a \equiv a : A}
+    \infer1{\Gamma \vdash a \equiv a : A}
   \end{prooftree}
   $;
 \item symmetry for types:
@@ -666,7 +678,7 @@ They actually say that  \emph{judgmental equality is %
   $;
 \item symmetry for terms:
   $ \begin{prooftree}
-    \hypo{\Gamma a \equiv a' : A}
+    \hypo{\Gamma \vdash a \equiv a' : A}
     \infer1{\Gamma \vdash a' \equiv a : A}
   \end{prooftree}
   $;
@@ -766,39 +778,39 @@ $ a $ and sometimes denote it shorter with $ B(a) $.
 \index{types!dependent!fiber}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Dependent $ \Pi $ Types}
-\index{types!dependent!$ \Pi $ (function)}
+\section{Dependent $ \prod $ Types}
+\index{types!dependent!$ \prod $ (function)}
 \label{sec:dep-pi}
 
-How do we actually \qq{parametrize} a type in general by another type?
+\indent\indent How do we actually \qq{parametrize} a type in general by another type?
 And assume we did that. What are the well-formed terms that inhabit
 such types? We are about to find the answers to these questions:
 the types are called \emph{(dependent) function types} or
-$ \Pi $-types and their terms will be lambda abstractions.
+$ \prod $-types and their terms will be lambda abstractions.
 
 Again taking from Martin-L\"{o}f, in order to specify a type, it
 is enough to give its \emph{formation rule} (called \emph{introduction}
 by Martin-L\"{o}f) and a rule which shows how to identify identical
-types of this sort. They are, respectively, the $ \Pi $-formation
-rule and the $ \Pi $-equality rule, presented below:
+types of this sort. They are, respectively, the $ \prod $-formation
+rule and the $ \prod $-equality rule, presented below:
 \begin{itemize}
-\item $ \Pi $ formation:
+\item $ \prod $ formation:
   $ \begin{prooftree}
     \hypo{\Gamma, x : A \vdash B(x) \text{ type}}
-    \infer1{\Gamma \vdash \Pi_{(x : A)} B(x) \text{ type}}
-  \end{prooftree} \Pi-\text{intro}
+    \infer1{\Gamma \vdash \prod_{(x : A)} B(x) \text{ type}}
+  \end{prooftree} \prod-\text{intro}
   $;
-\item $ \Pi $-equality:
+\item $ \prod $-equality:
   $ \begin{prooftree}
     \hypo{\Gamma : A \equiv A' \text{ type}}
     \hypo{\Gamma, x : A \vdash B(x) \equiv B'(x) \text{ type}}
-    \infer2{\Gamma \vdash \Pi_{(x : A)} B(x) \equiv %
+    \infer2{\Gamma \vdash \prod_{(x : A)} B(x) \equiv %
       \Gamma_{(x : A')} B'(x) \text{ type}}
-  \end{prooftree} \Pi-\text{eq}
+  \end{prooftree} \prod-\text{eq}
   $.
 \end{itemize}
-\index{types!dependent!$ \Pi $ (function)!formation}
-\index{types!dependent!$ \Pi $ (function)!equality}
+\index{types!dependent!$ \prod $ (function)!formation}
+\index{types!dependent!$ \prod $ (function)!equality}
 
 In words, if we start with a context $ \Gamma $ and weaken it with
 a declaration of a fresh variable $ x : A $ (assumed arbitrary)
@@ -806,8 +818,8 @@ and if in this (weakened) context we have a well-formed type
 which is denoted by $ B(x) $ precisely to emphasize that it holds for
 any $ x $, the conclusion is that we can form a type which engulfs
 this arbitrary $ x $ and the respective family $ B(x) $. This is the
-so-called \emph{product type} or $ \Pi $-type and is denoted by
-$ \Pi_{(x : A)} B(x) $. Again, we emphasize the fact that this holds
+so-called \emph{product type} or $ \prod $-type and is denoted by
+$ \prod_{(x : A)} B(x) $. Again, we emphasize the fact that this holds
 for all $ x $ which is fixed for a particular type, but can be varied
 freely and the judgment still holds.
 
@@ -822,17 +834,17 @@ still holds true. So basically we have a sort of a \emph{family of %
 This still holds true if we uniformly rename the parameter $ x $.
 That is, assuming that $ x' : A $ is a fresh variable that does not
 occur in the hypothesis $ \Gamma, x : A $ (i.e.\ $ x \notin \Gamma $
-and $ x' \neq x $), we have the $ \Pi $-renaming rule:
+and $ x' \neq x $), we have the $ \prod $-renaming rule:
 \[
   \begin{prooftree}
     \hypo{\Gamma, x : A \vdash B(x) \text{ type}}
-    \infer1{\Gamma \vdash \Pi_{(x : A)} B(x) \equiv %
-      \Pi_{(x' : A)} B(x') \text{ type}}
-  \end{prooftree} \Pi-x'/x.
+    \infer1{\Gamma \vdash \prod_{(x : A)} B(x) \equiv %
+      \prod_{(x' : A)} B(x') \text{ type}}
+  \end{prooftree} \prod-x'/x.
 \]
-\index{types!dependent!$ \Pi $ (function)!renaming}
+\index{types!dependent!$ \prod $ (function)!renaming}
 
-The well-formed terms that inhabit such $ \Pi $-types are special cases
+The well-formed terms that inhabit such $ \prod $-types are special cases
 of $ \lambda $-abstractions. Their special quality consists in that they
 can produce outputs of different types, \emph{depending} (pun intended!)
 on the type of the input, but they do this in a uniform way, in the sense
@@ -840,10 +852,10 @@ that it can be captured in an inference rule:
 \[
   \begin{prooftree}
     \hypo{\Gamma, x : A \vdash b(x) : B(x)}
-    \infer1{\Gamma \vdash \lambda x.b(x) : \Pi_{(x : A)} B(x)}
+    \infer1{\Gamma \vdash \lambda x.b(x) : \prod_{(x : A)} B(x)}
   \end{prooftree} \lambda_A.
 \]
-\index{types!dependent!$ \Pi $ (function)!$ \lambda $-abstraction}
+\index{types!dependent!$ \prod $ (function)!$ \lambda $-abstraction}
 
 Notice how we specified everywhere that both the terms $ b $ and the
 types $ B $ \emph{depend} on the choice of $ x : A $.
@@ -875,7 +887,7 @@ lambda abstractions are identical:
   \begin{prooftree}
     \hypo{\Gamma, x : A \vdash b(x) \equiv b'(x) : B(x)}
     \infer1{\Gamma \vdash \lambda x . b(x) \equiv %
-      \lambda x . b'(x) : \Pi_{(x : A)} B(x)}
+      \lambda x . b'(x) : \prod_{(x : A)} B(x)}
   \end{prooftree}\lambda_A-\text{eq}
 \]
 What this rule says is that if we start with identical terms (more
@@ -940,26 +952,26 @@ $ x' \neq x $ and $ x' \notin \Gamma $, then we have:
   \begin{prooftree}
     \hypo{\Gamma, x : A \vdash b(x) : B(x)}
     \infer1{\Gamma \vdash \lambda x . b(x) \equiv \lambda x' b(x') : %
-      \Pi_{(x : A)} B(x)}
+      \prod_{(x : A)} B(x)}
   \end{prooftree}\lambda_A-x'/x.
 \]
-\index{types!dependent!$ \Pi $ (product)!$ \lambda $-equality}
+\index{types!dependent!$ \prod $ (product)!$ \lambda $-equality}
 
 Whenever it is possible, we will still use the more common notation
 for functions, hence a \emph{dependent function}, which is a well-formed
-term of a $ \Pi $-type will be denoted either explicitly by the
-lambda notation, such as $ \lambda x . b(x) : \Pi_{(x : A)} B(x) $,
-or implicitly, by $ f : \Pi_{(x : A)} B(x) $, being understood that
+term of a $ \prod $-type will be denoted either explicitly by the
+lambda notation, such as $ \lambda x . b(x) : \prod_{(x : A)} B(x) $,
+or implicitly, by $ f : \prod_{(x : A)} B(x) $, being understood that
 the argument of $ f $ is $ x $.
 
 The actual use of functions is contained in the \emph{evaluation rule}:
 \[
   \begin{prooftree}
-    \hypo{\Gamma \vdash f : \Pi_{(x : A)} B(x)}
+    \hypo{\Gamma \vdash f : \prod_{(x : A)} B(x)}
     \infer1{\Gamma, x : A \vdash f(x) : B(x)}
   \end{prooftree}\dr{ev}_A.
 \]
-\index{types!dependent!$ \Pi $ (function)!function evaluation}
+\index{types!dependent!$ \prod $ (function)!function evaluation}
 
 Moreover, basic conversions can be performed inside functional terms,
 both of implying that evaluation and lambda abstraction are mutually
@@ -974,49 +986,49 @@ inverse operations:
   so nothing special here.
 \item $ \eta $-conversion:
   $ \begin{prooftree}
-    \hypo{\Gamma \vdash f : \Pi_{(x : A)} B(x)}
-    \infer1{\Gamma \vdash \lambda x . f(x) \equiv f : \Pi_{(x:A)} B(x)}
+    \hypo{\Gamma \vdash f : \prod_{(x : A)} B(x)}
+    \infer1{\Gamma \vdash \lambda x . f(x) \equiv f : \prod_{(x:A)} B(x)}
   \end{prooftree}\eta
   $, which says nothing else that another name for a lambda abstraction
   of the form $ \lambda x . f(x) $ is $ f $.
 \end{itemize}
-\index{types!dependent!$ \Pi $ (function)!$ \beta $-reduction}
-\index{types!dependent!$ \Pi $ (function)!$ \eta $-conversion}
+\index{types!dependent!$ \prod $ (function)!$ \beta $-reduction}
+\index{types!dependent!$ \prod $ (function)!$ \eta $-conversion}
 
 Note that as in the case of regular (untyped) lambda calculus, functions of
 multiple arguments can be written as iterating lambda abstraction
-(which in turn produces terms of iterated $ \Pi $-types). As such,
+(which in turn produces terms of iterated $ \prod $-types). As such,
 a function of two arguments $ (x, y) \in A \times B $ can be written as
 $ \lambda x . \lambda y . f(x, y) $ or simply $ \lambda xy.f(x,y) $,
-which is a term of type $ \Pi_{(x : A)} \Pi_{(y : B)} B(x, y) $.
+which is a term of type $ \prod_{(x : A)} \prod_{(y : B)} B(x, y) $.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Function Types}
 \index{types!$ \to $ (function)}
 \label{sec:dep-fun}
 
-We can obtain such types as a particular case of $ \Pi $ types.
+\indent\indent We can obtain such types as a particular case of $ \prod $ types.
 As such, assume $ A $ and $ B $ are both types in context $ \Gamma $.
 First we weaken $ B $ by $ A $ (i.e.\ add $ A $ to the context), then
-form the corresponding $ \Pi $-type:
+form the corresponding $ \prod $-type:
 \[
   \begin{prooftree}
     \hypo{\Gamma \vdash A \text{ type}}
     \hypo{\Gamma \vdash B \text{ type}}
     \infer2{\Gamma, x : A \vdash B \text{ type}}
-    \infer1{\Gamma \vdash \Pi_{(x : A)} B \text{ type}}
+    \infer1{\Gamma \vdash \prod_{(x : A)} B \text{ type}}
   \end{prooftree}.
 \]
 
 What we achieve by this is that we somehow \emph{fix} the type $ A $
 in the intermediate step where we weakened the context $ \Gamma $,
 since now $ A $ (by means of all its arbitrary inhabitants $ x : A $)
-is added to the hypothesis. This means that such particular $ \Pi $
+is added to the hypothesis. This means that such particular $ \prod $
 types contain ordinary functions $ A \to B $, which is also the
 notation that we use for this \emph{function type}.
 
 It follows that all the inference rules for this type can be obtained
-as a particular case of $ \Pi $ types, so we just list them accordingly:
+as a particular case of $ \prod $ types, so we just list them accordingly:
 \begin{itemize}
 \item $ \to $-introduction (formation):
 $ \begin{prooftree}
@@ -1093,7 +1105,7 @@ mean $ \dr{ev}(\dr{ev}(\dr{comp},g),g) $ in this context.
 \label{sec:nat-ind}
 \index{types!dependent!$ \NN $ (naturals)}
 
-As a closing theoretical example of this chapter, we show how the natural
+\indent\indent As a closing theoretical example of this chapter, we show how the natural
 numbers can be formed as a type, using the Peano triple and the induction
 principle.
 
@@ -1110,8 +1122,8 @@ Next, the \emph{induction principle}:
   \begin{prooftree}
     \hypo{\Gamma, n : \NN \vdash P \text{ type}}
     \hypo{\Gamma \vdash p_0 : P(0)}
-    \hypo{\Gamma \vdash p_S : \Pi_{(n : \NN)} P(n) \to P(S(n))}
-    \infer3{\Gamma \vdash \dr{ind}_{\NN} (p_0, p_S) : \Pi_{(n : \NN)} P(n)}.
+    \hypo{\Gamma \vdash p_S : \prod_{(n : \NN)} P(n) \to P(S(n))}
+    \infer3{\Gamma \vdash \dr{ind}_{\NN} (p_0, p_S) : \prod_{(n : \NN)} P(n)}.
   \end{prooftree}\NN-\text{ind}.
 \]
 
