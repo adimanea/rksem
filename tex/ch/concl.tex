@@ -1,0 +1,66 @@
+% ! TEX root = ../racket.tex
+
+\chapter*{Conclusions and Further Work}
+\pagestyle{plain}                           % ignore header
+
+\indent\indent We now end this dissertation with some summarizing
+thoughts, as well as indications of further work.
+
+The goal of the thesis was two-fold. On the one hand, to provide an
+introduction to type theory, which contains both mathematical formulations
+and programming implementations that would hopefully illustrate the
+interplay between the two. On the other hand, it must be pointed out that
+the belief in explaining and teaching as a means of better understanding
+for oneself is a strong motivation. In this sense, the dissertation
+was also written as an explanatory work which is as self-contained as
+possible, but also includes directions for further reading and queues
+for experimenting. This is also one of the main motivations for focusing
+on so-called DIY, self-crafting methods for proof assistants.
+
+The approach was intended to be gradual. Therefore, the exposition
+of the main theoretical constructions that are used in the dissertation,
+in the (mathematical) language of type theory was the subject of the
+first chapter. We then went on with Proust, the so-called ``nano proof
+assistant'', which we appreciate to be as DIY as it gets in terms of
+implementing some simple formal verification tools, focused on lambda
+calculus. Lastly, we made use of more advanced features of type theory,
+most prominently dependent types which we explained with the help of
+Pie implementations. Subsequent expansions were added to include
+coproduct types and the example of the \texttt{Bool} type, implemented
+as a coproduct of two copies of the unit type. All of these advanced
+features (which we skipped in the first chapter) were explained in an
+\emph{ad hoc} manner and were closely followed by Pie implementations.
+
+\vspace{0.3cm}
+
+The directions for further work abound. First and foremost, any deeper
+venturing in the topics and methods outlined in this dissertation require
+a good understanding and command of the Racket programming language.
+This is no easy task, since as we mentioned, it should be properly called
+a \emph{toolbox} for domain-specific languages and its multiple facets
+allow for great flexibility which comes at the price of solid theoretical
+foundations in the subjects that are aimed for. Thankfully, in this sense,
+the Pie language is open source, hosted on GitHub and thus it can be examined
+closely as a good first exercise, then extended as needed.
+
+To the best of our knowledge, no Lisp dialect or derived language has been
+used for implementing the specific features of Martin-L\"{o}f type theory,
+including the ``crown jewel'' of homotopy type theory. In this sense, one
+direction that is of primary interest for the author is focused on the Kenzo
+program (\cite{kenzo}), developed at the University of Grenoble for what
+the authors call \emph{methods of Constructive Algebraic Topology} and
+\emph{Effective Algebraic Topology}. As such, the Common Lisp and ACL2
+(\cite{acl2}) implementation of Kenzo is the subject of our subsequent
+research with the aim of enriching the implementations with relevant features
+of homotopy type theory, most prominently dependent types. For this
+purpose, Racket is seen as a good candidate, given its flexibility and
+the vastness of the tools it offers for language design.
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../racket"
+%%% End:
