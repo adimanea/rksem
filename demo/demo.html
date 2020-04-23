@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-04-23 Thu 11:25 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dissertation Demos</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Adrian Manea" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Dissertation Demos</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org5ccb501">1. BASIC RACKET</a></li>
+<li><a href="#orgfcb9a4f">2. PROUST</a></li>
+<li><a href="#org2e9caa1">3. PIE</a>
+<ul>
+<li><a href="#orga5b5b8c">3.1. Basic Syntax</a></li>
+<li><a href="#orgf5a7cb2">3.2. Induction and Dependent Types</a></li>
+<li><a href="#org8398a6c">3.3. <code>Pair</code> Types and Functions</a>
+<ul>
+<li><a href="#org7fc20ef">3.3.1. Custom <code>Pear</code> Type</a></li>
+<li><a href="#orgfc28ea8">3.3.2. Standard <code>Pair</code> Type</a></li>
+</ul>
+</li>
+<li><a href="#org5ad9174">3.4. <code>List</code> Type and Functions</a>
+<ul>
+<li><a href="#org30b771e">3.4.1. Length of a List</a></li>
+<li><a href="#org0ce6bec">3.4.2. Appending a List to Another List</a></li>
+</ul>
+</li>
+<li><a href="#orgea1436d">3.5. Recursor for Product Types</a></li>
+<li><a href="#org1999174">3.6. Coproduct Types</a></li>
+<li><a href="#org8305275">3.7. Example: <code>Bool</code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5ccb501" class="outline-2">
+<h2 id="org5ccb501"><span class="section-number-2">1</span> BASIC RACKET</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+[[<a href="basics.rkt">   LOCAL FILE</a>  ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Basics on Racket (Appendix)</span>
+<span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">racket</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">quote</span>
+'<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">1</span> <span style="color: #f0ce47;">2</span><span style="color: #b6a0ff;">)</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; '(+ 1 2)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">quasiquote &amp; unquote</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">x</span> <span style="color: #f0ce47;">3</span><span style="color: #b6a0ff;">)</span>
+`<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">2</span> ,x<span style="color: #b6a0ff;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; '(+ 2 3)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">2</span> x<span style="color: #b6a0ff;">)</span>             <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; 5</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">splice unquote</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">y</span> '<span style="color: #f8dec0;">(</span><span style="color: #f0ce47;">1</span> <span style="color: #f0ce47;">2</span> <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+`<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">4</span> ,@y<span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; '(+ 4 1 2 3)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">ERROR</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(+ 4 y)             ; =&gt; contract violation: + expected number</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">anonymous function via lambda</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">mod2</span> n<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>t<span style="color: #f0ce47;">)</span>
+    <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">remainder</span> t <span style="color: #f0ce47;">2</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span> n<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span>mod2 <span style="color: #f0ce47;">3</span><span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; 1</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">mod3</span> x<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cond</span>
+    <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">equal?</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">remainder</span> x <span style="color: #f0ce47;">3</span><span style="color: #b6a0ff;">)</span> <span style="color: #f0ce47;">1</span><span style="color: #f0ce47;">)</span> <span style="color: #b6a0ff;">write</span> <span style="color: #f0ce47;">"it's 1"</span><span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">equal?</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">remainder</span> x <span style="color: #f0ce47;">3</span><span style="color: #b6a0ff;">)</span> <span style="color: #f0ce47;">2</span><span style="color: #f0ce47;">)</span> <span style="color: #b6a0ff;">write</span> <span style="color: #f0ce47;">"it's 2"</span><span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">#t</span> <span style="color: #b6a0ff;">write</span> <span style="color: #f0ce47;">"it's 0"</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span>mod3 <span style="color: #f0ce47;">5</span><span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; "it's 2"</span>
+<span style="color: #b6a0ff;">(</span>mod3 <span style="color: #f0ce47;">1</span><span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; "it's 1"</span>
+<span style="color: #b6a0ff;">(</span>mod3 <span style="color: #f0ce47;">6</span><span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; "it's 0"</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">add-or-quote</span> x<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cond</span>
+    <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">equal?</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">remainder</span> x <span style="color: #f0ce47;">2</span><span style="color: #b6a0ff;">)</span> <span style="color: #f0ce47;">0</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f8dec0;">(</span>t<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">1</span> <span style="color: #f0ce47;">2</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span> x<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">#t</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f8dec0;">(</span>t<span style="color: #f8dec0;">)</span> <span style="color: #f0ce47;">'hello</span><span style="color: #b6a0ff;">)</span> x<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span>add-or-quote <span style="color: #f0ce47;">5</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; 'hello</span>
+<span style="color: #b6a0ff;">(</span>add-or-quote <span style="color: #f0ce47;">6</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; 3</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfcb9a4f" class="outline-2">
+<h2 id="orgfcb9a4f"><span class="section-number-2">2</span> PROUST</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+[[   <a href="proust.rkt">LOCAL FILE</a>  ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">P. Ragde -- Proust, a nano proof assistant (2016)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Special thanks to the author!</span>
+
+<span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">racket</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">struct</span> Lam <span style="color: #f8dec0;">(</span>var body<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">#:transparent</span><span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">lambda abstraction</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">struct</span> App <span style="color: #f8dec0;">(</span>func arg<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">#:transparent</span><span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">function application</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">struct</span> Ann <span style="color: #f8dec0;">(</span>expr type<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">#:transparent</span><span style="color: #b6a0ff;">)</span>         <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">explicit type annotations</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">struct</span> Arrow <span style="color: #f8dec0;">(</span>domain codomain<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">#:transparent</span><span style="color: #b6a0ff;">)</span> <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">functional types</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">GRAMMAR</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">EXPRESSIONS</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">expr ::= (lambda x =&gt; expr)</span>
+<span style="color: #a8a8a8;">;;        </span><span style="color: #a8a8a8;">| (expr expr)</span>
+<span style="color: #a8a8a8;">;;        </span><span style="color: #a8a8a8;">| (expr : type)</span>
+<span style="color: #a8a8a8;">;;        </span><span style="color: #a8a8a8;">| x (variable)            &lt;------ NO CONSTANTS ALLOWED!</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">TYPES</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">type ::= (type -&gt; type)</span>
+<span style="color: #a8a8a8;">;;        </span><span style="color: #a8a8a8;">| X</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Parse types</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">parse-type</span> t<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> t                                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">pattern match the type</span>
+    <span style="color: #ff9977;">[</span>`<span style="color: #f0ce47;">(</span>,t1 <span style="color: #b6a0ff;">-&gt;</span> ,t2<span style="color: #f0ce47;">)</span>                          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it functional?</span>
+     <span style="color: #f0ce47;">(</span>Arrow <span style="color: #b6a0ff;">(</span>parse-type t1<span style="color: #b6a0ff;">)</span>                 <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make it an Arrow</span>
+            <span style="color: #b6a0ff;">(</span>parse-type t2<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">(</span>`<span style="color: #f0ce47;">(</span>,t1 <span style="color: #b6a0ff;">-&gt;</span> ,t2 <span style="color: #b6a0ff;">-&gt;</span> ,r <span style="color: #b6a0ff;">...</span><span style="color: #f0ce47;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it a multifunc?</span>
+     <span style="color: #f0ce47;">(</span>Arrow <span style="color: #b6a0ff;">(</span>parse-type t1<span style="color: #b6a0ff;">)</span>                 <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make it a "multiarrow"</span>
+            <span style="color: #b6a0ff;">(</span>parse-type `<span style="color: #f8dec0;">(</span>,t1 <span style="color: #b6a0ff;">-&gt;</span> ,@r<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>? <span style="color: #b6a0ff;">symbol?</span> X<span style="color: #f0ce47;">)</span> X<span style="color: #ff9977;">]</span>                       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it simple? return it</span>
+    <span style="color: #ff9977;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">error</span> <span style="color: #f0ce47;">"can't parse this type"</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span>parse-type '<span style="color: #f8dec0;">(</span>Int <span style="color: #b6a0ff;">-&gt;</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (Arrow 'Int 'Nat)</span>
+<span style="color: #b6a0ff;">(</span>parse-type <span style="color: #f0ce47;">'String</span><span style="color: #b6a0ff;">)</span>                        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; 'String</span>
+<span style="color: #b6a0ff;">(</span>parse-type '<span style="color: #f8dec0;">(</span>Int <span style="color: #b6a0ff;">-&gt;</span> Nat <span style="color: #b6a0ff;">-&gt;</span> <span style="color: #b6a0ff;">String</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (Arrow 'Int (Arrow 'Int 'String))</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">parse-expr</span> s<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> s                              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">pattern match the argument</span>
+    <span style="color: #ff9977;">[</span>`<span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> ,<span style="color: #b6a0ff;">(</span>? <span style="color: #b6a0ff;">symbol?</span> x<span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">=&gt;</span> ,e<span style="color: #f0ce47;">)</span>     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it a lambda?</span>
+     <span style="color: #f0ce47;">(</span>Lam x <span style="color: #b6a0ff;">(</span>parse-expr e<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make it a Lam</span>
+    <span style="color: #ff9977;">[</span>`<span style="color: #f0ce47;">(</span>,e0 ,e1<span style="color: #f0ce47;">)</span>                         <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it an application?</span>
+     <span style="color: #f0ce47;">(</span>App <span style="color: #b6a0ff;">(</span>parse-expr e0<span style="color: #b6a0ff;">)</span>               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make it an App</span>
+          <span style="color: #b6a0ff;">(</span>parse-expr e1<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span>`<span style="color: #f0ce47;">(</span>,e <span style="color: #b6a0ff;">:</span> ,t<span style="color: #f0ce47;">)</span>                         <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it a type annotation (e : t)?</span>
+     <span style="color: #f0ce47;">(</span>Ann <span style="color: #b6a0ff;">(</span>parse-expr e<span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make it an Ann</span>
+          <span style="color: #b6a0ff;">(</span>parse-type t<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span>`<span style="color: #f0ce47;">(</span>,e1 ,e2 ,e3 ,r <span style="color: #b6a0ff;">...</span><span style="color: #f0ce47;">)</span>              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it a general list?</span>
+     <span style="color: #f0ce47;">(</span>parse-expr
+      `<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>,e1 ,e2<span style="color: #f8dec0;">)</span> ,e3 ,@r<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">parse it in pairs</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>? <span style="color: #b6a0ff;">symbol?</span> x<span style="color: #f0ce47;">)</span> x<span style="color: #ff9977;">]</span>                   <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">else, it's a symbol, return it</span>
+    <span style="color: #ff9977;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">error</span> <span style="color: #f0ce47;">'parse</span> <span style="color: #f0ce47;">"bad syntax ~a"</span> s<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">fail with reason</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span>f x<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (App 'f 'x)</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> x <span style="color: #b6a0ff;">=&gt;</span> x<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (Lam 'x 'x)</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> x <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #ff9977;">(</span>x y<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (Lam 'x (App 'x 'y))</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(parse-expr 3)                          ; =&gt; parse: bad syntax 3     &lt;-- WILL STOP EVALUATION</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span>x <span style="color: #b6a0ff;">:</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                 <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (Ann 'x 'Nat)</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span>x y z t<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                 <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (App (App (App 'x 'y) 'z) 't)</span>
+<span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span>x <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> y <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #f0ce47;">(</span>z t<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>a <span style="color: #b6a0ff;">:</span> Int<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (App (App 'x (Lam 'y (App 'z 't))) (Ann 'a 'Int))</span>
+
+
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Pretty printing ("unparsing")</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">pretty-print-expr : expr -&gt; String</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">pretty-print-expr</span> e<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> e
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Lam x b<span style="color: #f0ce47;">)</span>                                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">lambdas</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"(lambda ~a =&gt; ~a)"</span> x <span style="color: #b6a0ff;">(</span>pretty-print-expr b<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>App e1 e2<span style="color: #f0ce47;">)</span>                                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">function application</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"(~a ~a)"</span> <span style="color: #b6a0ff;">(</span>pretty-print-expr e1<span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">(</span>pretty-print-expr e2<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>? <span style="color: #b6a0ff;">symbol?</span> x<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"~a"</span> x<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>             <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">variables</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Ann e t<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"(~a : ~a)"</span>              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">type annotations</span>
+                       <span style="color: #b6a0ff;">(</span>pretty-print-expr e<span style="color: #b6a0ff;">)</span>
+                       <span style="color: #b6a0ff;">(</span>pretty-print-expr t<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">pretty-print-type : Type -&gt; String</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">pretty-print-type</span> t<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> t
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Arrow t1 t2<span style="color: #f0ce47;">)</span>                              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">functional types</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"(~a -&gt; ~a)"</span>
+             <span style="color: #b6a0ff;">(</span>pretty-print-type t1<span style="color: #b6a0ff;">)</span>
+             <span style="color: #b6a0ff;">(</span>pretty-print-type t2<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #b6a0ff;">else</span> t<span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">simple types</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Context = (Listof (List Symbol Type))</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">pretty-print-context</span> ctx<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cond</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">empty?</span> ctx<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">""</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">string-append</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">format</span> <span style="color: #f0ce47;">"~a : ~a, "</span>
+                                 <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">first</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">first</span> ctx<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span>
+                                 <span style="color: #f8dec0;">(</span>pretty-print-type <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">second</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">first</span> ctx<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+                         <span style="color: #b6a0ff;">(</span>pretty-print-context <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">rest</span> ctx<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span>pretty-print-context <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #f0ce47;">'x</span> <span style="color: #f0ce47;">'Int</span><span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #f0ce47;">'z</span> '<span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">-&gt;</span> B<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span> <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; "x : Int, z : A -&gt; B"</span>
+<span style="color: #b6a0ff;">(</span>pretty-print-context <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #f0ce47;">'x</span> <span style="color: #f0ce47;">'Int</span><span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">list</span> <span style="color: #f0ce47;">'f</span> <span style="color: #f0ce47;">(</span>pretty-print-expr <span style="color: #b6a0ff;">(</span>parse-expr '<span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> z <span style="color: #b6a0ff;">=&gt;</span> t<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;;                                                         </span><span style="color: #a8a8a8;">|_________________|</span>
+<span style="color: #a8a8a8;">;;                                                           </span><span style="color: #a8a8a8;">mutual inverses</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; "x : Int, f : (lambda z =&gt; t)"</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">CHECKING LAMBDAS</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">type-check : Context Expr Type -&gt; Boolean</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">produces true if expr has type t in context ctx (else, error)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">type-check</span> ctx expr type<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> expr
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Lam x t<span style="color: #f0ce47;">)</span>                      <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is it a lambda expression?</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">match</span> type                    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then the type must be an Arrow</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #f8dec0;">(</span>Arrow tt tw<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span>type-check <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">cons</span> `<span style="color: #f0ce47;">(</span>,x ,tt<span style="color: #f0ce47;">)</span> ctx<span style="color: #ff9977;">)</span> t tw<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">]</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f8dec0;">(</span>cannot-check ctx expr type<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">]</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">if</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">equal?</span> <span style="color: #f8dec0;">(</span>type-infer ctx expr<span style="color: #f8dec0;">)</span> type<span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">true</span>      <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">fail for any other type</span>
+              <span style="color: #b6a0ff;">(</span>cannot-check ctx expr type<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">the error function</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cannot-check</span> ctx expr type<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">error</span> <span style="color: #f0ce47;">'type-check</span> <span style="color: #f0ce47;">"cannot typecheck ~a as ~a in context ~a"</span>
+         <span style="color: #ff9977;">(</span>pretty-print-expr expr<span style="color: #ff9977;">)</span>
+         <span style="color: #ff9977;">(</span>pretty-print-type type<span style="color: #ff9977;">)</span>
+         <span style="color: #ff9977;">(</span>pretty-print-context ctx<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">type-infer : Context Expr -&gt; Type</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">tries to produce type of expr in context ctx (else, error)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">type-infer</span> ctx expr<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">match</span> expr
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Lam <span style="color: #b6a0ff;">_</span> <span style="color: #b6a0ff;">_</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>cannot-infer ctx expr<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>         <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">lambdas are handled in type-check</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>Ann e t<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>type-check ctx e t<span style="color: #f0ce47;">)</span> t<span style="color: #ff9977;">]</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">check type annotation</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>App f a<span style="color: #f0ce47;">)</span>                                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">function application</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">tf</span> <span style="color: #b6a0ff;">(</span>type-infer ctx f<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">match</span> tf                                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">must be Arrow type</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #f8dec0;">(</span>Arrow tt tw<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">#:when</span> <span style="color: #f8dec0;">(</span>type-check ctx a tt<span style="color: #f8dec0;">)</span> tw<span style="color: #b6a0ff;">]</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">when the rest typechecks</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f8dec0;">(</span>cannot-infer ctx expr<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">]</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span>
+    <span style="color: #ff9977;">[</span><span style="color: #f0ce47;">(</span>? <span style="color: #b6a0ff;">symbol?</span> x<span style="color: #f0ce47;">)</span>                              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">for symbols</span>
+     <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">cond</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">assoc</span> x ctx<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #b6a0ff;">second</span><span style="color: #b6a0ff;">]</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">if it's a (ctx) list, the second is the type</span>
+       <span style="color: #b6a0ff;">[</span><span style="color: #b6a0ff;">else</span> <span style="color: #f8dec0;">(</span>cannot-infer ctx expr<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">]</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">]</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">else, fail</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">the error function</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cannot-infer</span> ctx expr<span style="color: #f8dec0;">)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">error</span> <span style="color: #f0ce47;">'type-infer</span> <span style="color: #f0ce47;">"cannot infer type of ~a in context ~a"</span>
+         <span style="color: #ff9977;">(</span>pretty-print-expr<span style="color: #ff9977;">)</span>
+         <span style="color: #ff9977;">(</span>pretty-print-context ctx<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">BASIC TESTING</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">require</span> test-engine/racket-tests<span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">check-proof</span> p<span style="color: #f8dec0;">)</span>                         <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">for empty contexts</span>
+  <span style="color: #f8dec0;">(</span>type-infer <span style="color: #b6a0ff;">empty</span> <span style="color: #ff9977;">(</span>parse-expr p<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">true</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">lambda x . x : A -&gt; A</span>
+<span style="color: #b6a0ff;">(</span>check-expect <span style="color: #f8dec0;">(</span>check-proof '<span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> x <span style="color: #b6a0ff;">=&gt;</span> x<span style="color: #f0ce47;">)</span> <span style="color: #b6a0ff;">:</span> <span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">-&gt;</span> A<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">true</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">lambda xy.x : A -&gt; (B -&gt; A)</span>
+<span style="color: #b6a0ff;">(</span>check-expect <span style="color: #f8dec0;">(</span>check-proof '<span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> x <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> y <span style="color: #b6a0ff;">=&gt;</span> x<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span> <span style="color: #b6a0ff;">:</span> <span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">-&gt;</span> <span style="color: #b6a0ff;">(</span>B <span style="color: #b6a0ff;">-&gt;</span> A<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span>
+              <span style="color: #b6a0ff;">true</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">lambda xy.yx : (A -&gt; ((A -&gt; B) -&gt; B))</span>
+<span style="color: #b6a0ff;">(</span>check-expect
+ <span style="color: #f8dec0;">(</span>check-proof '<span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> x <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> y <span style="color: #b6a0ff;">=&gt;</span> <span style="color: #f8dec0;">(</span>y x<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span> <span style="color: #b6a0ff;">:</span> <span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">-&gt;</span> <span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>A <span style="color: #b6a0ff;">-&gt;</span> B<span style="color: #f8dec0;">)</span> <span style="color: #b6a0ff;">-&gt;</span> B<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span>
+ <span style="color: #b6a0ff;">true</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span>test<span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; All 3 tests passed!</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2e9caa1" class="outline-2">
+<h2 id="org2e9caa1"><span class="section-number-2">3</span> PIE</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orga5b5b8c" class="outline-3">
+<h3 id="orga5b5b8c"><span class="section-number-3">3.1</span> Basic Syntax</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+[[   <a href="pie-basics.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #b6a0ff;">(</span>the <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">Pair</span> Atom Atom<span style="color: #f8dec0;">)</span>
+     <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">'spinach</span> <span style="color: #f0ce47;">'cauliflower</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">declares that the cons expression has the specified type</span>
+
+<span style="color: #b6a0ff;">(</span>claim one Nat<span style="color: #b6a0ff;">)</span>             <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">one will be of type Nat</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">one</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">add1</span> zero<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">zero is primitive</span>
+<span style="color: #b6a0ff;">(</span>the Nat <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">add1</span> one<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">declares that 2 : Nat</span>
+
+<span style="color: #b6a0ff;">(</span>claim two Nat<span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">two</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">add1</span>
+   <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> zero<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">in REPL:</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">&gt; two</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(the Nat two)</span>
+
+<span style="color: #b6a0ff;">(</span>claim myDogs <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">Pair</span> Atom Atom<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">myDogs</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">'Ricky</span> <span style="color: #f0ce47;">'Rocky</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">in REPL</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">&gt; myDogs</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(the (Pair Atom Atom) (cons 'Ricky 'Rocky))</span>
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf5a7cb2" class="outline-3">
+<h3 id="orgf5a7cb2"><span class="section-number-3">3.2</span> Induction and Dependent Types</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+[[   <a href="pie-induction.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">A couple of the most used "inductive" functions</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(which-Nat target base step)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- if target is zero =&gt; return base</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- else, return (step (- target 1))</span>
+<span style="color: #b6a0ff;">(</span>which-Nat zero
+           <span style="color: #f0ce47;">'naught</span>
+           <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n<span style="color: #ff9977;">)</span> <span style="color: #f0ce47;">'more</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>      <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Atom 'naught)</span>
+
+<span style="color: #b6a0ff;">(</span>which-Nat <span style="color: #f0ce47;">4</span>
+           <span style="color: #f0ce47;">'naught</span>
+           <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n<span style="color: #ff9977;">)</span> <span style="color: #f0ce47;">'more</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>      <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Atom 'more)</span>
+
+<span style="color: #b6a0ff;">(</span>which-Nat <span style="color: #f0ce47;">5</span>
+           <span style="color: #f0ce47;">0</span>
+           <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n<span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> <span style="color: #f0ce47;">7</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>   <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 8)</span>
+
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(iter-Nat target base step)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- if target is zero =&gt; return base;</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- else, target is some (add1 n) and return (step (iter-Nat n base step))</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">We will use this to define addition</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">First, define the inductive step</span>
+<span style="color: #b6a0ff;">(</span>claim step+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Nat Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">processes one Nat and returns another</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">step+</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>+n-1<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> +n-1<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Now the addition</span>
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">+</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Nat Nat Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">addition for the Nat type</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">+</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> n j
+          <span style="color: #ff9977;">(</span>iter-Nat n j step+<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">(rec-Nat target base step)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- if target is zero, return base;</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">- else, target is some (add1 n) and return (step (n (rec-Nat n base step)))</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Example</span>
+<span style="color: #b6a0ff;">(</span>rec-Nat
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">add1</span> zero<span style="color: #f8dec0;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">target = 1 =&gt; n = 0</span>
+ <span style="color: #f0ce47;">0</span>                          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">base</span>
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n-1 almost<span style="color: #ff9977;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">step (two-arg function)</span>
+   <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">add1</span> almost<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Nat 2)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Example: Gauss sum</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">the inductive step</span>
+<span style="color: #b6a0ff;">(</span>claim step-gauss
+       <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Nat Nat Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">step-gauss</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n-1 gauss-n-1<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">+</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">add1</span> n-1<span style="color: #f0ce47;">)</span> gauss-n-1<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">now the Gauss function</span>
+<span style="color: #b6a0ff;">(</span>claim gauss <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Nat Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">gauss</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>n<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span>rec-Nat n
+             <span style="color: #f0ce47;">0</span>
+             step-gauss<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span>gauss <span style="color: #f0ce47;">15</span><span style="color: #b6a0ff;">)</span>                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 120)</span>
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8398a6c" class="outline-3">
+<h3 id="org8398a6c"><span class="section-number-3">3.3</span> <code>Pair</code> Types and Functions</h3>
+<div class="outline-text-3" id="text-3-3">
+</div>
+<div id="outline-container-org7fc20ef" class="outline-4">
+<h4 id="org7fc20ef"><span class="section-number-4">3.3.1</span> Custom <code>Pear</code> Type</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<p>
+[[  <a href="pie-pair-types-func.rkt">LOCAL FILE</a>  ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #b6a0ff;">(</span>claim Pear <span style="color: #b6a0ff;">U</span><span style="color: #b6a0ff;">)</span>                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">claim the custom type</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">Pear</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">Pair</span> Nat Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">a Pear is a Pair of two Nats</span>
+
+<span style="color: #b6a0ff;">(</span>claim Pear-maker <span style="color: #b6a0ff;">U</span><span style="color: #b6a0ff;">)</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">claim of the type constructor</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">Pear-maker</span>              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">actual definition</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Nat Nat Pear<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">Pear-maker : (Nat, Nat) -&gt; Pear</span>
+
+<span style="color: #b6a0ff;">(</span>claim elim-Pear
+           <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Pear Pear-maker Pear<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>             <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">claim the type eliminator</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">elim-Pear</span>               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">the definition of the eliminator</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>pear maker<span style="color: #ff9977;">)</span>          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">is a lambda taking a pear and a maker function</span>
+    <span style="color: #ff9977;">(</span>maker <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">car</span> pear<span style="color: #f0ce47;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">which sends the maker on the first part of the pear</span>
+           <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">cdr</span> pear<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then on the second part</span>
+
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">require</span> <span style="color: #f0ce47;">"addition.rkt"</span><span style="color: #b6a0ff;">)</span>        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">we need Nat addition (DIY)</span>
+
+<span style="color: #b6a0ff;">(</span>claim pearwise+                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">claim the addition for this custom type</span>
+       <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> Pear Pear Pear<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">with type (Pear, Pear) -&gt; Pear</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">pearwise+</span>               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">(a, b) + (c ,d) = (a + c, b + d)</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>x y<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span>elim-Pear x
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span>a1 d1<span style="color: #b6a0ff;">)</span>
+                 <span style="color: #b6a0ff;">(</span>elim-Pear y
+                            <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> a2 d2<span style="color: #f8dec0;">)</span>
+                            <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span>
+                             <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">+</span> a1 a2<span style="color: #ff9977;">)</span>
+                             <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">+</span> d1 d2<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span>elim-Pear <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">3</span> <span style="color: #f0ce47;">17</span><span style="color: #f8dec0;">)</span>
+           <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>a d<span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">cons</span> d a<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the (Pair Nat Nat) (cons 17 3))</span>
+
+<span style="color: #b6a0ff;">(</span>pearwise+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">1</span> <span style="color: #f0ce47;">2</span><span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">5</span> <span style="color: #f0ce47;">7</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the (Pair Nat Nat) (cons 6 9))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfc28ea8" class="outline-4">
+<h4 id="orgfc28ea8"><span class="section-number-4">3.3.2</span> Standard <code>Pair</code> Type</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<p>
+[[   <a href="pie-pair-types-func.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #b6a0ff;">(</span>claim elim-Pair                    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">"consumer" (eliminator) for Pairs</span>
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>D <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>X <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">Pair</span> A D<span style="color: #f0ce47;">)</span>
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">-&gt;</span> A D X<span style="color: #f0ce47;">)</span> X<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">elim-Pair</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>A D X<span style="color: #ff9977;">)</span>                   <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">abstract the type variables first</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>p f<span style="color: #f0ce47;">)</span>                   <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then the rest (f = eliminator, p = pair)</span>
+      <span style="color: #f0ce47;">(</span>f <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">car</span> p<span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">cdr</span> p<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span>claim kar                          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">DIY car = first</span>
+       <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">Pair</span> Nat Nat<span style="color: #ff9977;">)</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">kar</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>p<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span>elim-Pair Nat Nat Nat p        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make the types concrete</span>
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span>a d<span style="color: #b6a0ff;">)</span> a<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">take first component</span>
+
+<span style="color: #b6a0ff;">(</span>claim kdr                          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">DIY cdr = second</span>
+       <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">Pair</span> Nat Nat<span style="color: #ff9977;">)</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">kdr</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>p<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span>elim-Pair Nat Nat Nat p        <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">make the types concrete</span>
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span>a d<span style="color: #b6a0ff;">)</span> d<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">take second component</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">flipping two elements of a Pair</span>
+<span style="color: #b6a0ff;">(</span>claim flip
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>D <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">Pair</span> A D<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">Pair</span> D A<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">flip</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>A D<span style="color: #ff9977;">)</span>                     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">abstract the type variables first</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>p<span style="color: #f0ce47;">)</span>                     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then the pair</span>
+      <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">cdr</span> p<span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">car</span> p<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Examples</span>
+<span style="color: #b6a0ff;">(</span>kdr <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">5</span> <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 3)</span>
+<span style="color: #b6a0ff;">(</span>kar <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">8</span> <span style="color: #f0ce47;">4</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 8)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>flip Nat Atom<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">17</span> <span style="color: #f0ce47;">'apple</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the (Pair Atom Nat) (cons 'apple 17))</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org5ad9174" class="outline-3">
+<h3 id="org5ad9174"><span class="section-number-3">3.4</span> <code>List</code> Type and Functions</h3>
+<div class="outline-text-3" id="text-3-4">
+</div>
+<div id="outline-container-org30b771e" class="outline-4">
+<h4 id="org30b771e"><span class="section-number-4">3.4.1</span> Length of a List</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<p>
+[[  <a href="pie-list-length.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">"inductive step" first</span>
+<span style="color: #b6a0ff;">(</span>claim step-length
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>E <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> E <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span> Nat Nat<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">step-length</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>E<span style="color: #ff9977;">)</span>                               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">abstract the type first</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>e es length-es<span style="color: #f0ce47;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then the rest</span>
+      <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">add1</span> length-es<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                   <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">just increase by 1 at each step (see also Gauss)</span>
+
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">length</span>                               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">length of a List</span>
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>E <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>                          <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">of elements of type E</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span> Nat<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>              <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">goes from List to Nat</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">length</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>E<span style="color: #ff9977;">)</span>                               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">abstract the type parameter</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>es<span style="color: #f0ce47;">)</span>                            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">then the actual list</span>
+      <span style="color: #f0ce47;">(</span>rec-List es
+                <span style="color: #f0ce47;">0</span>
+                <span style="color: #b6a0ff;">(</span>step-length E<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">call the inductive step with this type</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">special version for E = Atom</span>
+<span style="color: #b6a0ff;">(</span>claim length-Atom
+       <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">List</span> Atom<span style="color: #ff9977;">)</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">length-Atom</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">length</span> Atom<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">length</span> Nat <span style="color: #f8dec0;">(</span>:: <span style="color: #f0ce47;">1</span> <span style="color: #ff9977;">(</span>:: <span style="color: #f0ce47;">2</span> <span style="color: #f0ce47;">(</span>:: <span style="color: #f0ce47;">3</span> nil<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 3)</span>
+<span style="color: #b6a0ff;">(</span>length-Atom <span style="color: #f8dec0;">(</span>:: <span style="color: #f0ce47;">'cat</span> nil<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                 <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 1)</span>
+<span style="color: #b6a0ff;">(</span>length-Atom <span style="color: #f8dec0;">(</span>:: <span style="color: #f0ce47;">'cat</span> <span style="color: #ff9977;">(</span>:: <span style="color: #f0ce47;">'dog</span> nil<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 2)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0ce6bec" class="outline-4">
+<h4 id="org0ce6bec"><span class="section-number-4">3.4.2</span> Appending a List to Another List</h4>
+<div class="outline-text-4" id="text-3-4-2">
+<p>
+[[   <a href="pie-list-append.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Definining the functions to append to a list,</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">using steps and induction, as well as dependent types.</span>
+<span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">the inductive step first</span>
+<span style="color: #b6a0ff;">(</span>claim step-append
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>E <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> E <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span>
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">step-append</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>E<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>e es append-es<span style="color: #f0ce47;">)</span>
+      <span style="color: #f0ce47;">(</span>:: e append-es<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">append</span>
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>E <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span>
+               <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">List</span> E<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">append</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>E<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>start end<span style="color: #f0ce47;">)</span>
+      <span style="color: #f0ce47;">(</span>rec-List start
+                end
+                <span style="color: #b6a0ff;">(</span>step-append E<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">append</span> Nat <span style="color: #f8dec0;">(</span>:: <span style="color: #f0ce47;">5</span> nil<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span>:: <span style="color: #f0ce47;">3</span> nil<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the (List Nat) (:: 5 (:: 3 nil)))</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgea1436d" class="outline-3">
+<h3 id="orgea1436d"><span class="section-number-3">3.5</span> Recursor for Product Types</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+[[   <a href="hott-recursor.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">The recursor rec_(A x B) from the HoTT book.</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">rec_(A x B) : (Pi_(C : U) (A -&gt; B -&gt; C)) -&gt; (A x B) -&gt; C</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">rec_(A x B) (C, g, (a, b)) := g(a)(b)</span>
+
+<span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #b6a0ff;">(</span>claim recAxB
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>B <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>C <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">-&gt;</span> A B C<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">Pair</span> A B<span style="color: #f0ce47;">)</span> C<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">recAxB</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>A B C<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>g p<span style="color: #f0ce47;">)</span>
+      <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">(</span>g <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">car</span> p<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">cdr</span> p<span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">example</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recAxB Nat Nat Nat<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>x y<span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> y<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">2</span> <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Nat 4)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">first projection</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recAxB Nat Nat Nat<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>x y<span style="color: #ff9977;">)</span> x<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">2</span> <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>              <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Nat 4)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">defined generally, for Nat type</span>
+<span style="color: #b6a0ff;">(</span>claim p1 <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">Pair</span> Nat Nat<span style="color: #ff9977;">)</span> Nat<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">p1</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #ff9977;">(</span>recAxB Nat Nat Nat<span style="color: #ff9977;">)</span>
+   <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>x y<span style="color: #f0ce47;">)</span> x<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">test</span>
+<span style="color: #b6a0ff;">(</span>p1 <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">cons</span> <span style="color: #f0ce47;">2</span> <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                                                 <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Nat 2)</span>
+
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">for unit type (Atom hack)</span>
+<span style="color: #b6a0ff;">(</span>claim recA
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>C <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> C Atom C<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">recA</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>C<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>c atom<span style="color: #f0ce47;">)</span>
+      c<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recA Nat<span style="color: #f8dec0;">)</span> zero <span style="color: #f0ce47;">'something</span><span style="color: #b6a0ff;">)</span>                                    <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Nat 0)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">for unit type</span>
+<span style="color: #b6a0ff;">(</span>claim recU
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>C <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> C Trivial C<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">recU</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>C<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>c d<span style="color: #f0ce47;">)</span>       <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">d can only be sole</span>
+      c<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recU Trivial<span style="color: #f8dec0;">)</span> sole sole<span style="color: #b6a0ff;">)</span>                                      <span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">=&gt; (the Trivial sole)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1999174" class="outline-3">
+<h3 id="org1999174"><span class="section-number-3">3.6</span> Coproduct Types</h3>
+<div class="outline-text-3" id="text-3-6">
+<p>
+[[   <a href="hott-coproduct.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #b6a0ff;">(</span>claim recA+B
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>B <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>C <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">-&gt;</span> A C<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">-&gt;</span> B C<span style="color: #f0ce47;">)</span> <span style="color: #f0ce47;">(</span>Either A B<span style="color: #f0ce47;">)</span> C<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">recA+B</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>A B C<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f0ce47;">(</span>g0 g1 tgt<span style="color: #f0ce47;">)</span>
+      <span style="color: #f0ce47;">(</span>ind-Either tgt
+                  <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">_</span><span style="color: #f8dec0;">)</span> C<span style="color: #b6a0ff;">)</span>                <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">motive</span>
+                  <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f8dec0;">(</span>x<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span>g0 x<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">the left case</span>
+                  <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #f8dec0;">(</span>y<span style="color: #f8dec0;">)</span> <span style="color: #f8dec0;">(</span>g1 y<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>       <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">the right case</span>
+
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recA+B Nat Nat Nat<span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>x<span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> x<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>y<span style="color: #ff9977;">)</span> zero<span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span>left <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                                      <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 4)</span>
+
+<span style="color: #b6a0ff;">(</span><span style="color: #f8dec0;">(</span>recA+B Nat Nat Nat<span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>x<span style="color: #ff9977;">)</span> <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">add1</span> x<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>y<span style="color: #ff9977;">)</span> zero<span style="color: #f8dec0;">)</span>
+ <span style="color: #f8dec0;">(</span>right <span style="color: #f0ce47;">3</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>                                     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 0)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8305275" class="outline-3">
+<h3 id="org8305275"><span class="section-number-3">3.7</span> Example: <code>Bool</code></h3>
+<div class="outline-text-3" id="text-3-7">
+<p>
+[[   <a href="hott-bool.rkt">LOCAL FILE</a>   ]]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-racket"><span style="color: #b6a0ff;">#lang</span> <span style="color: #f8dec0;">pie</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">shortcuts</span>
+<span style="color: #b6a0ff;">(</span>claim Bool <span style="color: #b6a0ff;">U</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">Bool</span> <span style="color: #f8dec0;">(</span>Either Trivial Trivial<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">true</span> Bool<span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">true</span> <span style="color: #f8dec0;">(</span>left sole<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">false</span> Bool<span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">false</span> <span style="color: #f8dec0;">(</span>right sole<span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">Bool recursor = if (branching)</span>
+<span style="color: #b6a0ff;">(</span>claim <span style="color: #b6a0ff;">if</span>
+       <span style="color: #f8dec0;">(</span>Pi <span style="color: #ff9977;">(</span><span style="color: #f0ce47;">(</span>A <span style="color: #b6a0ff;">U</span><span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span>
+           <span style="color: #ff9977;">(</span><span style="color: #b6a0ff;">-&gt;</span> Bool A A A<span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">define</span> <span style="color: #f8dec0;">if</span>
+  <span style="color: #f8dec0;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #ff9977;">(</span>A tgt t f<span style="color: #ff9977;">)</span>
+    <span style="color: #ff9977;">(</span>ind-Either tgt
+                <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">_</span><span style="color: #b6a0ff;">)</span> A<span style="color: #f0ce47;">)</span>                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">motive</span>
+                <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">_</span><span style="color: #b6a0ff;">)</span> t<span style="color: #f0ce47;">)</span>                  <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">the true case</span>
+                <span style="color: #f0ce47;">(</span><span style="color: #b6a0ff;">lambda</span> <span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">_</span><span style="color: #b6a0ff;">)</span> f<span style="color: #f0ce47;">)</span><span style="color: #ff9977;">)</span><span style="color: #f8dec0;">)</span><span style="color: #b6a0ff;">)</span>               <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">the false case</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">REMARK: t != true and f != false</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">t is the instruction when tgt == true</span>
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">f is the instruction when tgt == false</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">if</span> Nat <span style="color: #b6a0ff;">true</span> zero <span style="color: #f0ce47;">1</span><span style="color: #b6a0ff;">)</span>            <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 0)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">if</span> Nat <span style="color: #b6a0ff;">false</span> zero <span style="color: #f0ce47;">1</span><span style="color: #b6a0ff;">)</span>           <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 1)</span>
+
+<span style="color: #a8a8a8;">;; </span><span style="color: #a8a8a8;">unfolded test</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">if</span> Nat <span style="color: #f8dec0;">(</span>left sole<span style="color: #f8dec0;">)</span> zero <span style="color: #f0ce47;">1</span><span style="color: #b6a0ff;">)</span>     <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 0)</span>
+<span style="color: #b6a0ff;">(</span><span style="color: #b6a0ff;">if</span> Nat <span style="color: #f8dec0;">(</span>right sole<span style="color: #f8dec0;">)</span> zero <span style="color: #f0ce47;">1</span><span style="color: #b6a0ff;">)</span>    <span style="color: #a8a8a8;">; </span><span style="color: #a8a8a8;">=&gt; (the Nat 1)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Adrian Manea</p>
+<p class="date">Created: 2020-04-23 Thu 11:25</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
