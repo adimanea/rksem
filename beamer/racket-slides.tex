@@ -71,7 +71,7 @@
 \fr{
   \ft{Introducere și motivație}
 
-  \lin{1}{Ideea: Scurtă introducere în \textbf{teoria tipurilor} (MLTT) și verificări %
+  \lin{1}{Scurtă introducere în \textbf{teoria tipurilor} (MLTT) și verificări %
     folosind \textbf{Racket}}{3}
 
   \lin{2}{\textbf{MLTT} pentru că folosește logica intuiționistă și stă la baza HoTT}{3}
@@ -222,13 +222,15 @@
 
   \lin{3}{Notația $ \prod_{(x : A)} B(x) $, numite și \emph{funcții dependente}.}{0}
 
+  \lin{4}{Interpretare: cuantificarea universală, $ (\forall x : A)B(x) $.}{0}
+
   \vspace{0.5cm}
 
-  \lin{4}{Exemplu: \textbf{numerele naturale}. Pornim cu $ 0 : \mathbb{N}, S : \mathbb{N} \to \mathbb{N} $.}{0}
+  \lin{5}{Exemplu: \textbf{numerele naturale}. Pornim cu $ 0 : \mathbb{N}, S : \mathbb{N} \to \mathbb{N} $.}{0}
 
-  \lin{5}{\emph{Principiul de inducție}, ca regulă de inferență:}{0}
+  \lin{6}{\emph{Principiul de inducție}, ca regulă de inferență:}{0}
 
-  \lin{6}{\small\[\begin{prooftree}
+  \lin{7}{\small\[\begin{prooftree}
         \hypo{\Gamma, n : \mathbb{N} \vdash P \text{ type}}
         \hypo{\Gamma \vdash p_0 : P(0)}
         \hypo{\Gamma \vdash p_S : \prod_{(n : \mathbb{N})} P(n) \to P(S(n))}
@@ -236,88 +238,143 @@
       \end{prooftree}(\mathbb{N}-\text{ind}).\]}{1}
 }
 
-\begin{frame}[fragile]
-  \frametitle{\hfill Proust \hfill}
+\fr{
+  \ft{Tipuri $ \Sigma $ (sumă)}
 
-  {\footnotesize
-\begin{verbatim}
-;; Tipurile cu care lucrăm
-(struct Lam (var body) #:transparent)          ; lambda abstracție
-(struct App (func arg) #:transparent)          ; aplicare de funcție
-(struct Ann (expr type) #:transparent)         ; tipizare explicită
-(struct Arrow (domain codomain) #:transparent) ; tip funcțional
-\end{verbatim}
-  }
+  \lin{1}{Ideea: Pentru $ a : A $, asociem cîte un tip $ B(a) \Rightarrow \displaystyle\sum_{(a : A)} B(a) $}{1}
 
-  {\footnotesize
-\begin{verbatim}
-;; Exemplu de înțelegerea tipurilor simple
-(define (parse-type t)
-  (match t                              ; pattern match pentru tip
-	[`(,t1 -> ,t2)                          ; este funcțional?
-	 (Arrow (parse-type t1)                 ; atunci este Arrow
-			(parse-type t2))]
-	(`(,t1 -> ,t2 -> ,r ...)                ; este "multifunc"?
-	 (Arrow (parse-type t1)                 ; atunci este "multi-Arrow"
-			(parse-type `(,t1 -> ,@r))))
-	[(? symbol? X) X]                       ; este simplu? returnează
-	[else (error "can't parse this type")]))
-\end{verbatim}
-  }
+  \lin{2}{Interpretare: cuantificarea existențială, $ (\exists x : A) B(a) $.}{0}
 
-\end{frame}
+  \vspace{1cm}
 
-\begin{frame}[fragile]
-  \frametitle{\hfill Proust \hfill}
+  \lin{3}{\textbf{Exemplu:} Fie $ x : \mathbb{N} $ fixat. Definim predicatul $ P(y): d \cdot y = x $.}{0}
 
-  {\footnotesize
-\begin{verbatim}
-;; Pentru expresii lambda
-;; type-check : Context Expr Type -> Boolean
-;; returnează true dacă expr este de tip t în contextul ctx
-(define (type-check ctx expr type)
-  (match expr
-	[(Lam x t)                      ; este lambda?
-	 (match type                    ; atunci type este Arrow
-	   [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
-	   [else (cannot-check ctx expr type)])]
-	[else (if (equal? (type-infer ctx expr) type) true      ; eroare pentru alte tipuri
-			  (cannot-check ctx expr type))]))
-\end{verbatim}
-  }
-\end{frame}
+  \lin{4}{Formăm tipul sumă $ \sum_{(y : \mathbb{N})} P(y) $, populat de:}{0}
+
+  \begin{itemize}
+    \ite{5}{elemente de tip $ y : \mathbb{N} $;}
+    \ite{6}{pentru fiecare $ y $, demonstrații ale $ P(y) $, i.e.\ cîte un $ d $,%
+      \emph{dacă există}.}
+  \end{itemize}
+}
+
+\fr{
+  \ft{Proust (2016)}
+
+  \lin{1}{Demonstrator DIY, cu accent didactic.}{2}
+
+  \lin{2}{Verifică tipizarea (în context) pentru:}{0}
+  \begin{itemize}
+    \ite{3}{tipizări explicite, \texttt{Ann (expr type)};}
+    \ite{4}{tipuri funcționale, \texttt{Arrow (domain codomain)};}
+    \ite{5}{aplicări de funcții, \texttt{App (func arg)};}
+    \ite{6}{expresii lambda, \texttt{Lam (var body)};}
+  \end{itemize}
+
+  \vspace{0.5cm}
+
+  \lin{7}{Exemplu: \[ \small\texttt{(check-expect (check-proof '((lambda x => x) : (A -> A))) true)} \]}{0}
+}
+
+\fr{
+  \ft{Pie (2018)}
+
+  \lin{1}{Limbaj specific (DSL), cu accent pe \emph{tipizare statică} și \emph{tipuri dependente}.}{2}
+
+  \lin{2}{Implementat inițial în Racket, mutat apoi în Haskell (\texttt{pie-hs}).}{2}
+
+  \lin{3}{Scris în formă dialogată, ca întreaga serie \emph{The Little X}.}{2}
+
+  \lin{4}{Exemple:}{0}
+  \begin{itemize}
+    \ite{5}{Rezervarea tipului: {\small\texttt{(claim one Nat)}};}
+    \ite{6}{Definiția: {\small\texttt{(define one (add1 zero))}};}
+    \ite{7}{Tipizarea explicită: {\small\texttt{(the Nat (add1 one))}};}
+    \ite{8}{Tipuri $ \Pi $: {\small\texttt{(Pi ((A U) (D U)) (-> (Pair A D) (Pair D A)))}}.}
+  \end{itemize}
+}
+% \begin{frame}[fragile]
+%   \frametitle{\hfill Proust \hfill}
+
+%   {\footnotesize
+% \begin{verbatim}
+% ;; Tipurile cu care lucrăm
+% (struct Lam (var body) #:transparent)          ; lambda abstracție
+% (struct App (func arg) #:transparent)          ; aplicare de funcție
+% (struct Ann (expr type) #:transparent)         ; tipizare explicită
+% (struct Arrow (domain codomain) #:transparent) ; tip funcțional
+% \end{verbatim}
+%   }
+
+%   {\footnotesize
+% \begin{verbatim}
+% ;; Exemplu de înțelegerea tipurilor simple
+% (define (parse-type t)
+%   (match t                              ; pattern match pentru tip
+% 	[`(,t1 -> ,t2)                          ; este funcțional?
+% 	 (Arrow (parse-type t1)                 ; atunci este Arrow
+% 			(parse-type t2))]
+% 	(`(,t1 -> ,t2 -> ,r ...)                ; este "multifunc"?
+% 	 (Arrow (parse-type t1)                 ; atunci este "multi-Arrow"
+% 			(parse-type `(,t1 -> ,@r))))
+% 	[(? symbol? X) X]                       ; este simplu? returnează
+% 	[else (error "can't parse this type")]))
+% \end{verbatim}
+%   }
+
+% \end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{\hfill Proust \hfill}
+
+%   {\footnotesize
+% \begin{verbatim}
+% ;; Pentru expresii lambda
+% ;; type-check : Context Expr Type -> Boolean
+% ;; returnează true dacă expr este de tip t în contextul ctx
+% (define (type-check ctx expr type)
+%   (match expr
+% 	[(Lam x t)                      ; este lambda?
+% 	 (match type                    ; atunci type este Arrow
+% 	   [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
+% 	   [else (cannot-check ctx expr type)])]
+% 	[else (if (equal? (type-infer ctx expr) type) true      ; eroare pentru alte tipuri
+% 			  (cannot-check ctx expr type))]))
+% \end{verbatim}
+%   }
+% \end{frame}
 
 
-\begin{frame}[fragile]
-  \frametitle{\hfill Proust \hfill}
+% \begin{frame}[fragile]
+%   \frametitle{\hfill Proust \hfill}
 
-  {\footnotesize
-\begin{verbatim}
-;; Inferența altor tipuri
-(define (type-infer ctx expr)
-  (match expr
-	[(Lam _ _) (cannot-infer ctx expr)]         ; lambda separat
-	[(Ann e t) (type-check ctx e t) t]          ; pentru tipizare explicită
-	[(App f a)                                  ; aplicarea funcțiilor
-	 (define tf (type-infer ctx f))
-	 (match tf                                  ; trebuie să fie de tip Arrow
-	   [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; cînd restul merge
-	   [else (cannot-infer ctx expr)])]
-	[(? symbol? x)                              ; simboluri
-	 (cond
-	   [(assoc x ctx) => second]                ; pentru liste de tip (ctx), tipul e second
-	   [else (cannot-infer ctx expr)])]))       ; altfel, eroare
-\end{verbatim}
-  }
-\end{frame}
+%   {\footnotesize
+% \begin{verbatim}
+% ;; Inferența altor tipuri
+% (define (type-infer ctx expr)
+%   (match expr
+% 	[(Lam _ _) (cannot-infer ctx expr)]         ; lambda separat
+% 	[(Ann e t) (type-check ctx e t) t]          ; pentru tipizare explicită
+% 	[(App f a)                                  ; aplicarea funcțiilor
+% 	 (define tf (type-infer ctx f))
+% 	 (match tf                                  ; trebuie să fie de tip Arrow
+% 	   [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; cînd restul merge
+% 	   [else (cannot-infer ctx expr)])]
+% 	[(? symbol? x)                              ; simboluri
+% 	 (cond
+% 	   [(assoc x ctx) => second]                ; pentru liste de tip (ctx), tipul e second
+% 	   [else (cannot-infer ctx expr)])]))       ; altfel, eroare
+% \end{verbatim}
+%   }
+% \end{frame}
 
-\begin{frame}[plain,c]
+% \begin{frame}[plain,c]
 
-  \begin{center}
-    \Huge DEMO (Proust, Pie)
-  \end{center}
+%   \begin{center}
+%     \Huge DEMO (Proust, Pie)
+%   \end{center}
 
-\end{frame}
+% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
