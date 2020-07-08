@@ -1,4 +1,4 @@
-\documentclass[xcolor=dvipsnames]{beamer}
+\documentclass[xcolor=dvipsnames,handout]{beamer}
 
 % font setup
 \usepackage{libertine}
@@ -12,6 +12,8 @@
 \newcommand\qq{\enquote}
 \newcommand\dr{\mathrm}
 \usepackage[normalem]{ulem}
+
+\usepackage{ebproof}
 
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -52,7 +54,7 @@
 \setbeamertemplate{headline}{}  
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % TITLE PAGE
 \title[Demonstratoare în Racket]{Crafting Provers in Racket}
 \author[Adrian Manea]{absolvent: Adrian Manea \\ coordonator: Traian Șerbănuță}
@@ -65,23 +67,266 @@
 \maketitle
 
 % SLIDES START HERE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \fr{
   \ft{Introducere și motivație}
 
+  \lin{1}{Ideea: Scurtă introducere în \textbf{teoria tipurilor} (MLTT) și verificări %
+    folosind \textbf{Racket}}{3}
 
+  \lin{2}{\textbf{MLTT} pentru că folosește logica intuiționistă și stă la baza HoTT}{3}
+
+  \lin{3}{\textbf{Racket} pentru că este pornit din Lisp (preferință personală) și creat
+    expres pentru cercetări în limbaje de programare}{3}
+}
+
+\fr{
+  \ft{Plan}
+
+  \begin{enumerate}
+    \ite{1}{Elemente de bază pentru MLTT: $ \lambda $-calcul și tipuri dependente}
+    \ite{2}{\textsc{Proust}, \emph{``a nano proof assistant''}}
+    \ite{3}{\textsc{Pie} pentru tipuri dependente}
+  \end{enumerate}
+
+  \vspace{1cm}
+  
+  \lin{4}{Referințe principale:}{0}
+  \begin{enumerate}{\small
+      \ite{5}{MLTT: \cite{mltt}, \cite{hott}, \cite{pmltt};}
+      \ite{6}{Proust: \cite{proust};}
+      \ite{7}{Pie: \cite{typer};}
+      \ite{8}{Racket: \cite{racket}, \cite{htdp}}}
+  \end{enumerate}
+}
+
+\fr{
+  \ft{Teoria tipurilor în formularea P.\ Martin-L\"{o}f ($\sim$1980)}
+
+  \lin{1}{Dezvoltarea istorică (\cite{collins}) începe în jurul paradoxului lui Russell, %
+    atinge și probleme de limbaj (Frege, Carnap), atinge maturitatea prin %
+    corespondența Curry-Howard(-Lambek)}{3}
+
+  \lin{2}{Distincții clare față de teoria mulțimilor $ \Rightarrow $ intenții %
+    fundamentale, accentuate de \emph{teoria toposurilor} (categorii + logică)}{3}
+
+  \lin{3}{\emph{Abordare intuiționistă:} existențialii trebuie instanțiați %
+    finitist, terțul exclus dispare, demonstrații bazate pe judecăți și reguli de inferență}{3}
+}
+
+\fr{
+  \ft{Teoria tipurilor în formularea P.\ Martin-L\"{o}f ($\sim$1980)}
+
+  \lin{1}{Formulare (sintaxă) abstractă, interpretări (semantici) diverse:}{0}
+  \begin{itemize}
+    \ite{2}{propoziții ca tipuri (Curry-Howard, Wadler et al.)}
+    \ite{3}{categorii cartezian închise (Lambek)}
+    \ite{4}{probleme și soluții (Brouwer-Heyting-Kolmogorov)}
+  \end{itemize}
+
+  \lin{5}{
+    \begin{figure}[!htb]
+      \centering
+      \begin{tabular}{l | l | l}
+        A mulțime & $ a \in A $ & implică \\
+        \hline
+        $ A $ mulțime & $ a $ element al $ A $ & $ A $ nevidă \\
+        $ A $ propoziție & $ a $ demonstrație constructivă a $ A $ & $ A $ este adevărată \\
+        $ A $ intenție & $ a $ metodă de a îndeplini $ A $ & $ A $ realizabilă \\
+        $ A $ problemă & $ a $ metodă de rezolvare a $ A $ & $ A $ are soluție
+      \end{tabular}
+      \caption{Interpretări diverse ale $ a \in A $, \cite[p.\ 4]{mltt}}
+    \end{figure}
+  }{2}
 }
 
 
+\fr{
+  \ft{Lambda calcul fără tipuri ($\sim$1930)}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \lin{1}{Intuitiv: un formalism pentru ,,funcții anonime''.}{1}
+
+  \lin{2}{Gramatica BNF: \[ t ::= x \mid \lambda x. t \mid tt \]}{0}
+
+  \begin{itemize}
+    \ite{3}{variabile libere $ x $;}
+    \ite{4}{lambda-abstracții (leagă variabila $ x $ în termenul $ t $);}
+    \ite{5}{aplicări ale unui termen pe alt termen.}
+  \end{itemize}
+
+  \vspace{1cm}
+
+  \lin{6}{Exemple: $ x $, $ \lambda x . 5 $, $ (\lambda x . 5) z $, %
+    $ (\lambda x . 5)(\lambda z . (z + 1)) $ etc.}{1}
+
+  \lin{7}{Astăzi, majoritatea limbajelor de programare au o formă de a declara
+    funcții anonime cu expresii \texttt{lambda}.}{0}
+}
+
+\fr{
+  \ft{Tipuri dependente}
+
+  \lin{1}{Apărute pentru interpretarea cuantificatorilor}{0}
+
+  \lin{2}{Utilizate pentru \emph{expresii parametrizate}, i.e.\ %
+    expresii ,,la fel'' dpdv sintactic, dar cu interpretări diferite.}{0}
+
+  \vspace{0.5cm}
+  
+  \lin{3}{Judecăți primitive (stil Martin-L\"{o}f):}{0}
+  \begin{itemize}
+    \ite{4}{$ A $ este un tip corect format în contextul $ \Gamma $: $ \Gamma \vdash A \text{ type} $;}
+    \ite{5}{$ A $ și $ B $ sînt tipuri egale în contextul $ \Gamma $: $ \Gamma \vdash A \equiv B \text{ type} $;}
+    \ite{6}{$ A $ este un termen corect format, de tip $ A $, în contextul $ \Gamma $:
+      $ \Gamma \vdash a : A $;}
+    \ite{7}{$ a $ și $ b $ sînt termeni egali de tip $ A $ în contextul $ \Gamma $:
+      $ \Gamma \vdash a \equiv b : A $.}
+  \end{itemize}
+
+  \lin{8}{Context = asumpții de tipizare, de forma: \[ \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, %
+      x_n : A_n(x_1, \dots, x_{n-1}) \]}{0}
+}
+
+\fr{
+  \ft{Tipuri funcționale}
+
+  \lin{1}{Intuitiv, date două tipuri $ A $ și $ B $ corect formate și populate,
+    regulile de asociere ale elementelor formează \emph{tipul funcțional} $ A \to B $.}{0}
+
+  \lin{2}{Inferențele pentru tipuri funcționale se fac cu \emph{lambda calcul}.}{0}
+
+  \lin{3}{\[ \begin{prooftree}
+        \hypo{\Gamma \vdash B \text{ type}}
+        \hypo{\Gamma, x : A \vdash b(x) : B}
+        \infer2{\Gamma \vdash \lambda x . b(x) : A \to B}
+      \end{prooftree} \quad (\lambda) \]}{0}
+
+  \lin{4}{\[ \begin{prooftree}
+        \hypo{\Gamma \vdash f : A \to B}
+        \infer1{\Gamma, x : A \vdash f(x) : B}
+      \end{prooftree}\quad \text{(ev)} \]}{0}
+
+  \lin{5}{\[\begin{prooftree}
+        \hypo{\Gamma \vdash B \text{ type}}
+        \hypo{\Gamma, x : A \vdash b(x) : B}
+        \infer2{\Gamma, x : A \vdash (\lambda y . b(y))(x) \equiv b(x) : B}
+      \end{prooftree} \quad (\beta) \]}{0}
+}
+
+\fr{
+  \ft{Tipuri $ \Pi $ (produs)}
+
+  \lin{1}{Ideea: \emph{familii de tipuri}, parametrizate de un tip anume.}{0}
+
+  \lin{2}{Pentru fiecare $ x : A $, asociem \emph{cîte un tip} $ B(x) $.}{0}
+
+  \lin{3}{Notația $ \prod_{(x : A)} B(x) $, numite și \emph{funcții dependente}.}{0}
+
+  \vspace{0.5cm}
+
+  \lin{4}{Exemplu: \textbf{numerele naturale}. Pornim cu $ 0 : \mathbb{N}, S : \mathbb{N} \to \mathbb{N} $.}{0}
+
+  \lin{5}{\emph{Principiul de inducție}, ca regulă de inferență:}{0}
+
+  \lin{6}{\small\[\begin{prooftree}
+        \hypo{\Gamma, n : \mathbb{N} \vdash P \text{ type}}
+        \hypo{\Gamma \vdash p_0 : P(0)}
+        \hypo{\Gamma \vdash p_S : \prod_{(n : \mathbb{N})} P(n) \to P(S(n))}
+        \infer3{\Gamma \vdash \dr{ind}_{\mathbb{N}} (p_0, p_S) : \prod_{(n : \mathbb{N})} P(n)}.
+      \end{prooftree}(\mathbb{N}-\text{ind}).\]}{1}
+}
+
+\begin{frame}[fragile]
+  \frametitle{\hfill Proust \hfill}
+
+  {\footnotesize
+\begin{verbatim}
+;; Tipurile cu care lucrăm
+(struct Lam (var body) #:transparent)          ; lambda abstracție
+(struct App (func arg) #:transparent)          ; aplicare de funcție
+(struct Ann (expr type) #:transparent)         ; tipizare explicită
+(struct Arrow (domain codomain) #:transparent) ; tip funcțional
+\end{verbatim}
+  }
+
+  {\footnotesize
+\begin{verbatim}
+;; Exemplu de înțelegerea tipurilor simple
+(define (parse-type t)
+  (match t                              ; pattern match pentru tip
+	[`(,t1 -> ,t2)                          ; este funcțional?
+	 (Arrow (parse-type t1)                 ; atunci este Arrow
+			(parse-type t2))]
+	(`(,t1 -> ,t2 -> ,r ...)                ; este "multifunc"?
+	 (Arrow (parse-type t1)                 ; atunci este "multi-Arrow"
+			(parse-type `(,t1 -> ,@r))))
+	[(? symbol? X) X]                       ; este simplu? returnează
+	[else (error "can't parse this type")]))
+\end{verbatim}
+  }
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{\hfill Proust \hfill}
+
+  {\footnotesize
+\begin{verbatim}
+;; Pentru expresii lambda
+;; type-check : Context Expr Type -> Boolean
+;; returnează true dacă expr este de tip t în contextul ctx
+(define (type-check ctx expr type)
+  (match expr
+	[(Lam x t)                      ; este lambda?
+	 (match type                    ; atunci type este Arrow
+	   [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
+	   [else (cannot-check ctx expr type)])]
+	[else (if (equal? (type-infer ctx expr) type) true      ; eroare pentru alte tipuri
+			  (cannot-check ctx expr type))]))
+\end{verbatim}
+  }
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{\hfill Proust \hfill}
+
+  {\footnotesize
+\begin{verbatim}
+;; Inferența altor tipuri
+(define (type-infer ctx expr)
+  (match expr
+	[(Lam _ _) (cannot-infer ctx expr)]         ; lambda separat
+	[(Ann e t) (type-check ctx e t) t]          ; pentru tipizare explicită
+	[(App f a)                                  ; aplicarea funcțiilor
+	 (define tf (type-infer ctx f))
+	 (match tf                                  ; trebuie să fie de tip Arrow
+	   [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; cînd restul merge
+	   [else (cannot-infer ctx expr)])]
+	[(? symbol? x)                              ; simboluri
+	 (cond
+	   [(assoc x ctx) => second]                ; pentru liste de tip (ctx), tipul e second
+	   [else (cannot-infer ctx expr)])]))       ; altfel, eroare
+\end{verbatim}
+  }
+\end{frame}
+
+\begin{frame}[plain,c]
+
+  \begin{center}
+    \Huge DEMO (Proust, Pie)
+  \end{center}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 % Bibliography
 \begin{frame}[allowframebreaks]
-    \ft{Bibliografie și lecturi suplimentare}
-    \bibliography{../tex/racket.bib}
-    \bibliographystyle{apalike}
-    % \nocite{*}
+  \ft{Bibliografie și lecturi suplimentare}
+  \bibliography{../tex/racket.bib}
+  \bibliographystyle{apalike}
+  % \nocite{*}
 \end{frame}
 
 \end{document}

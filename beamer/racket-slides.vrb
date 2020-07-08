@@ -1,0 +1,20 @@
+\frametitle{\hfill Proust \hfill}
+
+  {\footnotesize
+\begin{verbatim}
+;; Inferența altor tipuri
+(define (type-infer ctx expr)
+  (match expr
+	[(Lam _ _) (cannot-infer ctx expr)]         ; lambda separat
+	[(Ann e t) (type-check ctx e t) t]          ; pentru tipizare explicită
+	[(App f a)                                  ; aplicarea funcțiilor
+	 (define tf (type-infer ctx f))
+	 (match tf                                  ; trebuie să fie de tip Arrow
+	   [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; cînd restul merge
+	   [else (cannot-infer ctx expr)])]
+	[(? symbol? x)                              ; simboluri
+	 (cond
+	   [(assoc x ctx) => second]                ; pentru liste de tip (ctx), tipul e second
+	   [else (cannot-infer ctx expr)])]))       ; altfel, eroare
+\end{verbatim}
+  }
