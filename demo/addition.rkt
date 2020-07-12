@@ -8,5 +8,5 @@
 ;; Now the addition
 (claim + (-> Nat Nat Nat))          ; addition for the Nat type
 (define +
-  (lambda n j
-          (iter-Nat n j step+)))
+  (lambda (n j)
+    (iter-Nat n j step+)))
