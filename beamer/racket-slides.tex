@@ -103,15 +103,22 @@
 \fr{
   \ft{Teoria tipurilor în formularea P.\ Martin-L\"{o}f ($\sim$1980)}
 
-  \lin{1}{Dezvoltarea istorică (\cite{collins}) începe în jurul paradoxului lui Russell, %
-    atinge și probleme de limbaj (Frege, Carnap), atinge maturitatea prin %
-    corespondența Curry-Howard(-Lambek)}{3}
-
-  \lin{2}{Distincții clare față de teoria mulțimilor $ \Rightarrow $ intenții %
+  \lin{1}{Dezvoltarea istorică (\cite{collins}):}{0}
+  \begin{itemize}
+    \ite{2}{paradoxul lui Russell;}
+    \ite{3}{probleme de limbaj: Frege, Wittgenstein, Carnap;}
+    \ite{4}{$\dots$ corespondența Curry-Howard(-Lambek).}
+  \end{itemize}
+  
+  \lin{5}{Distincții clare față de teoria mulțimilor $ \Rightarrow $ intenții %
     fundamentale, accentuate de \emph{teoria toposurilor} (categorii + logică)}{3}
 
-  \lin{3}{\emph{Abordare intuiționistă:} existențialii trebuie instanțiați %
-    finitist, terțul exclus dispare, demonstrații bazate pe judecăți și reguli de inferență}{3}
+  \lin{6}{\emph{Abordare intuiționistă:}}{0}
+  \begin{itemize}
+    \ite{7}{existențialii trebuie instanțiați finitist;}
+    \ite{8}{terțul exclus dispare;}
+    \ite{9}{demonstrații bazate pe judecăți și reguli de inferență.}
+  \end{itemize}
 }
 
 \fr{
@@ -140,6 +147,31 @@
   }{2}
 }
 
+\fr{
+  \ft{Teoria tipurilor în formularea P.\ Martin-L\"{o}f ($\sim$1980)}
+
+  \lin{1}{Apărute pentru interpretarea cuantificatorilor.}{0}
+
+  \lin{2}{\emph{Expresii parametrizate}, i.e.\ %
+    expresii ,,la fel'' sintactic, cu interpretări diferite.}{0}
+
+  \vspace{0.5cm}
+  
+  \lin{3}{Judecăți primitive (stil Martin-L\"{o}f):}{0}
+  \begin{itemize}
+    \ite{4}{$ A $ este un \emph{tip corect format} în contextul $ \Gamma $: $ \Gamma \vdash A \text{ type} $;}
+    \ite{5}{$ A $ și $ B $ sînt \emph{tipuri identice} în contextul $ \Gamma $: $ \Gamma \vdash A \equiv B \text{ type} $;}
+    \ite{6}{$ A $ este un \emph{termen corect format}, de tip $ A $, în contextul $ \Gamma $:
+      $ \Gamma \vdash a : A $;}
+    \ite{7}{$ a $ și $ b $ sînt \emph{termeni egali} de tip $ A $ în contextul $ \Gamma $:
+      $ \Gamma \vdash a \equiv b : A $.}
+  \end{itemize}
+
+  \vspace{0.5cm}
+
+  \lin{8}{Context = asumpții de tipizare, de forma: \[ \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, %
+      x_n : A_n(x_1, \dots, x_{n-1}) \]}{0}
+}
 
 \fr{
   \ft{Lambda calcul fără tipuri ($\sim$1930)}
@@ -164,34 +196,9 @@
 }
 
 \fr{
-  \ft{Tipuri dependente}
-
-  \lin{1}{Apărute pentru interpretarea cuantificatorilor}{0}
-
-  \lin{2}{Utilizate pentru \emph{expresii parametrizate}, i.e.\ %
-    expresii ,,la fel'' dpdv sintactic, dar cu interpretări diferite.}{0}
-
-  \vspace{0.5cm}
-  
-  \lin{3}{Judecăți primitive (stil Martin-L\"{o}f):}{0}
-  \begin{itemize}
-    \ite{4}{$ A $ este un tip corect format în contextul $ \Gamma $: $ \Gamma \vdash A \text{ type} $;}
-    \ite{5}{$ A $ și $ B $ sînt tipuri egale în contextul $ \Gamma $: $ \Gamma \vdash A \equiv B \text{ type} $;}
-    \ite{6}{$ A $ este un termen corect format, de tip $ A $, în contextul $ \Gamma $:
-      $ \Gamma \vdash a : A $;}
-    \ite{7}{$ a $ și $ b $ sînt termeni egali de tip $ A $ în contextul $ \Gamma $:
-      $ \Gamma \vdash a \equiv b : A $.}
-  \end{itemize}
-
-  \lin{8}{Context = asumpții de tipizare, de forma: \[ \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, %
-      x_n : A_n(x_1, \dots, x_{n-1}) \]}{0}
-}
-
-\fr{
   \ft{Tipuri funcționale}
 
-  \lin{1}{Intuitiv, date două tipuri $ A $ și $ B $ corect formate și populate,
-    regulile de asociere ale elementelor formează \emph{tipul funcțional} $ A \to B $.}{0}
+  \lin{1}{$ A, B \text{ type} $; asociem elementele $ \Rightarrow $ \emph{tipul funcțional} $ A \to B $.}{1}
 
   \lin{2}{Inferențele pentru tipuri funcționale se fac cu \emph{lambda calcul}.}{0}
 
@@ -204,7 +211,7 @@
   \lin{4}{\[ \begin{prooftree}
         \hypo{\Gamma \vdash f : A \to B}
         \infer1{\Gamma, x : A \vdash f(x) : B}
-      \end{prooftree}\quad \text{(ev)} \]}{0}
+      \end{prooftree}\quad \text{(eval)} \]}{0}
 
   \lin{5}{\[\begin{prooftree}
         \hypo{\Gamma \vdash B \text{ type}}
@@ -214,42 +221,43 @@
 }
 
 \fr{
-  \ft{Tipuri $ \Pi $ (produs)}
+  \ft{Tipuri dependente: $ \Pi $ (produs)}
 
-  \lin{1}{Ideea: \emph{familii de tipuri}, parametrizate de un tip anume.}{0}
+  \lin{1}{Ideea: \emph{familii de tipuri}, parametrizate de un tip anume.}{1}
 
-  \lin{2}{Pentru fiecare $ x : A $, asociem \emph{cîte un tip} $ B(x) $.}{0}
+  \lin{2}{Pentru fiecare $ x : A $, asociem \emph{cîte un tip} $ B(x) $.}{1}
 
-  \lin{3}{Notația $ \prod_{(x : A)} B(x) $, numite și \emph{funcții dependente}.}{0}
+  \lin{3}{Notația $ \prod_{(x : A)} B(x) $, numite și \emph{funcții dependente}.}{1}
 
-  \lin{4}{Interpretare: cuantificarea universală, $ (\forall x : A)B(x) $.}{0}
+  \lin{4}{Interpretare: cuantificarea universală, %
+    $ (\forall x : A)B(x) \leadsto \prod_{(x : A)} B(x) $.}{1}
 
   \vspace{0.5cm}
 
-  \lin{5}{Exemplu: \textbf{numerele naturale}. Pornim cu $ 0 : \mathbb{N}, S : \mathbb{N} \to \mathbb{N} $.}{0}
+  \lin{5}{Exemplu: \textbf{numerele naturale}.}{1}
 
   \lin{6}{\emph{Principiul de inducție}, ca regulă de inferență:}{0}
 
   \lin{7}{\small\[\begin{prooftree}
         \hypo{\Gamma, n : \mathbb{N} \vdash P \text{ type}}
         \hypo{\Gamma \vdash p_0 : P(0)}
-        \hypo{\Gamma \vdash p_S : \prod_{(n : \mathbb{N})} P(n) \to P(S(n))}
+        \hypo{\Gamma \vdash p_S : \prod_{(n : \mathbb{N})} \left(P(n) \to P(S(n))\right)}
         \infer3{\Gamma \vdash \dr{ind}_{\mathbb{N}} (p_0, p_S) : \prod_{(n : \mathbb{N})} P(n)}.
       \end{prooftree}(\mathbb{N}-\text{ind}).\]}{1}
 }
 
 \fr{
-  \ft{Tipuri $ \Sigma $ (sumă)}
+  \ft{Tipuri dependente: $ \Sigma $ (sumă)}
 
-  \lin{1}{Ideea: Pentru $ a : A $, asociem cîte un tip $ B(a) \Rightarrow \displaystyle\sum_{(a : A)} B(a) $}{1}
+  \lin{1}{Ideea: Pentru $ a : A $, asociem cîte un tip $ B(a) \Rightarrow \sum_{(a : A)} B(a) $}{2}
 
-  \lin{2}{Interpretare: cuantificarea existențială, $ (\exists x : A) B(a) $.}{0}
+  \lin{2}{Interpretare: cuantificarea existențială, $ (\exists x : A) B(a) \leadsto \sum_{(x : A)} B(a)$.}{0}
 
   \vspace{1cm}
 
-  \lin{3}{\textbf{Exemplu:} Fie $ x : \mathbb{N} $ fixat. Definim predicatul $ P(y): d \cdot y = x $.}{0}
+  \lin{3}{\textbf{Exemplu:} Fie $ x : \mathbb{N} $ fixat. Definim predicatul $ P(y): d \cdot y = x $.}{1}
 
-  \lin{4}{Formăm tipul sumă $ \sum_{(y : \mathbb{N})} P(y) $, populat de:}{0}
+  \lin{4}{Formăm tipul sumă $ \sum_{(y : \mathbb{N})} P(y) $, populat de:}{1}
 
   \begin{itemize}
     \ite{5}{elemente de tip $ y : \mathbb{N} $;}
@@ -283,98 +291,14 @@
 
   \lin{2}{Implementat inițial în Racket, mutat apoi în Haskell (\texttt{pie-hs}).}{2}
 
-  \lin{3}{Scris în formă dialogată, ca întreaga serie \emph{The Little X}.}{2}
-
-  \lin{4}{Exemple:}{0}
+  \lin{3}{Exemple:}{0}
   \begin{itemize}
-    \ite{5}{Rezervarea tipului: {\small\texttt{(claim one Nat)}};}
-    \ite{6}{Definiția: {\small\texttt{(define one (add1 zero))}};}
-    \ite{7}{Tipizarea explicită: {\small\texttt{(the Nat (add1 one))}};}
-    \ite{8}{Tipuri $ \Pi $: {\small\texttt{(Pi ((A U) (D U)) (-> (Pair A D) (Pair D A)))}}.}
+    \ite{4}{Rezervarea tipului: {\small\texttt{(claim one Nat)}};}
+    \ite{5}{Definiția: {\small\texttt{(define one (add1 zero))}};}
+    \ite{6}{Tipizarea explicită: {\small\texttt{(the Nat (add1 one))}};}
+    \ite{7}{Tipuri $ \Pi $: {\small\texttt{(Pi ((A U) (D U)) (-> (Pair A D) (Pair D A)))}}.}
   \end{itemize}
 }
-% \begin{frame}[fragile]
-%   \frametitle{\hfill Proust \hfill}
-
-%   {\footnotesize
-% \begin{verbatim}
-% ;; Tipurile cu care lucrăm
-% (struct Lam (var body) #:transparent)          ; lambda abstracție
-% (struct App (func arg) #:transparent)          ; aplicare de funcție
-% (struct Ann (expr type) #:transparent)         ; tipizare explicită
-% (struct Arrow (domain codomain) #:transparent) ; tip funcțional
-% \end{verbatim}
-%   }
-
-%   {\footnotesize
-% \begin{verbatim}
-% ;; Exemplu de înțelegerea tipurilor simple
-% (define (parse-type t)
-%   (match t                              ; pattern match pentru tip
-% 	[`(,t1 -> ,t2)                          ; este funcțional?
-% 	 (Arrow (parse-type t1)                 ; atunci este Arrow
-% 			(parse-type t2))]
-% 	(`(,t1 -> ,t2 -> ,r ...)                ; este "multifunc"?
-% 	 (Arrow (parse-type t1)                 ; atunci este "multi-Arrow"
-% 			(parse-type `(,t1 -> ,@r))))
-% 	[(? symbol? X) X]                       ; este simplu? returnează
-% 	[else (error "can't parse this type")]))
-% \end{verbatim}
-%   }
-
-% \end{frame}
-
-% \begin{frame}[fragile]
-%   \frametitle{\hfill Proust \hfill}
-
-%   {\footnotesize
-% \begin{verbatim}
-% ;; Pentru expresii lambda
-% ;; type-check : Context Expr Type -> Boolean
-% ;; returnează true dacă expr este de tip t în contextul ctx
-% (define (type-check ctx expr type)
-%   (match expr
-% 	[(Lam x t)                      ; este lambda?
-% 	 (match type                    ; atunci type este Arrow
-% 	   [(Arrow tt tw) (type-check (cons `(,x ,tt) ctx) t tw)]
-% 	   [else (cannot-check ctx expr type)])]
-% 	[else (if (equal? (type-infer ctx expr) type) true      ; eroare pentru alte tipuri
-% 			  (cannot-check ctx expr type))]))
-% \end{verbatim}
-%   }
-% \end{frame}
-
-
-% \begin{frame}[fragile]
-%   \frametitle{\hfill Proust \hfill}
-
-%   {\footnotesize
-% \begin{verbatim}
-% ;; Inferența altor tipuri
-% (define (type-infer ctx expr)
-%   (match expr
-% 	[(Lam _ _) (cannot-infer ctx expr)]         ; lambda separat
-% 	[(Ann e t) (type-check ctx e t) t]          ; pentru tipizare explicită
-% 	[(App f a)                                  ; aplicarea funcțiilor
-% 	 (define tf (type-infer ctx f))
-% 	 (match tf                                  ; trebuie să fie de tip Arrow
-% 	   [(Arrow tt tw) #:when (type-check ctx a tt) tw]  ; cînd restul merge
-% 	   [else (cannot-infer ctx expr)])]
-% 	[(? symbol? x)                              ; simboluri
-% 	 (cond
-% 	   [(assoc x ctx) => second]                ; pentru liste de tip (ctx), tipul e second
-% 	   [else (cannot-infer ctx expr)])]))       ; altfel, eroare
-% \end{verbatim}
-%   }
-% \end{frame}
-
-% \begin{frame}[plain,c]
-
-%   \begin{center}
-%     \Huge DEMO (Proust, Pie)
-%   \end{center}
-
-% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
