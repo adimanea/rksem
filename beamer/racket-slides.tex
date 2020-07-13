@@ -89,15 +89,15 @@
     \ite{3}{\textsc{Pie} pentru tipuri dependente}
   \end{enumerate}
 
-  \vspace{1cm}
+  % \vspace{1cm}
   
-  \lin{4}{Referințe principale:}{0}
-  \begin{enumerate}{\small
-      \ite{5}{MLTT: \cite{mltt}, \cite{hott}, \cite{pmltt};}
-      \ite{6}{Proust: \cite{proust};}
-      \ite{7}{Pie: \cite{typer};}
-      \ite{8}{Racket: \cite{racket}, \cite{htdp}}}
-  \end{enumerate}
+  % \lin{4}{Referințe principale:}{0}
+  % \begin{enumerate}{\small
+  %   \ite{5}{MLTT: \cite{mltt}, \cite{hott}, \cite{pmltt};}
+  %   \ite{6}{Proust: \cite{proust};}
+  %   \ite{7}{Pie: \cite{typer};}
+  %   \ite{8}{Racket: \cite{racket}, \cite{htdp}}}
+  % \end{enumerate}
 }
 
 \fr{
@@ -150,26 +150,27 @@
 \fr{
   \ft{Teoria tipurilor în formularea P.\ Martin-L\"{o}f ($\sim$1980)}
 
-  \lin{1}{Apărute pentru interpretarea cuantificatorilor.}{0}
+  \lin{1}{\textbf{Tipuri dependente:}}{0}
+  \lin{2}{Apărute pentru interpretarea cuantificatorilor.}{0}
 
-  \lin{2}{\emph{Expresii parametrizate}, i.e.\ %
+  \lin{3}{\emph{Expresii parametrizate}, i.e.\ %
     expresii ,,la fel'' sintactic, cu interpretări diferite.}{0}
 
   \vspace{0.5cm}
   
-  \lin{3}{Judecăți primitive (stil Martin-L\"{o}f):}{0}
+  \lin{4}{Judecăți primitive (stil Martin-L\"{o}f):}{0}
   \begin{itemize}
-    \ite{4}{$ A $ este un \emph{tip corect format} în contextul $ \Gamma $: $ \Gamma \vdash A \text{ type} $;}
-    \ite{5}{$ A $ și $ B $ sînt \emph{tipuri identice} în contextul $ \Gamma $: $ \Gamma \vdash A \equiv B \text{ type} $;}
-    \ite{6}{$ A $ este un \emph{termen corect format}, de tip $ A $, în contextul $ \Gamma $:
+    \ite{5}{$ A $ este un \emph{tip corect format} în contextul $ \Gamma $: $ \Gamma \vdash A \text{ type} $;}
+    \ite{6}{$ A $ și $ B $ sînt \emph{tipuri identice} în contextul $ \Gamma $: $ \Gamma \vdash A \equiv B \text{ type} $;}
+    \ite{7}{$ A $ este un \emph{termen corect format}, de tip $ A $, în contextul $ \Gamma $:
       $ \Gamma \vdash a : A $;}
-    \ite{7}{$ a $ și $ b $ sînt \emph{termeni egali} de tip $ A $ în contextul $ \Gamma $:
+    \ite{8}{$ a $ și $ b $ sînt \emph{termeni egali} de tip $ A $ în contextul $ \Gamma $:
       $ \Gamma \vdash a \equiv b : A $.}
   \end{itemize}
 
   \vspace{0.5cm}
 
-  \lin{8}{Context = asumpții de tipizare, de forma: \[ \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, %
+  \lin{9}{Context = asumpții de tipizare, de forma: \[ \Gamma = x_1 : A_1, x_2 : A_2(x_1), \dots, %
       x_n : A_n(x_1, \dots, x_{n-1}) \]}{0}
 }
 
@@ -261,7 +262,7 @@
 
   \begin{itemize}
     \ite{5}{elemente de tip $ y : \mathbb{N} $;}
-    \ite{6}{pentru fiecare $ y $, demonstrații ale $ P(y) $, i.e.\ cîte un $ d $,%
+    \ite{6}{pentru fiecare $ y $, demonstrații ale $ P(y) $, i.e.\ cîte un $ d $, %
       \emph{dacă există}.}
   \end{itemize}
 }
@@ -273,7 +274,7 @@
 
   \lin{2}{Verifică tipizarea (în context) pentru:}{0}
   \begin{itemize}
-    \ite{3}{tipizări explicite, \texttt{Ann (expr type)};}
+    \ite{3}{tipizări explicite (\emph{type annotations}), \texttt{Ann (expr type)};}
     \ite{4}{tipuri funcționale, \texttt{Arrow (domain codomain)};}
     \ite{5}{aplicări de funcții, \texttt{App (func arg)};}
     \ite{6}{expresii lambda, \texttt{Lam (var body)};}
@@ -304,10 +305,13 @@
 
 % Bibliography
 \begin{frame}[allowframebreaks]
+
   \ft{Bibliografie și lecturi suplimentare}
-  \bibliography{../tex/racket.bib}
+  
   \bibliographystyle{apalike}
-  % \nocite{*}
+  \bibliography{slides.bib}
+
+  \nocite{*}
 \end{frame}
 
 \end{document}
